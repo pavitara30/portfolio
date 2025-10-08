@@ -282,6 +282,78 @@
     }
   }
 
+  /* Contact form styles */
+  .contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  @media (max-width: 720px) {
+    .contact-container {
+      grid-template-columns: 1fr;
+    }
+  }
+  .contact-info h3 {
+    color: var(--neon-purple);
+    font-weight: 700;
+    margin-bottom: 15px;
+  }
+  .contact-info p, .contact-info strong, .contact-info span, .contact-info a {
+    color: var(--text-light);
+    font-size: 1rem;
+  }
+  .contact-info a {
+    color: var(--neon-lilac);
+    text-decoration: none;
+  }
+  .contact-info div + div {
+    margin-top: 20px;
+  }
+  .contact-form {
+    background: var(--glass-bg);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 30px rgba(160, 126, 255, 0.25);
+    border: 1.5px solid var(--glass-border);
+  }
+  .contact-form label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--text-light);
+    font-weight: 600;
+  }
+  .contact-form input,
+  .contact-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.1);
+    color: var(--text-light);
+    font-size: 1rem;
+    resize: vertical;
+    font-family: 'Inter', sans-serif;
+  }
+  .contact-form button {
+    width: 100%;
+    padding: 15px;
+    background: var(--neon-purple);
+    color: var(--background-dark);
+    border: none;
+    border-radius: 15px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--neon-purple);
+    transition: background-color 0.3s ease;
+  }
+  .contact-form button:hover {
+    background: var(--neon-lilac);
+    box-shadow: 0 0 25px var(--neon-lilac);
+  }
 </style>
 </head>
 <body>
@@ -405,8 +477,35 @@
   </div>
 </section>
 
-<section id="contact" class="fade-in" style="text-align:center; color: var(--text-muted);">
-  <p>Feel free to reach out via GitHub or LinkedIn for collaborations.</p>
+<!-- Added Contact Section -->
+<section id="contact" class="fade-in">
+  <div class="section-header">
+    <span class="section-badge">Contact</span>
+    <h2 class="section-title">Let's Create Something Amazing</h2>
+    <p class="section-subtitle">Ready to bring your ideas to life? Let’s discuss your project and explore how we can work together.</p>
+  </div>
+  <div class="contact-container">
+    <div class="contact-info">
+      <h3>Get in Touch</h3>
+      <p>I'm always excited to work on innovative projects and collaborate with inspiring people. Whether you have a specific project in mind or just want to say hi, feel free to reach out!</p>
+      <div>
+        <div><strong>Email:</strong><br /><a href="mailto:pavitara.s@example.com">tarasenvel03@gmail.com</a></div>
+        <div><strong>Phone:</strong><br /><span>+91 73057 36999</span></div>
+        <div><strong>Location:</strong><br /><span>Chennai, Tamil Nadu, India</span></div>
+      </div>
+    </div>
+    <form class="contact-form" onsubmit="handleSubmit(event)">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" name="name" placeholder="John Doe" required />
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" placeholder="john@example.com" required />
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="subject" placeholder="Project Inquiry" required />
+      <label for="message">Message</label>
+      <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </div>
 </section>
 
 <footer>
@@ -468,6 +567,20 @@
   }
   window.addEventListener('scroll', setActiveNav);
 
+  // Contact form submission simulation
+  function handleSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const btn = form.querySelector('button');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+    setTimeout(() => {
+      alert('Thank you for reaching out! I will get back to you soon.');
+      form.reset();
+      btn.textContent = 'Send Message';
+      btn.disabled = false;
+    }, 1500);
+  }
 </script>
 </body>
 </html>
