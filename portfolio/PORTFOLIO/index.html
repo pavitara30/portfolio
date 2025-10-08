@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pavitara S - Portfolio</title>
+<style>
+  /* Fonts */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+  :root {
+    --background-dark: #0b0715;
+    --neon-purple: #a07eff;
+    --neon-lilac: #c4a7e7;
+    --dark-navy: #120e2b;
+    --glass-bg: rgba(35, 24, 58, 0.3);
+    --glass-border: rgba(160, 126, 255, 0.3);
+    --text-light: #f0e9ff;
+    --text-muted: #9b8ccc;
+  }
+
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--background-dark);
+    color: var(--text-light);
+    min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Background with floating neon orbs */
+  .bg-animation {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    pointer-events: none;
+    z-index: -1;
+    background: radial-gradient(circle, var(--dark-navy), var(--background-dark));
+  }
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--neon-purple);
+    filter: drop-shadow(0 0 6px var(--neon-purple));
+    animation-timing-function: ease-in-out;
+    opacity: 0.7;
+  }
+  .orb.small {
+    width: 20px; height: 20px;
+    animation-name: floatUpDown;
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+  }
+  .orb.medium {
+    width: 35px; height: 35px;
+    animation-name: floatSideways;
+    animation-duration: 10s;
+    animation-iteration-count: infinite;
+  }
+  .orb.large {
+    width: 60px; height: 60px;
+    background: transparent;
+    border: 2px solid var(--neon-lilac);
+    opacity: 0.3;
+    filter: drop-shadow(0 0 8px var(--neon-lilac));
+    animation-name: pulseRing;
+    animation-duration: 8s;
+    animation-iteration-count: infinite;
+  }
+
+  /* Animations */
+  @keyframes floatUpDown {
+    0%, 100% { transform: translateY(0); opacity: 0.7; }
+    50% { transform: translateY(-15px); opacity: 1; }
+  }
+  @keyframes floatSideways {
+    0%, 100% { transform: translateX(0); opacity: 0.7; }
+    50% { transform: translateX(25px); opacity: 1; }
+  }
+  @keyframes pulseRing {
+    0%, 100% { transform: scale(1); opacity: 0.3; }
+    50% { transform: scale(1.15); opacity: 0.6; }
+  }
+
+  /* Navigation */
+  nav {
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--glass-bg);
+    border-radius: 35px;
+    box-shadow: 0 0 10px var(--neon-purple);
+    padding: 12px 30px;
+    display: flex;
+    gap: 30px;
+    z-index: 1000;
+  }
+  nav a {
+    color: var(--text-light);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    padding: 8px 15px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease;
+  }
+  nav a:hover,
+  nav a.active {
+    background-color: var(--neon-purple);
+    color: var(--background-dark);
+    box-shadow: 0 0 10px var(--neon-purple);
+  }
+
+  /* Hero */
+  .hero {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 0 20px;
+  }
+  .hero h1 {
+    font-weight: 700;
+    font-size: clamp(3rem, 8vw, 5.5rem);
+    color: var(--neon-purple);
+    text-shadow: 0 0 20px var(--neon-purple);
+    margin-bottom: 10px;
+    font-family: 'Inter', sans-serif;
+  }
+  .hero-subtitle {
+    color: var(--neon-lilac);
+    font-weight: 500;
+    font-size: 1.5rem;
+    margin-bottom: 40px;
+    min-height: 2.2rem;
+    font-style: italic;
+  }
+  .cta-buttons a {
+    text-decoration: none;
+    display: inline-block;
+    background-color: var(--neon-purple);
+    color: var(--background-dark);
+    padding: 14px 40px;
+    border-radius: 30px;
+    font-weight: 600;
+    margin: 0 10px;
+    box-shadow: 0 0 12px var(--neon-purple);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .cta-buttons a:hover {
+    background-color: var(--neon-lilac);
+    box-shadow: 0 0 25px var(--neon-lilac);
+  }
+
+  /* Section styling */
+  section {
+    max-width: 960px;
+    margin: 100px auto 100px auto;
+    padding: 0 20px;
+  }
+  .section-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .section-badge {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--neon-lilac);
+    letter-spacing: 2px;
+    padding: 7px 24px;
+    border: 1.5px solid var(--neon-lilac);
+    border-radius: 35px;
+    margin-bottom: 20px;
+  }
+  .section-title {
+    color: var(--neon-purple);
+    font-weight: 700;
+    font-size: 2.7rem;
+    letter-spacing: 2px;
+  }
+  .section-subtitle {
+    color: var(--text-muted);
+    font-weight: 400;
+    font-size: 1.1rem;
+    max-width: 700px;
+    margin: 10px auto 0 auto;
+    letter-spacing: 0.5px;
+  }
+
+  /* About */
+  .about-content {
+    font-weight: 400;
+    color: var(--text-light);
+    line-height: 1.6;
+    max-width: 700px;
+    margin: 0 auto;
+    font-size: 1.1rem;
+  }
+  .profile-card {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 30px auto;
+    border-radius: 50%;
+    background: var(--neon-purple);
+    box-shadow: 0 0 20px var(--neon-purple);
+  }
+  /* Skills & Leadership container reuse */
+  .container-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px;
+  }
+  .card {
+    background: var(--glass-bg);
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 0 18px rgba(160,126,255,0.3);
+    border: 1.5px solid var(--glass-border);
+    transition: background-color 0.3s ease;
+  }
+  .card:hover {
+    background-color: rgba(196, 167, 231, 0.2);
+  }
+  .card h3 {
+    color: var(--neon-purple);
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tag {
+    background: var(--neon-lilac);
+    padding: 7px 18px;
+    border-radius: 25px;
+    font-weight: 600;
+    color: var(--background-dark);
+    box-shadow: 0 0 8px var(--neon-lilac);
+    user-select: none;
+  }
+
+  /* Projects text */
+  .project-description {
+    color: var(--text-muted);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* Fade-in on scroll */
+  .fade-in {
+    opacity: 0;
+    transform: translateY(25px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  footer {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    user-select: none;
+  }
+
+  /* Responsive */
+  @media (max-width: 720px) {
+    .container-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+</style>
+</head>
+<body>
+
+<div class="bg-animation">
+  <!-- Ten orbs with various sizes and positions -->
+  <div class="orb small" style="top: 15vh; left: 10vw; animation-delay: 0s;"></div>
+  <div class="orb medium" style="top: 40vh; left: 25vw; animation-delay: 1.5s;"></div>
+  <div class="orb small" style="top: 70vh; left: 15vw; animation-delay: 3s;"></div>
+  <div class="orb large" style="top: 20vh; left: 60vw; animation-delay: 0.5s;"></div>
+  <div class="orb medium" style="top: 65vh; left: 72vw; animation-delay: 4s;"></div>
+  <div class="orb small" style="top: 45vh; left: 88vw; animation-delay: 1s;"></div>
+  <div class="orb medium" style="top: 85vh; left: 42vw; animation-delay: 6s;"></div>
+  <div class="orb large" style="top: 77vh; left: 80vw; animation-delay: 2s;"></div>
+  <div class="orb small" style="top: 30vh; left: 78vw; animation-delay: 3.5s;"></div>
+  <div class="orb medium" style="top: 10vh; left: 88vw; animation-delay: 0s;"></div>
+</div>
+
+<nav>
+  <a href="#home" class="active">Home</a>
+  <a href="#about">About</a>
+  <a href="#skills">Skills</a>
+  <a href="#projects">Projects</a>
+  <a href="#leadership">Leadership</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<section id="home" class="hero">
+  <h1>Pavitara S</h1>
+  <div class="hero-subtitle" id="hero-subtitle"></div>
+  <div class="cta-buttons">
+    <a href="#projects">View Projects</a>
+    <a href="#contact">Contact Me</a>
+  </div>
+</section>
+
+<section id="about" class="fade-in">
+  <div class="section-header">
+    <span class="section-badge">About Me</span>
+    <h2 class="section-title">Driven Tech Enthusiast</h2>
+    <p class="section-subtitle">Exploring, leading, and learning through the world of computer science.</p>
+  </div>
+  <div class="profile-card"></div>
+  <div class="about-content" style="max-width:720px; margin: auto;">
+    <h3>Hi, I'm Pavitara</h3>
+    <p>I'm in my 3rd year of Computer Science at Loyola-ICAM College of Engineering and Technology, Chennai. Passionate about technology, I constantly explore new domains and ideas. I've held important leadership roles and enjoy guiding teams with my communication skills.</p>
+    <p>Notably, I won 1st place for a startup pitch at Anna University for a groundbreaking medical diagnostic project, and represented in ICAM Paris with an innovative IoT hovercraft project.</p>
+  </div>
+</section>
+
+<section id="skills" class="fade-in">
+  <div class="section-header">
+    <span class="section-badge">Skills</span>
+    <h2 class="section-title">Technical Expertise</h2>
+    <p class="section-subtitle">Coding, leadership, and project management.</p>
+  </div>
+  <div class="container-grid">
+    <div class="card">
+      <h3>Programming</h3>
+      <div class="tags">
+        <span class="tag">Java</span>
+        <span class="tag">SQL</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Leadership</h3>
+      <div class="tags">
+        <span class="tag">Team Management</span>
+        <span class="tag">Communication</span>
+        <span class="tag">Event Organization</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="projects" class="fade-in">
+  <div class="section-header">
+    <span class="section-badge">Portfolio</span>
+    <h2 class="section-title">Featured Projects</h2>
+    <p class="section-subtitle">Project wins and international experience.</p>
+  </div>
+  <div class="container-grid">
+    <div class="card">
+      <h3>Nanopore-PLM Diagnostic Kit</h3>
+      <p class="project-description">
+        Won 1st place at Anna University Startup Pitch. Selected for incubation. Combined nanopore tech and PLM (LLM) to detect neurodegenerative diseases affordably.
+      </p>
+    </div>
+    <div class="card">
+      <h3>Hovercraft w/ IoT Voice Control</h3>
+      <p class="project-description">
+        Selected for ICAM Paris Student Exchange. Developed a voice and app-controlled hovercraft using Blynk IoT.
+      </p>
+    </div>
+  </div>
+</section>
+
+<section id="leadership" class="fade-in">
+  <div class="section-header">
+    <span class="section-badge">Leadership</span>
+    <h2 class="section-title">Clubs & Roles</h2>
+    <p class="section-subtitle">Leading with energy and collaboration</p>
+  </div>
+  <div class="container-grid">
+    <div class="card">
+      <h3>Turbonites Kart Motorsport</h3>
+      <div class="tags">
+        <span class="tag">HR Head</span>
+        <span class="tag">Media & Sponsorship Head</span>
+        <span class="tag">Driver</span>
+        <span class="tag">Non-Tech Head (2025)</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Enunciate Club</h3>
+      <div class="tags">
+        <span class="tag">President</span>
+        <span class="tag">Language & Culture Events</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="fade-in" style="text-align:center; color: var(--text-muted);">
+  <p>Feel free to reach out via GitHub or LinkedIn for collaborations.</p>
+</section>
+
+<footer>
+  <p>&copy; 2025 Pavitara S. All rights reserved.</p>
+</footer>
+
+<script>
+  // Animate subtitle text
+  const heroSubtitle = document.getElementById('hero-subtitle');
+  const lines = [
+    'Passionate tech enthusiast',
+    'Computer Science student at Loyola-ICAM Chennai',
+    'Leader with great communication skills',
+    'Winner of Anna University Startup Pitch',
+    'Innovator with projects in AI & IoT'
+  ];
+  let lineIndex = 0, charIndex = 0;
+
+  function typeText() {
+    if(charIndex <= lines[lineIndex].length) {
+      heroSubtitle.textContent = lines[lineIndex].substring(0, charIndex);
+      charIndex++;
+      setTimeout(typeText, 70);
+    } else {
+      setTimeout(() => {
+        charIndex = 0;
+        lineIndex = (lineIndex + 1) % lines.length;
+        typeText();
+      }, 2000);
+    }
+  }
+  window.onload = typeText;
+
+  // Fade in on scroll
+  const faders = document.querySelectorAll('.fade-in');
+  const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -100px 0px" };
+  const fadeOnScroll = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+  faders.forEach(fader => fadeOnScroll.observe(fader));
+
+  // Nav active on scroll
+  const sections = Array.from(document.querySelectorAll('section[id]'));
+  const navLinks = document.querySelectorAll('nav a');
+  function setActiveNav() {
+    let scrollPos = window.scrollY + window.innerHeight / 3;
+    for(let section of sections){
+      if(scrollPos >= section.offsetTop){
+        navLinks.forEach(link => link.classList.remove('active'));
+        const active = document.querySelector(`nav a[href="#${section.id}"]`);
+        if(active) active.classList.add('active');
+      }
+    }
+  }
+  window.addEventListener('scroll', setActiveNav);
+
+</script>
+</body>
+</html>
