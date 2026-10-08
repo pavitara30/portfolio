@@ -92,48 +92,47 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 .hud-speed small{font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-left:4px;}
 .hud-hint{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
 .hud.boost .hud-speed{color:var(--peach);}
-/* the boost pedal: centred under the kart, angled like a race decal,
-   iridescent with a sheen that sweeps across it, and a fill that charges as you hold */
+/* the boost pedal: centred under the kart, angled like a race decal.
+   Dark glass with a thin gradient edge, a faint sheen now and then,
+   and a soft fill that charges as you hold */
 .hud-boost{
   position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:4;
-  transform:translateX(-50%) skewX(-12deg);
+  transform:translateX(-50%) skewX(-10deg);
   pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
   display:flex;align-items:center;justify-content:center;gap:10px;
-  min-width:172px;min-height:54px;padding:0 26px;border-radius:12px;overflow:hidden;isolation:isolate;
-  font-family:var(--f-mono);font-size:.82rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#120b26;
+  min-width:156px;min-height:48px;padding:0 22px;border-radius:10px;overflow:hidden;isolation:isolate;
+  font-family:var(--f-mono);font-size:.74rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:#ffd2e6;
+  border:1px solid transparent;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.08) 46%, rgba(0,0,0,.12) 54%, rgba(255,255,255,.18)),
-    linear-gradient(115deg, #ffb07c 0%, #ff5ca8 34%, #bc6cff 68%, #7ad7ff 100%);
-  background-size:100% 100%, 220% 100%;
-  border:1px solid rgba(255,255,255,.55);
-  box-shadow:0 0 0 1px rgba(11,15,40,.6), 0 10px 30px rgba(255,92,168,.45), 0 0 46px rgba(188,108,255,.35), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -3px 8px rgba(18,11,38,.35);
-  animation:boostHue 6s linear infinite;
-  transition:transform .12s var(--ease), box-shadow .2s var(--ease);
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,0) 55%) padding-box,
+    linear-gradient(rgba(14,12,34,.82), rgba(14,12,34,.82)) padding-box,
+    linear-gradient(115deg, rgba(255,176,124,.9), rgba(255,92,168,.9) 45%, rgba(188,108,255,.9)) border-box;
+  box-shadow:0 6px 22px rgba(255,92,168,.18);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:transform .12s var(--ease), box-shadow .25s var(--ease), color .2s var(--ease);
 }
-.hud-boost > span{display:inline-block;transform:skewX(12deg);position:relative;z-index:2;}
-.hud-boost .chev{letter-spacing:-.1em;opacity:.75;}
+.hud-boost > span{display:inline-block;transform:skewX(10deg);position:relative;z-index:2;}
+.hud-boost .chev{letter-spacing:-.1em;color:var(--pink);opacity:.8;}
 /* charge fill */
 .hud-boost::before{
   content:'';position:absolute;inset:0;z-index:1;width:var(--charge,0%);
-  background:linear-gradient(90deg, rgba(255,255,255,.15), rgba(255,255,255,.55));
-  mix-blend-mode:overlay;transition:width .1s linear;
+  background:linear-gradient(90deg, rgba(255,92,168,.08), rgba(255,92,168,.28));
+  transition:width .1s linear;
 }
-/* sheen */
+/* a faint sheen that passes every few seconds */
 .hud-boost::after{
-  content:'';position:absolute;top:-20%;bottom:-20%;left:-60%;width:40%;z-index:1;
-  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.85), rgba(255,255,255,0));
-  transform:skewX(-20deg);animation:boostSheen 2.8s var(--ease) infinite;
+  content:'';position:absolute;top:-20%;bottom:-20%;left:-60%;width:30%;z-index:1;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.16), rgba(255,255,255,0));
+  transform:skewX(-20deg);animation:boostSheen 5s var(--ease) infinite;
 }
-@keyframes boostSheen{0%,55%{left:-60%;}100%{left:130%;}}
-@keyframes boostHue{to{background-position:0 0, 220% 0;}}
-.hud-boost:hover{box-shadow:0 0 0 1px rgba(11,15,40,.6), 0 12px 36px rgba(255,92,168,.6), 0 0 60px rgba(188,108,255,.5), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -3px 8px rgba(18,11,38,.35);}
+@keyframes boostSheen{0%,70%{left:-60%;}100%{left:130%;}}
+.hud-boost:hover{box-shadow:0 6px 26px rgba(255,92,168,.3);color:#fff;}
 .hud.boost .hud-boost{
-  transform:translateX(-50%) skewX(-12deg) scale(.96);
-  box-shadow:0 0 0 1px rgba(11,15,40,.6), 0 6px 40px rgba(255,176,124,.75), 0 0 80px rgba(255,92,168,.6), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -3px 8px rgba(18,11,38,.35);
+  transform:translateX(-50%) skewX(-10deg) scale(.97);color:var(--peach);
+  box-shadow:0 4px 28px rgba(255,176,124,.35);
 }
-.hud.boost .hud-boost::after{animation-duration:.7s;}
-@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-width:164px;min-height:56px;}}
-@media (prefers-reduced-motion:reduce){.hud-boost,.hud-boost::after{animation:none;}}
+@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-width:152px;min-height:50px;}}
+@media (prefers-reduced-motion:reduce){.hud-boost::after{animation:none;}}
 .hud.faded .hud-boost{pointer-events:none;}
 /* ===== TIME WARP ===== */
 .warp-msg{
