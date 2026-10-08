@@ -103,6 +103,29 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 .hud.boost .hud-boost{color:var(--peach);border-color:rgba(255,176,124,.6);background:rgba(255,176,124,.08);}
 @media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-height:30px;padding:5px 12px;font-size:.62rem;}}
 .hud.faded .hud-boost{pointer-events:none;}
+/* ===== TIME WARP ===== */
+.warp-msg{
+  margin-top:14px;display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+  text-transform:uppercase;letter-spacing:.2em;color:var(--lilac);
+  opacity:0;transform:translateY(-4px);transition:opacity .25s var(--ease),transform .25s var(--ease);
+  text-shadow:0 0 14px rgba(11,15,40,.9);
+}
+.warp-msg.show{opacity:1;transform:none;}
+.warp-msg span{font-size:.66rem;}
+.warp-msg b{font-size:2.6rem;line-height:1;color:var(--peach);font-weight:700;letter-spacing:0;font-variant-numeric:tabular-nums;}
+.warp-msg.warped b{color:#3df5e0;}
+.hud:not(.warping) .warp-msg{display:none;}
+@media (max-width:700px){
+  /* on phones the message takes the hint's place, on one line, so it never covers her name */
+  .hud.warping .hud-hint{display:none;}
+  .warp-msg{flex-direction:row;align-items:baseline;gap:8px;margin-top:6px;}
+  .warp-msg span{font-size:.58rem;letter-spacing:.12em;}
+  .warp-msg b{font-size:1.1rem;}
+}
+.warp-flash{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 62%, #fff 0%, rgba(216,255,250,.9) 22%, rgba(188,108,255,.5) 55%, rgba(11,15,40,0) 85%);}
+.hud-world{color:#3df5e0;}
+.hud-world:empty{display:none;}
 #kart3d{position:fixed;left:0;top:0;transform-origin:50% 50%;z-index:0;pointer-events:none;display:block;will-change:transform;}
 @media (hover:none){
   body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
@@ -344,11 +367,13 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 <canvas id="scene" aria-hidden="true"></canvas>
 <canvas id="kart3d" aria-hidden="true"></canvas>
 <div id="scrim" aria-hidden="true"></div>
+<div class="warp-flash" id="warpFlash" aria-hidden="true"></div>
 <div class="hud" id="hud" aria-hidden="true">
-  <div class="hud-row"><span><b>P1</b></span><span>LAP <b id="hudLap">1</b></span></div>
+  <div class="hud-row"><span class="hud-world" id="hudWorld"></span><span><b>P1</b></span><span>LAP <b id="hudLap">1</b></span></div>
   <div class="hud-speed"><span id="hudSpeed">0</span><small>KM/H</small></div>
   <button class="hud-boost" id="boostBtn" type="button" tabindex="-1">boost</button>
   <div class="hud-hint" id="hudHint">hold it, or hold space</div>
+  <div class="warp-msg" id="warpMsg"><span id="warpLabel">entering time warp</span><b id="warpCount">3</b></div>
 </div>
 
 <div id="page">
@@ -670,6 +695,28 @@ if(isTouch) hudHint.textContent = 'hold it';
 
 const C = { night:'#0B0F28', midnight:'#1B1B3A', dusk:'#6A4C7D', twilight:'#D17C9A', pink:'#FF5CA8', violet:'#BC6CFF', peach:'#FFB07C', lilac:'#B9B2D0' };
 let W = 0, H = 0, DPR = 1, horizon = 0;
+
+/* Two worlds. Hold boost long enough and you time-warp from one to the other.
+   Board lines are meant to be read in passing: a quiet flex, never a shout. */
+const THEMES = {
+  dusk: {
+    sky:[C.night, C.midnight, C.dusk, C.twilight, C.peach], ground:['#2a1640', '#140f33', C.night],
+    gridH:'255,92,168', gridV:'188,108,255', edge:C.peach, edgeGlow:C.pink, kerb:'rgba(255,92,168,.85)',
+    glow:'255,92,168', head:'rgba(255,170,210,.7)', band:'rgba(255,92,168,.9)', tyreBand:'rgba(255,92,168,.8)',
+    board:'rgba(255,92,168,.85)', boardText:'#ffd2e6', horizon:C.pink, streak:'255,176,124',
+    skyline:'#231a44', windows:'rgba(255,176,124,.75)', palm:'#120d2b', warp:false,
+    words:["you're in p2", 'show up anyway', 'slow is smooth', 'unbothered since lap 1', 'made in chennai']
+  },
+  warp: {
+    sky:['#03040c', '#0a0b24', '#1b1450', '#24557a', '#3df5e0'], ground:['#0b2236', '#070f26', '#03040c'],
+    gridH:'61,245,224', gridV:'188,108,255', edge:'#3df5e0', edgeGlow:'#3df5e0', kerb:'rgba(188,108,255,.85)',
+    glow:'61,245,224', head:'rgba(200,255,250,.75)', band:'rgba(61,245,224,.9)', tyreBand:'rgba(188,108,255,.85)',
+    board:'rgba(61,245,224,.85)', boardText:'#d8fffa', horizon:'#3df5e0', streak:'61,245,224',
+    skyline:'#0d1433', windows:'rgba(61,245,224,.7)', palm:'#0a0f2a', warp:true,
+    words:['still in p2?', 'bonjour from paris', 'nanopore, loading', 'eta: whenever', 'the future is chill']
+  }
+};
+let TH = THEMES.dusk;
 let stars = [], skyline = [], palms = [];
 
 function rand(a, b){ return a + Math.random() * (b - a); }
@@ -709,19 +756,17 @@ function layout(){
 }
 
 const state = { dist:0, speed:0, target:1, steer:0, steerTarget:0, boost:false, lap:1, t:0,
-  steerVel:0, latAcc:0, accel:0, bounce:0, bounceVel:0 };
+  steerVel:0, latAcc:0, accel:0, bounce:0, bounceVel:0, hold:0 };
+// time warp: hold boost for 5s, then a 3s countdown, then the world changes
+const warp = { counting:false, count:0, needRelease:false, flash:0, msgTimer:0 };
 // the camera: a slow sway, a tilt into turns, shake, and a wider view on boost
 const cam = { roll:0, zoom:1.3, sx:0, sy:0, px:0, py:0 };
 
 function drawSky(){
   const g = ctx.createLinearGradient(0, 0, 0, horizon);
-  g.addColorStop(0, C.night);
-  g.addColorStop(.38, C.midnight);
-  g.addColorStop(.66, C.dusk);
-  g.addColorStop(.88, C.twilight);
-  g.addColorStop(1, C.peach);
+  [0, .38, .66, .88, 1].forEach((o, i) => g.addColorStop(o, TH.sky[i]));
   ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, horizon + 1);
+  ctx.fillRect(-W * 0.2, -H * 0.2, W * 1.4, horizon + 1 + H * 0.2);
 
   const streak = Math.max(0, state.speed - 1.4) * 9;
   for(const s of stars){
@@ -737,7 +782,27 @@ function drawSky(){
   ctx.globalAlpha = 1;
 }
 
+function drawPlanet(){
+  // the warp world has a ringed planet where the sun was
+  const r = Math.min(W, H) * (W < 700 ? 0.22 : 0.16);
+  const cx = W/2 - state.steer * 18, cy = horizon - r * 0.55;
+  const glowG = ctx.createRadialGradient(cx, cy, r * 0.8, cx, cy, r * 2.4);
+  glowG.addColorStop(0, 'rgba(61,245,224,.25)'); glowG.addColorStop(1, 'rgba(61,245,224,0)');
+  ctx.fillStyle = glowG; ctx.fillRect(cx - r * 2.4, cy - r * 2.4, r * 4.8, r * 4.8);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(-W, -H, W * 3, horizon + H); ctx.clip();
+  const g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+  g.addColorStop(0, '#d8fffa'); g.addColorStop(.45, '#3df5e0'); g.addColorStop(1, '#5b2bb0');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(216,255,250,.75)'; ctx.lineWidth = Math.max(1.5, r * 0.035);
+  ctx.beginPath(); ctx.ellipse(cx, cy, r * 1.75, r * 0.38, -0.22, Math.PI * 0.04, Math.PI * 0.96, true); ctx.stroke();
+  ctx.strokeStyle = 'rgba(188,108,255,.6)'; ctx.lineWidth = Math.max(1, r * 0.02);
+  ctx.beginPath(); ctx.ellipse(cx, cy, r * 1.95, r * 0.44, -0.22, Math.PI * 0.04, Math.PI * 0.96, true); ctx.stroke();
+  ctx.restore();
+}
+
 function drawSun(){
+  if(TH.warp) return drawPlanet();
   const r = Math.min(W, H) * (W < 700 ? 0.26 : 0.2);
   const cx = W/2 - state.steer * 18;
   const cy = horizon - r * 0.32;
@@ -772,11 +837,15 @@ function drawSun(){
 }
 
 function drawSkyline(){
-  ctx.fillStyle = '#231a44';
+  ctx.fillStyle = TH.skyline;
   for(const b of skyline){
-    ctx.fillRect(b.x, horizon - b.h, b.w, b.h);
+    if(TH.warp){
+      // the city becomes a row of thin glass spires
+      ctx.beginPath(); ctx.moveTo(b.x, horizon); ctx.lineTo(b.x + b.w/2, horizon - b.h * 1.5); ctx.lineTo(b.x + b.w, horizon); ctx.fill();
+    } else ctx.fillRect(b.x, horizon - b.h, b.w, b.h);
   }
-  ctx.fillStyle = 'rgba(255,176,124,.75)';
+  if(TH.warp) return;
+  ctx.fillStyle = TH.windows;
   for(const b of skyline){
     for(const l of b.lights) ctx.fillRect(b.x + l.dx, horizon - b.h + l.dy, 1.6, 1.6);
   }
@@ -786,7 +855,8 @@ function drawPalm(p, baseY){
   if(baseY === undefined) baseY = horizon + 2;
   const sway = Math.sin(state.t * 0.8 + (p.seed !== undefined ? p.seed : p.x)) * 0.02;
   const topX = p.x + p.h * (p.lean + sway), topY = baseY - p.h;
-  ctx.strokeStyle = '#120d2b'; ctx.fillStyle = '#120d2b';
+  if(TH.warp) return drawCrystal(p.x, baseY, p.h);
+  ctx.strokeStyle = TH.palm; ctx.fillStyle = TH.palm;
   ctx.lineCap = 'round';
   ctx.lineWidth = Math.max(3, p.h * 0.035);
   ctx.beginPath();
@@ -805,13 +875,22 @@ function drawPalm(p, baseY){
   }
 }
 
+function drawCrystal(x, baseY, h){
+  // warp-world stand-in for a palm: a tall faceted shard with a lit edge
+  const w = h * 0.16;
+  ctx.fillStyle = '#0d1636';
+  ctx.beginPath(); ctx.moveTo(x - w, baseY); ctx.lineTo(x - w * 0.2, baseY - h); ctx.lineTo(x + w * 0.6, baseY - h * 0.55); ctx.lineTo(x + w, baseY); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(61,245,224,.7)'; ctx.lineWidth = Math.max(1, h * 0.012);
+  ctx.beginPath(); ctx.moveTo(x - w * 0.2, baseY - h); ctx.lineTo(x + w * 0.1, baseY); ctx.stroke();
+}
+
 function drawGround(){
   const g = ctx.createLinearGradient(0, horizon, 0, H);
-  g.addColorStop(0, '#2a1640');
-  g.addColorStop(.25, '#140f33');
-  g.addColorStop(1, C.night);
+  g.addColorStop(0, TH.ground[0]);
+  g.addColorStop(.25, TH.ground[1]);
+  g.addColorStop(1, TH.ground[2]);
   ctx.fillStyle = g;
-  ctx.fillRect(0, horizon, W, H - horizon);
+  ctx.fillRect(-W * 0.2, horizon, W * 1.4, H - horizon + H * 0.2);
 
   const vx = W/2 - state.steer * 30, depth = H - horizon;
   // horizontal grid lines coming toward the viewer
@@ -821,7 +900,7 @@ function drawGround(){
     const y = horizon + depth * (1.2 / z);
     if(y > H || y < horizon) continue;
     const k = (y - horizon) / depth;
-    ctx.strokeStyle = `rgba(255,92,168,${(0.08 + k * 0.5).toFixed(3)})`;
+    ctx.strokeStyle = `rgba(${TH.gridH},${(0.08 + k * 0.5).toFixed(3)})`;
     ctx.lineWidth = 0.6 + k * 1.4;
     ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
   }
@@ -829,7 +908,7 @@ function drawGround(){
   const spread = W * 3.2;
   for(let i=-18;i<=18;i++){
     const bx = W/2 + (i / 18) * spread / 2;
-    ctx.strokeStyle = 'rgba(188,108,255,.22)';
+    ctx.strokeStyle = `rgba(${TH.gridV},.22)`;
     ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(vx, horizon); ctx.lineTo(bx, H); ctx.stroke();
   }
@@ -841,8 +920,8 @@ function drawGround(){
   ctx.moveTo(vx - roadTop, horizon); ctx.lineTo(vx + roadTop, horizon);
   ctx.lineTo(W/2 + roadBottom/2, H); ctx.lineTo(W/2 - roadBottom/2, H);
   ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = C.peach; ctx.lineWidth = 2;
-  ctx.shadowColor = C.pink; ctx.shadowBlur = 12;
+  ctx.strokeStyle = TH.edge; ctx.lineWidth = 2;
+  ctx.shadowColor = TH.edgeGlow; ctx.shadowBlur = 12;
   ctx.beginPath(); ctx.moveTo(vx - roadTop, horizon); ctx.lineTo(W/2 - roadBottom/2, H); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(vx + roadTop, horizon); ctx.lineTo(W/2 + roadBottom/2, H); ctx.stroke();
   ctx.shadowBlur = 0;
@@ -850,7 +929,7 @@ function drawGround(){
   // red-and-white style kerbs on both edges, in pink, rushing past
   const kphase = (state.dist * 3.2) % 1;
   const lTop = vx - roadTop, rTop = vx + roadTop, lBot = W/2 - roadBottom/2, rBot = W/2 + roadBottom/2;
-  ctx.fillStyle = 'rgba(255,92,168,.85)';
+  ctx.fillStyle = TH.kerb;
   for(let i=0;i<40;i++){
     const z1 = (i + 1 - kphase) * 0.5, z2 = z1 + 0.25;
     if(z1 < 0.3) continue;
@@ -882,7 +961,7 @@ function drawGround(){
   }
 
   // horizon line
-  ctx.fillStyle = C.pink;
+  ctx.fillStyle = TH.horizon;
   ctx.globalAlpha = .9;
   ctx.fillRect(0, horizon - 1, W, 2);
   ctx.globalAlpha = 1;
@@ -1118,6 +1197,8 @@ const kart3d = (function(){
     kart.position.x = Math.sin(state.t * 47) * 0.005 * Math.max(0, state.speed - 1.5);
     shadow.rotation.z = kart.rotation.y;
     tail.color.setHex(state.boost ? 0xffb07c : 0xff5ca8);
+    sun.color.setHex(TH.warp ? 0x3df5e0 : 0xffb07c);
+    rim.color.setHex(TH.warp ? 0xbc6cff : 0xff5ca8);
     flameMat.opacity = boostK * (0.45 + Math.random() * 0.3);
     flameCore.material.opacity = boostK * 0.9;
     flame.scale.set(1, 0.5 + boostK * (0.9 + Math.random() * 0.6), 1);
@@ -1137,13 +1218,12 @@ const kart3d = (function(){
 const SPAN = 30, TRAVEL = 1.6;
 const side = [];
 (function(){
-  const words = ['P1', 'turbonites', 'fkrc s6', 'licet', 'lights out'];
   let w = 0;
   for(let z=1; z<SPAN; z+=2.5){ side.push({ type:'lamp', x:-1.55, z }); side.push({ type:'lamp', x:1.55, z:z + 1.25 }); }
   for(let z=0.5; z<SPAN; z+=0.85){ side.push({ type:'bollard', x:-1.2, z }); side.push({ type:'bollard', x:1.2, z:z + 0.42 }); }
   for(let z=3; z<SPAN; z+=rand(3.5, 6)) side.push({ type:'palm', x:(Math.random() < .5 ? -1 : 1) * rand(2.3, 3.2), z, h:rand(2.6, 3.4), lean:rand(-.15, .15) });
   for(let z=5; z<SPAN; z+=rand(5, 8)) side.push({ type:'tyres', x:(Math.random() < .5 ? -1 : 1) * rand(1.45, 1.7), z });
-  for(let z=8; z<SPAN; z+=rand(9, 12)) side.push({ type:'board', x:(w % 2 ? 1 : -1) * 2.05, z, text:words[w++ % words.length] });
+  for(let z=7; z<SPAN; z+=rand(5.5, 7.5)) side.push({ type:'board', x:(w % 2 ? 1 : -1) * 2.2, z, word:w++ });
 })();
 
 function drawSide(){
@@ -1168,7 +1248,7 @@ function drawSide(){
     else if(o.type === 'bollard') drawBollard(x, y, u);
     else if(o.type === 'tyres') drawTyres(x, y, u);
     else if(o.type === 'palm') drawPalm({ x, h:u * o.h, lean:o.lean, seed:o.z }, y);
-    else if(o.type === 'board') drawBoard(x, y, u, o.text);
+    else if(o.type === 'board') drawBoard(x, y, u, TH.words[o.word % TH.words.length]);
   }
   ctx.globalAlpha = 1;
 }
@@ -1182,19 +1262,19 @@ function drawLamp(x, y, u, dir){
   const h = u * 1.7, armX = x + dir * u * 0.38, top = y - h;
   // pool of light on the road
   ctx.save(); ctx.translate(armX, y); ctx.scale(1, 0.28);
-  glow(0, 0, u * 0.9, 'rgba(255,92,168,A)', 0.22); ctx.restore();
+  glow(0, 0, u * 0.9, `rgba(${TH.glow},A)`, 0.22); ctx.restore();
   ctx.strokeStyle = '#1a1433'; ctx.lineCap = 'round';
   ctx.lineWidth = Math.max(1, u * 0.045);
   ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, top + u * 0.08);
   ctx.quadraticCurveTo(x, top, x + dir * u * 0.12, top); ctx.lineTo(armX, top); ctx.stroke();
-  glow(armX, top + u * 0.03, u * 0.45, 'rgba(255,92,168,A)', 0.55);
-  ctx.fillStyle = 'rgba(255,170,210,.7)';
+  glow(armX, top + u * 0.03, u * 0.45, `rgba(${TH.glow},A)`, 0.55);
+  ctx.fillStyle = TH.head;
   ctx.fillRect(armX - u * 0.07, top, u * 0.14, Math.max(1, Math.min(4, u * 0.025)));
 }
 function drawBollard(x, y, u){
   const w = Math.max(1, u * 0.07), h = u * 0.24;
   ctx.fillStyle = '#16122d'; ctx.fillRect(x - w/2, y - h, w, h);
-  ctx.fillStyle = 'rgba(255,92,168,.9)'; ctx.fillRect(x - w/2, y - h * 0.8, w, h * 0.18);
+  ctx.fillStyle = TH.band; ctx.fillRect(x - w/2, y - h * 0.8, w, h * 0.18);
 }
 function drawTyres(x, y, u){
   const r = u * 0.16;
@@ -1202,22 +1282,45 @@ function drawTyres(x, y, u){
     const cy = y - r * 0.55 - i * r * 0.7;
     ctx.fillStyle = '#0a0914';
     ctx.beginPath(); ctx.ellipse(x, cy, r, r * 0.42, 0, 0, Math.PI*2); ctx.fill();
-    ctx.strokeStyle = i === 1 ? 'rgba(255,92,168,.8)' : 'rgba(185,178,208,.35)';
+    ctx.strokeStyle = i === 1 ? TH.tyreBand : 'rgba(185,178,208,.35)';
     ctx.lineWidth = Math.max(1, u * 0.02); ctx.stroke();
   }
 }
 function drawBoard(x, y, u, text){
-  const w = u * 1.1, h = u * 0.42, top = y - u * 0.95;
+  const w = u * 1.5, h = u * 0.42, top = y - u * 1.0;
   ctx.fillStyle = '#120d2b';
   ctx.fillRect(x - w * 0.36, top + h, Math.max(1, u * 0.04), y - top - h);
   ctx.fillRect(x + w * 0.32, top + h, Math.max(1, u * 0.04), y - top - h);
   ctx.fillStyle = 'rgba(11,15,40,.92)'; ctx.fillRect(x - w/2, top, w, h);
-  ctx.strokeStyle = 'rgba(255,92,168,.85)'; ctx.lineWidth = Math.max(1, u * 0.025); ctx.strokeRect(x - w/2, top, w, h);
+  ctx.strokeStyle = TH.board; ctx.lineWidth = Math.max(1, u * 0.025); ctx.strokeRect(x - w/2, top, w, h);
   if(u > 14){
-    ctx.fillStyle = '#ffd2e6';
-    ctx.font = `700 ${Math.round(h * 0.42)}px "JetBrains Mono", monospace`;
+    ctx.fillStyle = TH.boardText;
+    ctx.font = `700 ${Math.round(h * 0.34)}px "JetBrains Mono", monospace`;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.fillText(text.toUpperCase(), x, top + h / 2 + 1, w * 0.86);
+    ctx.fillText(text, x, top + h / 2 + 1, w * 0.88);
+  }
+}
+
+/* ============ LIGHT SPEED ============
+   The longer boost is held, the more the scene stretches into lines that
+   fly out from the vanishing point. */
+const rays = [];
+for(let i=0;i<110;i++) rays.push({ a:Math.random() * Math.PI * 2, r:Math.random(), w:rand(.6, 1.8) });
+function lightK(){ return Math.max(0, Math.min(1, (state.hold - 0.8) / 4.2)); }
+function drawLightspeed(dt){
+  const k = lightK();
+  if(k <= 0.01) return;
+  const vx = W/2 - state.steer * 30, vy = horizon;
+  const reach = Math.hypot(W, H) * 0.75;
+  ctx.lineCap = 'round';
+  for(const ray of rays){
+    ray.r *= 1 + dt * (1.5 + 7 * k);
+    if(ray.r > 1.2){ ray.r = rand(0.03, 0.12); ray.a = Math.random() * Math.PI * 2; }
+    const c = Math.cos(ray.a), s = Math.sin(ray.a);
+    const r2 = ray.r * reach, r1 = r2 * (1 - (0.15 + 0.55 * k) * Math.min(1, ray.r * 1.5));
+    ctx.strokeStyle = `rgba(${ray.w > 1.4 ? TH.streak : '245,240,250'},${(0.55 * k * Math.min(1, ray.r * 3)).toFixed(3)})`;
+    ctx.lineWidth = ray.w * (0.6 + ray.r * 1.4);
+    ctx.beginPath(); ctx.moveTo(vx + c * r1, vy + s * r1 * 0.8); ctx.lineTo(vx + c * r2, vy + s * r2 * 0.8); ctx.stroke();
   }
 }
 
@@ -1235,7 +1338,7 @@ function drawStreaks(){
     const off = (0.62 + (i % 5) * 0.09) * side;
     const x1 = vx + (W/2 + off * W * 0.5 - vx) * ((y1 - horizon) / depth);
     const x2 = vx + (W/2 + off * W * 0.5 - vx) * ((y2 - horizon) / depth);
-    ctx.strokeStyle = `rgba(255,176,124,${(0.5 * k).toFixed(3)})`;
+    ctx.strokeStyle = `rgba(${TH.streak},${(0.5 * k).toFixed(3)})`;
     ctx.lineWidth = 1 + 2 * ((y1 - horizon) / depth);
     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x1, y1); ctx.stroke();
   }
@@ -1257,6 +1360,7 @@ function frame(dt){
   drawGround();
   drawStreaks();
   drawSide();
+  drawLightspeed(dt || 0);
   if(!kart3d) drawKart();
   ctx.restore();
   if(kart3d) kart3d.render(dt || 0);
@@ -1272,7 +1376,9 @@ function camPoint(x, y){
 function step(dt){
   // throttle against drag: it surges off the line and coasts down when you let go
   const prev = state.speed;
-  state.target = state.boost ? 4 : 1;
+  // after a warp, light speed waits until boost is released and pressed again
+  state.hold = state.boost && !warp.needRelease ? state.hold + dt : 0;
+  state.target = state.boost ? 4 + lightK() * 3.5 : 1;
   state.speed += (state.target - state.speed) * Math.min(1, dt * (state.boost ? 2.4 : 1.2));
   const accel = dt > 0 ? (state.speed - prev) / dt : 0;
   state.accel += (accel - state.accel) * Math.min(1, dt * 8);
@@ -1291,16 +1397,60 @@ function step(dt){
   state.bounceVel += (-state.bounce * 160 - state.bounceVel * 12) * dt;
   state.bounce += state.bounceVel * dt;
 
+  stepWarp(dt);
+
   // camera
   const boostK = Math.max(0, Math.min(1, (state.speed - 1.2) / 2.4));
   const rollT = Math.sin(state.t * 0.5) * 0.004 - state.steerVel * 0.03 - state.latAcc * 0.0012;
   cam.roll += (Math.max(-0.035, Math.min(0.035, rollT)) - cam.roll) * Math.min(1, dt * 4);
   // cruise slightly zoomed in (narrow field of view); boost pulls it wide
-  const zoomT = 1.3 - boostK * 0.28 - Math.max(0, state.accel) * 0.008;
+  const zoomT = 1.3 - boostK * 0.28 - lightK() * 0.1 - Math.max(0, state.accel) * 0.008;
   cam.zoom += (zoomT - cam.zoom) * Math.min(1, dt * 3);
   const shake = boostK * 1.6, t = state.t;
   cam.sx = Math.sin(t * 0.7) * 3 + (Math.sin(t * 13.1) + Math.sin(t * 21.7 + 2)) * 0.5 * shake;
   cam.sy = Math.sin(t * 0.9 + 1) * 2 + (Math.sin(t * 15.3 + 1) + Math.sin(t * 24.1)) * 0.5 * shake + state.bounce * 18;
+}
+
+const warpMsg = document.getElementById('warpMsg'), warpCount = document.getElementById('warpCount');
+const warpLabel = document.getElementById('warpLabel'), warpFlash = document.getElementById('warpFlash');
+const hudWorld = document.getElementById('hudWorld');
+function showWarpMsg(label, count, warped){
+  warpLabel.textContent = label; warpCount.textContent = count;
+  warpMsg.classList.toggle('warped', !!warped);
+  warpMsg.classList.add('show');
+  hudEl.classList.add('warping');
+}
+function stepWarp(dt){
+  if(!state.boost) warp.needRelease = false;
+  const onHero = !hudEl.classList.contains('faded');
+  if(!warp.counting && !warp.needRelease && onHero && state.hold >= 5){
+    warp.counting = true; warp.count = 3;
+  }
+  if(warp.counting){
+    if(!state.boost || !onHero){
+      warp.counting = false;
+      showWarpMsg('warp cancelled', '', TH.warp); warp.msgTimer = 1.1;
+    } else {
+      warp.count -= dt;
+      if(warp.count <= 0){
+        warp.counting = false; warp.needRelease = true; warp.flash = 1;
+        TH = TH.warp ? THEMES.dusk : THEMES.warp;
+        state.hold = 0;
+        hudWorld.textContent = TH.warp ? 'TIME WARP' : '';
+        showWarpMsg(TH.warp ? 'welcome to the time warp' : 'back in 2026', '', TH.warp); warp.msgTimer = 2.2;
+      } else {
+        showWarpMsg(TH.warp ? 'leaving time warp' : 'entering time warp', Math.ceil(warp.count), TH.warp);
+      }
+    }
+  }
+  if(warp.msgTimer > 0){
+    warp.msgTimer -= dt;
+    if(warp.msgTimer <= 0){ warpMsg.classList.remove('show'); hudEl.classList.remove('warping'); }
+  }
+  if(warp.flash > 0){
+    warp.flash = Math.max(0, warp.flash - dt * 1.4);
+    warpFlash.style.opacity = (warp.flash * warp.flash).toFixed(3);
+  }
 }
 
 let last = 0, running = true;
