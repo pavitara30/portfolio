@@ -171,8 +171,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
   transition:background .3s var(--ease),padding .3s var(--ease),border-color .3s var(--ease);
 }
 .navbar.scrolled{background:rgba(11,15,40,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-block:calc(12px + env(safe-area-inset-top,0px)) 12px;border-color:var(--line);}
-.monogram{font-family:var(--f-name);font-size:30px;color:var(--pink);line-height:1;text-shadow:0 0 18px rgba(255,92,168,.55);display:inline-flex;align-items:center;gap:12px;}
-.monogram img{width:34px;height:34px;border-radius:50%;object-fit:cover;padding:2px;background:linear-gradient(135deg, var(--peach), var(--pink) 50%, var(--violet));flex:none;}
+.monogram{font-family:var(--f-name);font-size:30px;color:var(--pink);line-height:1;text-shadow:0 0 18px rgba(255,92,168,.55);}
 .nav-links{display:flex;gap:34px;}
 .nav-links a{font-size:.9rem;font-weight:500;color:var(--lilac);transition:color .2s var(--ease);}
 .nav-links a:hover,.nav-links a.active{color:var(--text);}
@@ -296,7 +295,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 .track-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;display:block;}
 .track-side{display:grid;gap:28px;}
 /* round photo at the finish */
-.finish-photo{width:112px;height:112px;margin:0 auto 26px;border-radius:50%;overflow:hidden;
+.finish-photo{width:clamp(150px, 13vw, 184px);height:clamp(150px, 13vw, 184px);margin:0 auto 30px;border-radius:50%;overflow:hidden;
   padding:3px;background:linear-gradient(135deg, var(--peach), var(--pink) 50%, var(--violet));}
 .finish-photo img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 35%;display:block;border:3px solid var(--night);}
 .p1-card{
@@ -429,7 +428,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 
 <div id="page">
   <nav class="navbar" id="navbar">
-    <a href="#home" class="monogram" aria-label="Home"><img src="img/pavitara-96.jpg" width="96" height="96" alt="" decoding="async">pavitara</a>
+    <a href="#home" class="monogram" aria-label="Home">pavitara</a>
     <ul class="nav-links">
       <li><a href="#work" data-nav="work">work</a></li>
       <li><a href="#track" data-nav="track">on track</a></li>
