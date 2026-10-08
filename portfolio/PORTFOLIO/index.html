@@ -92,6 +92,18 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 .hud-speed small{font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-left:4px;}
 .hud-hint{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
 .hud.boost .hud-speed{color:var(--peach);}
+.hud-boost{
+  pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;
+  margin-top:8px;min-height:32px;padding:6px 14px;border-radius:999px;
+  font-family:var(--f-mono);font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--lilac);border:1px solid rgba(185,178,208,.3);background:rgba(11,15,40,.45);
+  transition:color .2s var(--ease),border-color .2s var(--ease),background .2s var(--ease);
+}
+.hud-boost:hover{color:var(--text);border-color:rgba(255,92,168,.5);}
+.hud.boost .hud-boost{color:var(--peach);border-color:rgba(255,176,124,.6);background:rgba(255,176,124,.08);}
+@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-height:30px;padding:5px 12px;font-size:.62rem;}}
+.hud.faded .hud-boost{pointer-events:none;}
+#kart3d{position:fixed;left:0;bottom:0;z-index:0;pointer-events:none;display:block;will-change:transform;}
 @media (hover:none){
   body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 }
@@ -330,11 +342,13 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 </head>
 <body>
 <canvas id="scene" aria-hidden="true"></canvas>
+<canvas id="kart3d" aria-hidden="true"></canvas>
 <div id="scrim" aria-hidden="true"></div>
 <div class="hud" id="hud" aria-hidden="true">
   <div class="hud-row"><span><b>P1</b></span><span>LAP <b id="hudLap">1</b></span></div>
   <div class="hud-speed"><span id="hudSpeed">0</span><small>KM/H</small></div>
-  <div class="hud-hint" id="hudHint">hold anywhere or press space to boost</div>
+  <button class="hud-boost" id="boostBtn" type="button" tabindex="-1">boost</button>
+  <div class="hud-hint" id="hudHint">hold it, or hold space</div>
 </div>
 
 <div id="page">
@@ -583,6 +597,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
   </footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
 (function(){
 "use strict";
@@ -597,7 +612,9 @@ function onScroll(){
   // the scene stays bright in the hero, then dims so the text reads
   const t = Math.min(1, Math.max(0, (y - window.innerHeight * 0.25) / (window.innerHeight * 0.55)));
   scrim.style.setProperty('--scrim', t.toFixed(3));
-  hudEl.style.opacity = (1 - t * (window.innerWidth < 900 ? 1 : 0.7)).toFixed(3);
+  const hudA = 1 - t * (window.innerWidth < 900 ? 1 : 0.7);
+  hudEl.style.opacity = hudA.toFixed(3);
+  hudEl.classList.toggle('faded', hudA < 0.35);
 }
 window.addEventListener('scroll', onScroll, { passive:true });
 onScroll();
@@ -648,7 +665,8 @@ const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
 const hudSpeed = document.getElementById('hudSpeed');
 const hudLap = document.getElementById('hudLap');
 const hudHint = document.getElementById('hudHint');
-if(isTouch) hudHint.textContent = 'hold anywhere to boost';
+const boostBtn = document.getElementById('boostBtn');
+if(isTouch) hudHint.textContent = 'hold it';
 
 const C = { night:'#0B0F28', midnight:'#1B1B3A', dusk:'#6A4C7D', twilight:'#D17C9A', pink:'#FF5CA8', violet:'#BC6CFF', peach:'#FFB07C', lilac:'#B9B2D0' };
 let W = 0, H = 0, DPR = 1, horizon = 0;
@@ -921,13 +939,147 @@ function drawKart(){
   ctx.restore();
 }
 
-function frame(){
+/* ============ 3D KART ============
+   A small low-poly kart in her colours, drawn with three.js on its own
+   canvas over the road. Mostly silhouette, lit from the sunset ahead.
+   If three.js doesn't load, the flat 2D kart is drawn instead. */
+const kart3d = (function(){
+  if(!window.THREE) return null;
+  const T = window.THREE;
+  const el = document.getElementById('kart3d');
+  let renderer;
+  try { renderer = new T.WebGLRenderer({ canvas:el, alpha:true, antialias:true }); }
+  catch(err){ return null; }
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new T.Scene();
+  const camera = new T.PerspectiveCamera(26, 4/3, 0.1, 50);
+  camera.position.set(0, 1.45, 5.8);
+  camera.lookAt(0, 0.36, 0);
+
+  // violet sky above, near-black road below, peach sun ahead, a faint fill from behind
+  scene.add(new T.HemisphereLight(0x8a6cc8, 0x0b0f28, 0.55));
+  const sun = new T.DirectionalLight(0xffb07c, 1.5); sun.position.set(0, 2.2, -6); scene.add(sun);
+  const rim = new T.DirectionalLight(0xff5ca8, 0.7); rim.position.set(-4, 1.2, -3); scene.add(rim);
+  const fill = new T.DirectionalLight(0xb9b2d0, 0.28); fill.position.set(2, 3, 5); scene.add(fill);
+
+  const mat = (color, o) => new T.MeshStandardMaterial(Object.assign({ color, roughness:0.75, metalness:0.15, flatShading:true }, o || {}));
+  const body = mat(0x1a1636), dark = mat(0x0c0b1c), trim = mat(0x2b2550);
+  const pink = mat(0xff5ca8, { roughness:0.5, emissive:0x3a0f26 });
+  const tyre = mat(0x07070d, { roughness:0.95, metalness:0 });
+  const hub = mat(0x8c84aa, { metalness:0.6, roughness:0.4 });
+  const tail = new T.MeshBasicMaterial({ color:0xff5ca8 });
+
+  const kart = new T.Group();
+  const box = (w, h, d, m, x, y, z) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), m); b.position.set(x, y, z); kart.add(b); return b; };
+
+  // chassis, nose and side pods
+  box(0.9, 0.08, 1.9, dark, 0, 0.16, 0);
+  const nose = box(0.7, 0.16, 0.5, body, 0, 0.26, -0.82); nose.rotation.x = 0.18;
+  box(0.86, 0.06, 0.12, pink, 0, 0.2, -1.04);
+  box(0.22, 0.16, 0.8, body, -0.55, 0.24, 0.05);
+  box(0.22, 0.16, 0.8, body, 0.55, 0.24, 0.05);
+  box(0.03, 0.05, 0.76, pink, -0.665, 0.27, 0.05);
+  box(0.03, 0.05, 0.76, pink, 0.665, 0.27, 0.05);
+  // seat, engine and rear bumper
+  const seat = box(0.4, 0.3, 0.12, dark, 0, 0.36, 0.46); seat.rotation.x = -0.25;
+  box(0.36, 0.22, 0.3, trim, 0.32, 0.32, 0.72);
+  box(1.12, 0.07, 0.07, trim, 0, 0.22, 1.0);
+  const lightL = box(0.14, 0.05, 0.03, tail, -0.36, 0.27, 1.04);
+  const lightR = box(0.14, 0.05, 0.03, tail, 0.36, 0.27, 1.04);
+  // driver: shoulders, then a pink helmet with a dark visor band
+  box(0.46, 0.2, 0.26, trim, 0, 0.62, 0.3);
+  const helmet = new T.Mesh(new T.SphereGeometry(0.17, 14, 10), pink); helmet.position.set(0, 0.86, 0.26); kart.add(helmet);
+  const visor = new T.Mesh(new T.BoxGeometry(0.3, 0.06, 0.16), dark); visor.position.set(0, 0.86, 0.14); kart.add(visor);
+
+  // wheels: fat at the back, narrower at the front
+  const wheels = [], fronts = [];
+  function wheel(x, z, r, w, front){
+    const pivot = new T.Group(); pivot.position.set(x, r, z);
+    const spin = new T.Group(); pivot.add(spin);
+    const t = new T.Mesh(new T.CylinderGeometry(r, r, w, 16), tyre); t.rotation.z = Math.PI/2; spin.add(t);
+    const h = new T.Mesh(new T.CylinderGeometry(r*0.45, r*0.45, w + 0.01, 6), hub); h.rotation.z = Math.PI/2; spin.add(h);
+    kart.add(pivot); wheels.push(spin); if(front) fronts.push(pivot);
+  }
+  wheel(-0.62, -0.62, 0.15, 0.16, true); wheel(0.62, -0.62, 0.15, 0.16, true);
+  wheel(-0.64, 0.68, 0.18, 0.26, false); wheel(0.64, 0.68, 0.18, 0.26, false);
+
+  // exhaust flame, only visible on boost
+  const flameMat = new T.MeshBasicMaterial({ color:0xffb07c, transparent:true, opacity:0, blending:T.AdditiveBlending, depthWrite:false });
+  const flame = new T.Mesh(new T.ConeGeometry(0.07, 0.5, 10), flameMat);
+  flame.rotation.x = Math.PI/2; flame.position.set(0.32, 0.3, 1.1); kart.add(flame);
+
+  // soft shadow under the kart
+  const sc = document.createElement('canvas'); sc.width = sc.height = 64;
+  const sx = sc.getContext('2d'); const sg = sx.createRadialGradient(32,32,4,32,32,32);
+  sg.addColorStop(0,'rgba(0,0,0,.6)'); sg.addColorStop(1,'rgba(0,0,0,0)'); sx.fillStyle = sg; sx.fillRect(0,0,64,64);
+  const shadow = new T.Mesh(new T.PlaneGeometry(1.7, 2.5), new T.MeshBasicMaterial({ map:new T.CanvasTexture(sc), transparent:true, depthWrite:false }));
+  shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.005;
+  scene.add(shadow);
+  scene.add(kart);
+
+  let cw = 0, ch = 0, spin = 0, pitch = 0, lastSpeed = 1;
+  function size(){
+    // kept small on purpose: it sits on the road, it doesn't headline
+    cw = Math.round(Math.min(W * (W < 700 ? 0.62 : 0.3), 340, H * 0.42));
+    ch = Math.round(cw * 0.72);
+    renderer.setPixelRatio(DPR);
+    renderer.setSize(cw, ch, false);
+    el.style.width = cw + 'px'; el.style.height = ch + 'px';
+    camera.aspect = cw / ch; camera.updateProjectionMatrix();
+  }
+
+  function render(dt){
+    const boostK = Math.max(0, Math.min(1, (state.speed - 1.1) / 1.4));
+    spin -= state.speed * dt * 14;
+    wheels.forEach(w => { w.rotation.x = spin; });
+    fronts.forEach(f => { f.rotation.y = -state.steer * 0.45; });
+    // lean into the steer, and lift the nose a touch while accelerating
+    const accel = dt > 0 ? (state.speed - lastSpeed) / dt : 0; lastSpeed = state.speed;
+    pitch += (Math.max(-0.06, Math.min(0.06, accel * 0.05)) - pitch) * Math.min(1, dt * 6);
+    kart.rotation.set(-pitch, -state.steer * 0.32, state.steer * 0.06);
+    kart.position.y = Math.abs(Math.sin(state.t * (9 + state.speed * 5))) * 0.012 * state.speed;
+    shadow.rotation.z = kart.rotation.y;
+    tail.color.setHex(state.boost ? 0xffb07c : 0xff5ca8);
+    flameMat.opacity = boostK * (0.55 + Math.random() * 0.35);
+    flame.scale.set(1, 0.6 + boostK * (0.8 + Math.random() * 0.5), 1);
+    renderer.render(scene, camera);
+    // slide across the road with the steer
+    const x = W/2 - cw/2 + state.steer * W * 0.09;
+    el.style.transform = `translate3d(${x.toFixed(1)}px, ${(-H * 0.01).toFixed(1)}px, 0)`;
+  }
+
+  return { size, render };
+})();
+
+// speed streaks along the road edges while boosting
+function drawStreaks(){
+  const k = Math.max(0, Math.min(1, (state.speed - 1.3) / 1.2));
+  if(k <= 0) return;
+  const vx = W/2 - state.steer * 30, depth = H - horizon;
+  ctx.lineCap = 'round';
+  for(let i=0;i<14;i++){
+    const side = i % 2 ? 1 : -1;
+    const ph = ((state.dist * 2.4 + i * 0.37) % 1);
+    const z1 = 1 + ph * 7, z2 = z1 + 0.6 + k * 1.2;
+    const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
+    const off = (0.62 + (i % 5) * 0.09) * side;
+    const x1 = vx + (W/2 + off * W * 0.5 - vx) * ((y1 - horizon) / depth);
+    const x2 = vx + (W/2 + off * W * 0.5 - vx) * ((y2 - horizon) / depth);
+    ctx.strokeStyle = `rgba(255,176,124,${(0.35 * k).toFixed(3)})`;
+    ctx.lineWidth = 1 + 2 * ((y1 - horizon) / depth);
+    ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x1, y1); ctx.stroke();
+  }
+}
+
+function frame(dt){
   drawSky();
   drawSun();
   drawSkyline();
   for(const p of palms) drawPalm(p);
   drawGround();
-  drawKart();
+  drawStreaks();
+  if(kart3d) kart3d.render(dt || 0); else drawKart();
 }
 
 let last = 0, running = true;
@@ -944,10 +1096,12 @@ function loop(now){
   if(lap !== state.lap){ state.lap = lap; hudLap.textContent = lap; }
   hudSpeed.textContent = Math.round(state.speed * 46);
   hudEl.classList.toggle('boost', state.boost);
-  frame();
+  frame(dt);
   requestAnimationFrame(loop);
 }
 
+const baseLayout = layout;
+layout = function(){ baseLayout(); if(kart3d) kart3d.size(); };
 layout();
 if(reduceMotion){
   state.speed = 1; frame(); hudSpeed.textContent = 46;
@@ -966,16 +1120,33 @@ if(reduceMotion){
     state.steerTarget = Math.max(-1, Math.min(1, (e.clientX / W) * 2 - 1));
   }, { passive:true });
 
-  // hold anywhere that isn't a link or button to boost
-  const interactive = el => el.closest && el.closest('a,button,input,textarea,.email');
-  window.addEventListener('pointerdown', e=>{ if(!interactive(e.target)) state.boost = true; });
-  ['pointerup','pointercancel','blur'].forEach(ev=>window.addEventListener(ev, ()=>{ state.boost = false; }));
-  window.addEventListener('keydown', e=>{
-    if(e.code === 'Space' && !interactive(document.activeElement)){ e.preventDefault(); state.boost = true; }
-    if(e.code === 'ArrowLeft') state.steerTarget = Math.max(-1, state.steerTarget - 0.25);
-    if(e.code === 'ArrowRight') state.steerTarget = Math.min(1, state.steerTarget + 0.25);
+  // boost: hold the button (works on touch), hold space or W,
+  // or hold the mouse on any empty part of the page
+  const setBoost = on => { state.boost = on; };
+  boostBtn.addEventListener('pointerdown', e=>{
+    e.preventDefault(); e.stopPropagation();
+    try { boostBtn.setPointerCapture(e.pointerId); } catch(err){}
+    setBoost(true);
   });
-  window.addEventListener('keyup', e=>{ if(e.code === 'Space') state.boost = false; });
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>boostBtn.addEventListener(ev, ()=>setBoost(false)));
+  boostBtn.addEventListener('contextmenu', e=>e.preventDefault());
+
+  const interactive = el => el && el.closest && el.closest('a,button,input,textarea,select,label,.email');
+  window.addEventListener('pointerdown', e=>{
+    if(e.pointerType === 'mouse' && e.button === 0 && !interactive(e.target)) setBoost(true);
+  });
+  window.addEventListener('pointerup', e=>{ if(e.pointerType === 'mouse') setBoost(false); });
+  window.addEventListener('blur', ()=>setBoost(false));
+
+  // a focused link doesn't use space, so only real text fields and buttons keep it
+  const typing = el => el && el.closest && el.closest('input,textarea,select,button,[contenteditable]');
+  const boostKey = c => c === 'Space' || c === 'KeyW';
+  window.addEventListener('keydown', e=>{
+    if(boostKey(e.code) && !typing(document.activeElement) && !e.metaKey && !e.ctrlKey && !e.altKey){ e.preventDefault(); setBoost(true); }
+    if(e.code === 'ArrowLeft' || e.code === 'KeyA') state.steerTarget = Math.max(-1, state.steerTarget - 0.25);
+    if(e.code === 'ArrowRight' || e.code === 'KeyD') state.steerTarget = Math.min(1, state.steerTarget + 0.25);
+  });
+  window.addEventListener('keyup', e=>{ if(boostKey(e.code)) setBoost(false); });
 }
 })();
 </script>
