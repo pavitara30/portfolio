@@ -784,7 +784,7 @@ function drawSkyline(){
 
 function drawPalm(p, baseY){
   if(baseY === undefined) baseY = horizon + 2;
-  const sway = Math.sin(state.t * 0.8 + p.x) * 0.02;
+  const sway = Math.sin(state.t * 0.8 + (p.seed !== undefined ? p.seed : p.x)) * 0.02;
   const topX = p.x + p.h * (p.lean + sway), topY = baseY - p.h;
   ctx.strokeStyle = '#120d2b'; ctx.fillStyle = '#120d2b';
   ctx.lineCap = 'round';
@@ -1167,7 +1167,7 @@ function drawSide(){
     if(o.type === 'lamp') drawLamp(x, y, u, o.x < 0 ? 1 : -1);
     else if(o.type === 'bollard') drawBollard(x, y, u);
     else if(o.type === 'tyres') drawTyres(x, y, u);
-    else if(o.type === 'palm') drawPalm({ x, h:u * o.h, lean:o.lean }, y);
+    else if(o.type === 'palm') drawPalm({ x, h:u * o.h, lean:o.lean, seed:o.z }, y);
     else if(o.type === 'board') drawBoard(x, y, u, o.text);
   }
   ctx.globalAlpha = 1;
@@ -1297,9 +1297,9 @@ function step(dt){
   cam.roll += (Math.max(-0.035, Math.min(0.035, rollT)) - cam.roll) * Math.min(1, dt * 4);
   const zoomT = 1.05 + boostK * 0.09 + Math.max(0, state.accel) * 0.01;
   cam.zoom += (zoomT - cam.zoom) * Math.min(1, dt * 3);
-  const shake = 0.3 + boostK * 2.6;
-  cam.sx = Math.sin(state.t * 0.7) * 3 + (Math.random() - 0.5) * shake;
-  cam.sy = Math.sin(state.t * 0.9 + 1) * 2 + (Math.random() - 0.5) * shake + state.bounce * 30;
+  const shake = boostK * 1.6, t = state.t;
+  cam.sx = Math.sin(t * 0.7) * 3 + (Math.sin(t * 13.1) + Math.sin(t * 21.7 + 2)) * 0.5 * shake;
+  cam.sy = Math.sin(t * 0.9 + 1) * 2 + (Math.sin(t * 15.3 + 1) + Math.sin(t * 24.1)) * 0.5 * shake + state.bounce * 18;
 }
 
 let last = 0, running = true;
