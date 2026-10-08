@@ -100,8 +100,8 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
   transition:color .2s var(--ease),border-color .2s var(--ease),background .2s var(--ease);
 }
 .hud-boost:hover{color:var(--text);border-color:rgba(255,92,168,.5);}
-.hud.boost .hud-boost{color:var(--peach);border-color:rgba(255,176,124,.6);background:rgba(255,176,124,.08);}
-@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-height:30px;padding:5px 12px;font-size:.62rem;}}
+.hud.boost .hud-boost{color:var(--peach);border-color:rgba(255,176,124,.6);background:linear-gradient(90deg, rgba(255,176,124,.32) var(--charge,0%), rgba(255,176,124,.06) var(--charge,0%));}
+@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{position:fixed;right:var(--gutter);bottom:calc(18px + env(safe-area-inset-bottom,0px));min-height:48px;min-width:104px;padding:10px 18px;font-size:.68rem;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}}
 .hud.faded .hud-boost{pointer-events:none;}
 /* ===== TIME WARP ===== */
 .warp-msg{
@@ -691,7 +691,7 @@ const hudSpeed = document.getElementById('hudSpeed');
 const hudLap = document.getElementById('hudLap');
 const hudHint = document.getElementById('hudHint');
 const boostBtn = document.getElementById('boostBtn');
-if(isTouch) hudHint.textContent = 'hold it';
+if(isTouch) hudHint.textContent = 'hold boost + slide';
 
 const C = { night:'#0B0F28', midnight:'#1B1B3A', dusk:'#6A4C7D', twilight:'#D17C9A', pink:'#FF5CA8', violet:'#BC6CFF', peach:'#FFB07C', lilac:'#B9B2D0' };
 let W = 0, H = 0, DPR = 1, horizon = 0;
@@ -1464,6 +1464,7 @@ function loop(now){
   if(lap !== state.lap){ state.lap = lap; hudLap.textContent = lap; }
   hudSpeed.textContent = Math.round(state.speed * 42);
   hudEl.classList.toggle('boost', state.boost);
+  boostBtn.style.setProperty('--charge', (Math.min(1, state.hold / 5) * 100).toFixed(1) + '%');
   frame(dt);
   requestAnimationFrame(loop);
 }
@@ -1483,27 +1484,51 @@ if(reduceMotion){
     if(running){ last = 0; requestAnimationFrame(loop); }
   });
 
-  // steering follows the pointer
-  window.addEventListener('pointermove', e=>{
-    state.steerTarget = Math.max(-1, Math.min(1, (e.clientX / W) * 2 - 1));
-  }, { passive:true });
-
-  // boost: hold the button (works on touch), hold space or W,
-  // or hold the mouse on any empty part of the page
   const setBoost = on => { state.boost = on; };
-  boostBtn.addEventListener('pointerdown', e=>{
-    e.preventDefault(); e.stopPropagation();
-    try { boostBtn.setPointerCapture(e.pointerId); } catch(err){}
-    setBoost(true);
-  });
-  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>boostBtn.addEventListener(ev, ()=>setBoost(false)));
-  boostBtn.addEventListener('contextmenu', e=>e.preventDefault());
+  const steerTo = v => { state.steerTarget = Math.max(-1, Math.min(1, v)); };
 
+  // mouse: steering follows the pointer; hold on any empty part of the page to boost
   const interactive = el => el && el.closest && el.closest('a,button,input,textarea,select,label,.email');
+  window.addEventListener('pointermove', e=>{
+    if(e.pointerType === 'mouse') steerTo((e.clientX / W) * 2 - 1);
+  }, { passive:true });
+  boostBtn.addEventListener('pointerdown', e=>{
+    if(e.pointerType !== 'mouse') return;
+    e.preventDefault(); e.stopPropagation(); setBoost(true);
+  });
   window.addEventListener('pointerdown', e=>{
     if(e.pointerType === 'mouse' && e.button === 0 && !interactive(e.target)) setBoost(true);
   });
   window.addEventListener('pointerup', e=>{ if(e.pointerType === 'mouse') setBoost(false); });
+
+  // touch: hold the boost button to charge, slide that thumb left or right to steer.
+  // Touch events, not pointer events, so a long hold never gets cancelled into a scroll.
+  let boostTouch = null, touchStartX = 0, steerAtStart = 0;
+  boostBtn.addEventListener('touchstart', e=>{
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    boostTouch = t.identifier; touchStartX = t.clientX; steerAtStart = state.steerTarget;
+    setBoost(true);
+  }, { passive:false });
+  const findTouch = (list, id) => { for(const t of list) if(t.identifier === id) return t; return null; };
+  window.addEventListener('touchmove', e=>{
+    const held = boostTouch !== null && findTouch(e.changedTouches, boostTouch);
+    if(held){
+      // the thumb on the button: sliding a third of the screen is full lock
+      if(e.cancelable) e.preventDefault();
+      steerTo(steerAtStart + (held.clientX - touchStartX) / (W * 0.33));
+      return;
+    }
+    // any other finger dragging across the hero steers to where it is
+    if(window.scrollY < window.innerHeight * 0.5) steerTo((e.changedTouches[0].clientX / W) * 2 - 1);
+  }, { passive:false });
+  const endTouch = e=>{
+    if(boostTouch !== null && findTouch(e.changedTouches, boostTouch)){ boostTouch = null; setBoost(false); }
+  };
+  window.addEventListener('touchend', endTouch);
+  window.addEventListener('touchcancel', endTouch);
+  boostBtn.addEventListener('contextmenu', e=>e.preventDefault());
+
   window.addEventListener('blur', ()=>setBoost(false));
 
   // a focused link doesn't use space, so only real text fields and buttons keep it
