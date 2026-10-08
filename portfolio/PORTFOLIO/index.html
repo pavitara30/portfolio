@@ -103,7 +103,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 .hud.boost .hud-boost{color:var(--peach);border-color:rgba(255,176,124,.6);background:rgba(255,176,124,.08);}
 @media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-height:30px;padding:5px 12px;font-size:.62rem;}}
 .hud.faded .hud-boost{pointer-events:none;}
-#kart3d{position:fixed;left:0;bottom:0;z-index:0;pointer-events:none;display:block;will-change:transform;}
+#kart3d{position:fixed;left:0;top:0;transform-origin:50% 50%;z-index:0;pointer-events:none;display:block;will-change:transform;}
 @media (hover:none){
   body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
 }
@@ -708,7 +708,10 @@ function layout(){
   ];
 }
 
-const state = { dist:0, speed:0, target:1, steer:0, steerTarget:0, boost:false, lap:1, t:0 };
+const state = { dist:0, speed:0, target:1, steer:0, steerTarget:0, boost:false, lap:1, t:0,
+  steerVel:0, latAcc:0, accel:0, bounce:0, bounceVel:0 };
+// the camera: a slow sway, a tilt into turns, shake and a zoom-in punch on boost
+const cam = { roll:0, zoom:1.05, sx:0, sy:0, px:0, py:0 };
 
 function drawSky(){
   const g = ctx.createLinearGradient(0, 0, 0, horizon);
@@ -779,8 +782,8 @@ function drawSkyline(){
   }
 }
 
-function drawPalm(p){
-  const baseY = horizon + 2;
+function drawPalm(p, baseY){
+  if(baseY === undefined) baseY = horizon + 2;
   const sway = Math.sin(state.t * 0.8 + p.x) * 0.02;
   const topX = p.x + p.h * (p.lean + sway), topY = baseY - p.h;
   ctx.strokeStyle = '#120d2b'; ctx.fillStyle = '#120d2b';
@@ -845,7 +848,7 @@ function drawGround(){
   ctx.shadowBlur = 0;
 
   // red-and-white style kerbs on both edges, in pink, rushing past
-  const kphase = (state.dist * 1.6) % 1;
+  const kphase = (state.dist * 3.2) % 1;
   const lTop = vx - roadTop, rTop = vx + roadTop, lBot = W/2 - roadBottom/2, rBot = W/2 + roadBottom/2;
   ctx.fillStyle = 'rgba(255,92,168,.85)';
   for(let i=0;i<40;i++){
@@ -1036,6 +1039,12 @@ const kart3d = (function(){
   add(rbox(0.42, 0.34, 0.08, 0.06), dark, 0, 0.36, 0.48, -0.32);
   add(rbox(0.4, 0.06, 0.34, 0.03), dark, 0, 0.17, 0.32);
 
+  // roll hoop behind the seat, padded at the top and braced back to the frame
+  bar([[-0.22,0.16,0.6],[-0.23,0.62,0.62],[-0.2,0.78,0.63],[0,0.8,0.63],[0.2,0.78,0.63],[0.23,0.62,0.62],[0.22,0.16,0.6]], 0.026, steel);
+  bar([[-0.21,0.7,0.63],[-0.26,0.45,0.78],[-0.32,0.16,0.92]], 0.018, tube);
+  bar([[0.21,0.7,0.63],[0.26,0.45,0.78],[0.32,0.16,0.92]], 0.018, tube);
+  add(new T.CylinderGeometry(0.04, 0.04, 0.24, 12), pink, 0, 0.8, 0.63, 0, 0, Math.PI/2);
+
   // driver: suit, shoulders, arms to the wheel, helmet
   add(new T.CylinderGeometry(0.16, 0.19, 0.38, 16), suit, 0, 0.42, 0.34, -0.28);
   add(new T.CylinderGeometry(0.168, 0.168, 0.05, 16), pink, 0, 0.5, 0.37, -0.28);        // pink band on the suit
@@ -1083,7 +1092,7 @@ const kart3d = (function(){
   scene.add(shadow);
   scene.add(kart);
 
-  let cw = 0, ch = 0, spin = 0, pitch = 0, lastSpeed = 1;
+  let cw = 0, ch = 0, spin = 0, pitch = 0;
   function size(){
     // kept small on purpose: it sits on the road, it doesn't headline
     cw = Math.round(Math.min(W * (W < 700 ? 0.62 : 0.3), 340, H * 0.42));
@@ -1098,26 +1107,119 @@ const kart3d = (function(){
     const boostK = Math.max(0, Math.min(1, (state.speed - 1.1) / 2));
     spin -= state.speed * dt * 14;
     wheels.forEach(w => { w.rotation.x = spin; });
-    fronts.forEach(f => { f.rotation.y = -state.steer * 0.45; });
-    // lean into the steer, and lift the nose a touch while accelerating
-    const accel = dt > 0 ? (state.speed - lastSpeed) / dt : 0; lastSpeed = state.speed;
-    pitch += (Math.max(-0.06, Math.min(0.06, accel * 0.05)) - pitch) * Math.min(1, dt * 6);
-    kart.rotation.set(-pitch, -state.steer * 0.32, state.steer * 0.06);
-    kart.position.y = Math.abs(Math.sin(state.t * (9 + state.speed * 6))) * 0.01 * state.speed;
-    kart.position.x = Math.sin(state.t * 47) * 0.006 * Math.max(0, state.speed - 1.5);
+    // the front wheels point where it's heading; the body yaws with its sideways
+    // speed, rolls out of the turn, squats on boost and dives when you lift
+    fronts.forEach(f => { f.rotation.y = Math.max(-0.5, Math.min(0.5, -state.steerVel * 0.35 - state.latAcc * 0.01)); });
+    pitch += (Math.max(-0.07, Math.min(0.07, state.accel * 0.03)) - pitch) * Math.min(1, dt * 6);
+    const yaw = Math.max(-0.5, Math.min(0.5, -state.steerVel * 0.28 - state.steer * 0.08));
+    const roll = Math.max(-0.08, Math.min(0.08, state.latAcc * 0.004));
+    kart.rotation.set(pitch, yaw, roll);
+    kart.position.y = Math.max(0, state.bounce * 0.6);
+    kart.position.x = Math.sin(state.t * 47) * 0.005 * Math.max(0, state.speed - 1.5);
     shadow.rotation.z = kart.rotation.y;
     tail.color.setHex(state.boost ? 0xffb07c : 0xff5ca8);
     flameMat.opacity = boostK * (0.45 + Math.random() * 0.3);
     flameCore.material.opacity = boostK * 0.9;
     flame.scale.set(1, 0.5 + boostK * (0.9 + Math.random() * 0.6), 1);
     renderer.render(scene, camera);
-    // slide across the road with the steer
-    const x = W/2 - cw/2 + state.steer * W * 0.09;
-    el.style.transform = `translate3d(${x.toFixed(1)}px, ${(-H * 0.01).toFixed(1)}px, 0)`;
+    // slide across the road with the steer, then follow the camera
+    const [px, py] = camPoint(W/2 + state.steer * W * 0.09, H * 0.99 - ch / 2);
+    el.style.transform = `translate3d(${(px - cw/2).toFixed(1)}px, ${(py - ch/2).toFixed(1)}px, 0) rotate(${cam.roll.toFixed(4)}rad) scale(${cam.zoom.toFixed(4)})`;
   }
 
   return { size, render };
 })();
+
+/* ============ TRACKSIDE ============
+   Lamps, bollards, tyre stacks, palms and boards that come down both sides
+   of the road and sweep past close to the kart. World units: 1 = half the
+   road's width at the bottom of the screen; z is distance ahead. */
+const SPAN = 30, TRAVEL = 1.6;
+const side = [];
+(function(){
+  const words = ['P1', 'turbonites', 'fkrc s6', 'licet', 'lights out'];
+  let w = 0;
+  for(let z=1; z<SPAN; z+=2.5){ side.push({ type:'lamp', x:-1.55, z }); side.push({ type:'lamp', x:1.55, z:z + 1.25 }); }
+  for(let z=0.5; z<SPAN; z+=0.85){ side.push({ type:'bollard', x:-1.2, z }); side.push({ type:'bollard', x:1.2, z:z + 0.42 }); }
+  for(let z=3; z<SPAN; z+=rand(3.5, 6)) side.push({ type:'palm', x:(Math.random() < .5 ? -1 : 1) * rand(2.3, 3.2), z, h:rand(2.6, 3.4), lean:rand(-.15, .15) });
+  for(let z=5; z<SPAN; z+=rand(5, 8)) side.push({ type:'tyres', x:(Math.random() < .5 ? -1 : 1) * rand(1.45, 1.7), z });
+  for(let z=8; z<SPAN; z+=rand(9, 12)) side.push({ type:'board', x:(w % 2 ? 1 : -1) * 2.05, z, text:words[w++ % words.length] });
+})();
+
+function drawSide(){
+  const depth = H - horizon, vx = W/2 - state.steer * 30;
+  const roadBottom = Math.max(W * 0.46, 300);
+  const travel = state.dist * TRAVEL;
+  const items = [];
+  for(const o of side){
+    let z = ((o.z - travel) % SPAN + SPAN) % SPAN;
+    if(z < 0.22) continue;
+    items.push([z, o]);
+  }
+  items.sort((a, b) => b[0] - a[0]);
+  for(const [z, o] of items){
+    const k = 1.2 / z;                       // same perspective as the road
+    const y = horizon + depth * k;
+    const u = roadBottom / 2 * k;            // pixels per world unit at this depth
+    const x = vx + (W/2 + o.x * roadBottom / 2 - vx) * k;
+    if(x < -u * 4 || x > W + u * 4) continue;
+    ctx.globalAlpha = Math.min(1, (SPAN - z) / 6);
+    if(o.type === 'lamp') drawLamp(x, y, u, o.x < 0 ? 1 : -1);
+    else if(o.type === 'bollard') drawBollard(x, y, u);
+    else if(o.type === 'tyres') drawTyres(x, y, u);
+    else if(o.type === 'palm') drawPalm({ x, h:u * o.h, lean:o.lean }, y);
+    else if(o.type === 'board') drawBoard(x, y, u, o.text);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function glow(x, y, r, color, a){
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, color.replace('A', a)); g.addColorStop(1, color.replace('A', 0));
+  ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+}
+function drawLamp(x, y, u, dir){
+  const h = u * 1.7, armX = x + dir * u * 0.38, top = y - h;
+  // pool of light on the road
+  ctx.save(); ctx.translate(armX, y); ctx.scale(1, 0.28);
+  glow(0, 0, u * 0.9, 'rgba(255,92,168,A)', 0.22); ctx.restore();
+  ctx.strokeStyle = '#1a1433'; ctx.lineCap = 'round';
+  ctx.lineWidth = Math.max(1, u * 0.045);
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, top + u * 0.08);
+  ctx.quadraticCurveTo(x, top, x + dir * u * 0.12, top); ctx.lineTo(armX, top); ctx.stroke();
+  glow(armX, top + u * 0.03, u * 0.45, 'rgba(255,92,168,A)', 0.55);
+  ctx.fillStyle = 'rgba(255,170,210,.7)';
+  ctx.fillRect(armX - u * 0.07, top, u * 0.14, Math.max(1, Math.min(4, u * 0.025)));
+}
+function drawBollard(x, y, u){
+  const w = Math.max(1, u * 0.07), h = u * 0.24;
+  ctx.fillStyle = '#16122d'; ctx.fillRect(x - w/2, y - h, w, h);
+  ctx.fillStyle = 'rgba(255,92,168,.9)'; ctx.fillRect(x - w/2, y - h * 0.8, w, h * 0.18);
+}
+function drawTyres(x, y, u){
+  const r = u * 0.16;
+  for(let i=0;i<3;i++){
+    const cy = y - r * 0.55 - i * r * 0.7;
+    ctx.fillStyle = '#0a0914';
+    ctx.beginPath(); ctx.ellipse(x, cy, r, r * 0.42, 0, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = i === 1 ? 'rgba(255,92,168,.8)' : 'rgba(185,178,208,.35)';
+    ctx.lineWidth = Math.max(1, u * 0.02); ctx.stroke();
+  }
+}
+function drawBoard(x, y, u, text){
+  const w = u * 1.1, h = u * 0.42, top = y - u * 0.95;
+  ctx.fillStyle = '#120d2b';
+  ctx.fillRect(x - w * 0.36, top + h, Math.max(1, u * 0.04), y - top - h);
+  ctx.fillRect(x + w * 0.32, top + h, Math.max(1, u * 0.04), y - top - h);
+  ctx.fillStyle = 'rgba(11,15,40,.92)'; ctx.fillRect(x - w/2, top, w, h);
+  ctx.strokeStyle = 'rgba(255,92,168,.85)'; ctx.lineWidth = Math.max(1, u * 0.025); ctx.strokeRect(x - w/2, top, w, h);
+  if(u > 14){
+    ctx.fillStyle = '#ffd2e6';
+    ctx.font = `700 ${Math.round(h * 0.42)}px "JetBrains Mono", monospace`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(text.toUpperCase(), x, top + h / 2 + 1, w * 0.86);
+  }
+}
 
 // speed streaks along the road edges while boosting
 function drawStreaks(){
@@ -1140,13 +1242,64 @@ function drawStreaks(){
 }
 
 function frame(dt){
+  ctx.fillStyle = C.night; ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  // camera: pivot low in the frame, so the horizon swings and the road stays put
+  cam.px = W/2; cam.py = H * 0.78;
+  ctx.translate(cam.px + cam.sx, cam.py + cam.sy);
+  ctx.rotate(cam.roll);
+  ctx.scale(cam.zoom, cam.zoom);
+  ctx.translate(-cam.px, -cam.py);
   drawSky();
   drawSun();
   drawSkyline();
   for(const p of palms) drawPalm(p);
   drawGround();
   drawStreaks();
-  if(kart3d) kart3d.render(dt || 0); else drawKart();
+  drawSide();
+  if(!kart3d) drawKart();
+  ctx.restore();
+  if(kart3d) kart3d.render(dt || 0);
+}
+
+// where a point drawn in scene space ends up on screen after the camera
+function camPoint(x, y){
+  const dx = (x - cam.px) * cam.zoom, dy = (y - cam.py) * cam.zoom;
+  const c = Math.cos(cam.roll), s = Math.sin(cam.roll);
+  return [cam.px + cam.sx + dx * c - dy * s, cam.py + cam.sy + dx * s + dy * c];
+}
+
+function step(dt){
+  // throttle against drag: it surges off the line and coasts down when you let go
+  const prev = state.speed;
+  state.target = state.boost ? 4 : 1;
+  state.speed += (state.target - state.speed) * Math.min(1, dt * (state.boost ? 2.4 : 1.2));
+  const accel = dt > 0 ? (state.speed - prev) / dt : 0;
+  state.accel += (accel - state.accel) * Math.min(1, dt * 8);
+
+  // lateral: a spring toward where you point, with less grip the faster you go,
+  // so it overshoots a little and settles like a kart sliding on its tyres
+  const grip = 18 / (1 + (state.speed - 1) * 0.35), damp = 7.5;
+  const latA = (state.steerTarget - state.steer) * grip - state.steerVel * damp;
+  state.steerVel += latA * dt;
+  state.steer = Math.max(-1.08, Math.min(1.08, state.steer + state.steerVel * dt));
+  state.latAcc += (latA - state.latAcc) * Math.min(1, dt * 10);
+  state.dist += state.speed * dt;
+
+  // suspension: road bumps kick a damped spring, harder at speed
+  if(Math.random() < dt * (2 + state.speed * 3)) state.bounceVel += (Math.random() - 0.3) * 0.5 * state.speed;
+  state.bounceVel += (-state.bounce * 160 - state.bounceVel * 12) * dt;
+  state.bounce += state.bounceVel * dt;
+
+  // camera
+  const boostK = Math.max(0, Math.min(1, (state.speed - 1.2) / 2.4));
+  const rollT = Math.sin(state.t * 0.5) * 0.004 - state.steerVel * 0.03 - state.latAcc * 0.0012;
+  cam.roll += (Math.max(-0.035, Math.min(0.035, rollT)) - cam.roll) * Math.min(1, dt * 4);
+  const zoomT = 1.05 + boostK * 0.09 + Math.max(0, state.accel) * 0.01;
+  cam.zoom += (zoomT - cam.zoom) * Math.min(1, dt * 3);
+  const shake = 0.3 + boostK * 2.6;
+  cam.sx = Math.sin(state.t * 0.7) * 3 + (Math.random() - 0.5) * shake;
+  cam.sy = Math.sin(state.t * 0.9 + 1) * 2 + (Math.random() - 0.5) * shake + state.bounce * 30;
 }
 
 let last = 0, running = true;
@@ -1155,10 +1308,7 @@ function loop(now){
   const dt = Math.min(0.05, (now - (last || now)) / 1000);
   last = now;
   state.t += dt;
-  state.target = state.boost ? 4 : 1;
-  state.speed += (state.target - state.speed) * Math.min(1, dt * (state.boost ? 2.4 : 1.4));
-  state.steer += (state.steerTarget - state.steer) * Math.min(1, dt * 3);
-  state.dist += state.speed * dt;
+  step(dt);
   const lap = 1 + Math.floor(state.dist / 40);
   if(lap !== state.lap){ state.lap = lap; hudLap.textContent = lap; }
   hudSpeed.textContent = Math.round(state.speed * 42);
