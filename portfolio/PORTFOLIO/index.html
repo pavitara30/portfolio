@@ -710,8 +710,8 @@ function layout(){
 
 const state = { dist:0, speed:0, target:1, steer:0, steerTarget:0, boost:false, lap:1, t:0,
   steerVel:0, latAcc:0, accel:0, bounce:0, bounceVel:0 };
-// the camera: a slow sway, a tilt into turns, shake and a zoom-in punch on boost
-const cam = { roll:0, zoom:1.05, sx:0, sy:0, px:0, py:0 };
+// the camera: a slow sway, a tilt into turns, shake, and a wider view on boost
+const cam = { roll:0, zoom:1.16, sx:0, sy:0, px:0, py:0 };
 
 function drawSky(){
   const g = ctx.createLinearGradient(0, 0, 0, horizon);
@@ -1295,7 +1295,8 @@ function step(dt){
   const boostK = Math.max(0, Math.min(1, (state.speed - 1.2) / 2.4));
   const rollT = Math.sin(state.t * 0.5) * 0.004 - state.steerVel * 0.03 - state.latAcc * 0.0012;
   cam.roll += (Math.max(-0.035, Math.min(0.035, rollT)) - cam.roll) * Math.min(1, dt * 4);
-  const zoomT = 1.05 + boostK * 0.09 + Math.max(0, state.accel) * 0.01;
+  // cruise slightly zoomed in (narrow field of view); boost pulls it wide
+  const zoomT = 1.16 - boostK * 0.13 - Math.max(0, state.accel) * 0.006;
   cam.zoom += (zoomT - cam.zoom) * Math.min(1, dt * 3);
   const shake = boostK * 1.6, t = state.t;
   cam.sx = Math.sin(t * 0.7) * 3 + (Math.sin(t * 13.1) + Math.sin(t * 21.7 + 2)) * 0.5 * shake;
