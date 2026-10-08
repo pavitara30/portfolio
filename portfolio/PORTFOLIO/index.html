@@ -1,586 +1,1610 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pavitara S - Portfolio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pavitara S | Software Developer</title>
+<meta name="description" content="Pavitara S. Computer Science student and SDE intern in Chennai. P1 at FKRC Season 6, startup pitch winner, and builder of an IoT hovercraft made in Paris.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pavitara.vercel.app/">
+<meta property="og:title" content="Pavitara S | Software Developer">
+<meta property="og:description" content="Codes, races, pitches, leads. P1 at FKRC Season 6 and an SDE intern in Chennai.">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://pavitara.vercel.app/">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Pavitara S">
+<meta name="theme-color" content="#0B0F28">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://pavitara.vercel.app/#person",
+  "name": "Pavitara S",
+  "url": "https://pavitara.vercel.app/",
+  "jobTitle": "Software Developer",
+  "email": "mailto:tarasenvel03@gmail.com",
+  "address": { "@type": "PostalAddress", "addressLocality": "Chennai", "addressRegion": "Tamil Nadu", "addressCountry": "IN" },
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "Loyola-ICAM College of Engineering and Technology" },
+  "knowsAbout": ["Java", "Python", "Embedded C", "MySQL", "IoT", "Arduino"],
+  "sameAs": ["https://www.linkedin.com/in/pavitara-s-715458290/", "https://github.com/pavitara30"]
+}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23FFB07C'/%3E%3Cstop offset='1' stop-color='%23FF5CA8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230B0F28'/%3E%3Ccircle cx='32' cy='36' r='18' fill='url(%23g)'/%3E%3Crect x='10' y='38' width='44' height='3' fill='%230B0F28'/%3E%3Crect x='10' y='45' width='44' height='4' fill='%230B0F28'/%3E%3Crect x='10' y='52' width='44' height='12' fill='%230B0F28'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  /* Fonts */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+/* Layout: a fixed dusk race scene behind everything, a scrim that darkens as you scroll,
+   and a single reading column where sections are "sectors" of one lap. */
+:root{
+  --night:#0B0F28;
+  --midnight:#1B1B3A;
+  --dusk:#6A4C7D;
+  --pink:#FF5CA8;
+  --violet:#BC6CFF;
+  --peach:#FFB07C;
+  --lilac:#B9B2D0;
+  --text:#F5F0FA;
+  --muted:#9A93B5;
+  --line:rgba(185,178,208,.16);
+  --card:rgba(27,27,58,.62);
+  --f-name:'Yellowtail', 'Brush Script MT', cursive;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --gutter:max(20px, 6vw);
+  color-scheme:dark;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+html,body{background:var(--night);overflow-x:hidden;max-width:100%;}
+body{color:var(--text);font-family:var(--f-body);line-height:1.65;font-size:16px;min-height:100vh;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:pointer;}
+h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text-wrap:balance;line-height:1.05;}
+::selection{background:var(--pink);color:var(--night);}
+:focus-visible{outline:2px solid var(--peach);outline-offset:3px;border-radius:4px;}
 
-  :root {
-    --background-dark: #0b0715;
-    --neon-purple: #a07eff;
-    --neon-lilac: #c4a7e7;
-    --dark-navy: #120e2b;
-    --glass-bg: rgba(35, 24, 58, 0.3);
-    --glass-border: rgba(160, 126, 255, 0.3);
-    --text-light: #f0e9ff;
-    --text-muted: #9b8ccc;
-  }
+/* ===== SCENE ===== */
+#scene{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;}
+#scrim{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg, rgba(11,15,40,.88), rgba(11,15,40,.8));
+  opacity:var(--scrim,0);
+}
+#page{position:relative;z-index:2;}
+.container{max-width:1120px;margin:0 auto;padding-inline:var(--gutter);}
 
-  * {
-    margin: 0; padding: 0; box-sizing: border-box;
-  }
+/* ===== HUD ===== */
+.hud{
+  position:fixed;right:var(--gutter);top:92px;z-index:3;
+  font-family:var(--f-mono);text-align:right;
+  pointer-events:none;user-select:none;
+  font-variant-numeric:tabular-nums;
+  transition:opacity .4s var(--ease);
+}
+.hud-row{font-size:.72rem;letter-spacing:.14em;color:var(--lilac);display:flex;gap:16px;justify-content:flex-end;}
+.hud-row b{color:var(--pink);font-weight:700;}
+.hud-speed{font-size:1.7rem;font-weight:700;color:var(--text);line-height:1.2;}
+.hud-speed small{font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-left:4px;}
+.hud-hint{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.hud.boost .hud-speed{color:var(--peach);}
+/* the boost pedal: centred under the kart, angled like a race decal.
+   Dark glass with a thin gradient edge, a faint sheen now and then,
+   and a soft fill that charges as you hold */
+.hud-boost{
+  position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:4;
+  transform:translateX(-50%) skewX(-10deg);
+  pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-width:156px;min-height:48px;padding:0 22px;border-radius:10px;overflow:hidden;isolation:isolate;
+  font-family:var(--f-mono);font-size:.74rem;font-weight:700;letter-spacing:.28em;text-transform:uppercase;color:#ffd2e6;
+  border:1px solid transparent;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,0) 55%) padding-box,
+    linear-gradient(rgba(14,12,34,.82), rgba(14,12,34,.82)) padding-box,
+    linear-gradient(115deg, rgba(255,176,124,.9), rgba(255,92,168,.9) 45%, rgba(188,108,255,.9)) border-box;
+  box-shadow:0 6px 22px rgba(255,92,168,.18);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  transition:transform .12s var(--ease), box-shadow .25s var(--ease), color .2s var(--ease);
+}
+.hud-boost > span{display:inline-block;transform:skewX(10deg);position:relative;z-index:2;}
+.hud-boost .chev{letter-spacing:-.1em;color:var(--pink);opacity:.8;}
+/* charge fill */
+.hud-boost::before{
+  content:'';position:absolute;inset:0;z-index:1;width:var(--charge,0%);
+  background:linear-gradient(90deg, rgba(255,92,168,.08), rgba(255,92,168,.28));
+  transition:width .1s linear;
+}
+/* a faint sheen that passes every few seconds */
+.hud-boost::after{
+  content:'';position:absolute;top:-20%;bottom:-20%;left:-60%;width:30%;z-index:1;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.16), rgba(255,255,255,0));
+  transform:skewX(-20deg);animation:boostSheen 5s var(--ease) infinite;
+}
+@keyframes boostSheen{0%,70%{left:-60%;}100%{left:130%;}}
+.hud-boost:hover{box-shadow:0 6px 26px rgba(255,92,168,.3);color:#fff;}
+.hud.boost .hud-boost{
+  transform:translateX(-50%) skewX(-10deg) scale(.97);color:var(--peach);
+  box-shadow:0 4px 28px rgba(255,176,124,.35);
+}
+@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-width:152px;min-height:50px;}}
+@media (prefers-reduced-motion:reduce){.hud-boost::after{animation:none;}}
+.hud.faded .hud-boost{pointer-events:none;}
+/* ===== TIME WARP ===== */
+.warp-msg{
+  margin-top:14px;display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+  text-transform:uppercase;letter-spacing:.2em;color:var(--lilac);
+  opacity:0;transform:translateY(-4px);transition:opacity .25s var(--ease),transform .25s var(--ease);
+  text-shadow:0 0 14px rgba(11,15,40,.9);
+}
+.warp-msg.show{opacity:1;transform:none;}
+.warp-msg span{font-size:.66rem;}
+.warp-msg b{font-size:2.6rem;line-height:1;color:var(--peach);font-weight:700;letter-spacing:0;font-variant-numeric:tabular-nums;}
+.warp-msg.warped b{color:#3df5e0;}
+.hud:not(.warping) .warp-msg{display:none;}
+@media (max-width:700px){
+  /* on phones the message takes the hint's place, on one line, so it never covers her name */
+  .hud.warping .hud-hint{display:none;}
+  .warp-msg{flex-direction:row;align-items:baseline;gap:8px;margin-top:6px;}
+  .warp-msg span{font-size:.58rem;letter-spacing:.12em;}
+  .warp-msg b{font-size:1.1rem;}
+}
+.warp-flash{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 62%, #fff 0%, rgba(216,255,250,.9) 22%, rgba(188,108,255,.5) 55%, rgba(11,15,40,0) 85%);}
+.hud-world{color:#3df5e0;}
+.hud-world:empty{display:none;}
+#kart3d{position:fixed;left:0;top:0;transform-origin:50% 50%;z-index:0;pointer-events:none;display:block;will-change:transform;}
+@media (hover:none){
+  body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+}
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--background-dark);
-    color: var(--text-light);
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-  }
+/* ===== NAV ===== */
+.navbar{
+  position:fixed;top:0;left:0;width:100%;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(22px + env(safe-area-inset-top,0px)) var(--gutter) 22px;
+  border-bottom:1px solid transparent;
+  transition:background .3s var(--ease),padding .3s var(--ease),border-color .3s var(--ease);
+}
+.navbar.scrolled{background:rgba(11,15,40,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-block:calc(12px + env(safe-area-inset-top,0px)) 12px;border-color:var(--line);}
+.monogram{font-family:var(--f-name);font-size:30px;color:var(--pink);line-height:1;text-shadow:0 0 18px rgba(255,92,168,.55);}
+.nav-links{display:flex;gap:34px;}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--lilac);transition:color .2s var(--ease);}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.hamburger{display:none;flex-direction:column;gap:5px;width:48px;height:48px;align-items:center;justify-content:center;z-index:1600;}
+.hamburger span{width:22px;height:2px;background:var(--text);transition:transform .3s var(--ease),opacity .3s var(--ease);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{
+  position:fixed;inset:0;z-index:1500;background:var(--night);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;
+  transform:translateY(-100%);transition:transform .45s var(--ease);
+}
+.mobile-menu.open{transform:translateY(0);}
+.mobile-menu a{font-family:var(--f-display);font-size:1.7rem;font-weight:700;min-height:48px;display:flex;align-items:center;}
+.mobile-menu a:hover{color:var(--pink);}
 
-  /* Background with floating neon orbs */
-  .bg-animation {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    pointer-events: none;
-    z-index: -1;
-    background: radial-gradient(circle, var(--dark-navy), var(--background-dark));
-  }
-  .orb {
-    position: absolute;
-    border-radius: 50%;
-    background: var(--neon-purple);
-    filter: drop-shadow(0 0 6px var(--neon-purple));
-    animation-timing-function: ease-in-out;
-    opacity: 0.7;
-  }
-  .orb.small {
-    width: 20px; height: 20px;
-    animation-name: floatUpDown;
-    animation-duration: 6s;
-    animation-iteration-count: infinite;
-  }
-  .orb.medium {
-    width: 35px; height: 35px;
-    animation-name: floatSideways;
-    animation-duration: 10s;
-    animation-iteration-count: infinite;
-  }
-  .orb.large {
-    width: 60px; height: 60px;
-    background: transparent;
-    border: 2px solid var(--neon-lilac);
-    opacity: 0.3;
-    filter: drop-shadow(0 0 8px var(--neon-lilac));
-    animation-name: pulseRing;
-    animation-duration: 8s;
-    animation-iteration-count: infinite;
-  }
+/* ===== BUTTONS ===== */
+.buttons{display:flex;gap:12px;flex-wrap:wrap;}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;min-height:48px;
+  padding:13px 24px;border-radius:999px;
+  font-family:var(--f-display);font-weight:700;font-size:.95rem;
+  transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease),box-shadow .2s var(--ease);
+}
+.btn-pink{background:var(--pink);color:var(--night);box-shadow:0 0 0 rgba(255,92,168,0);}
+.btn-pink:hover{box-shadow:0 0 28px rgba(255,92,168,.55);}
+.btn-ghost{border:1px solid rgba(185,178,208,.35);color:var(--text);background:rgba(11,15,40,.35);}
+.btn-ghost:hover{border-color:var(--pink);color:var(--pink);}
+.btn svg{width:16px;height:16px;fill:currentColor;}
 
-  /* Animations */
-  @keyframes floatUpDown {
-    0%, 100% { transform: translateY(0); opacity: 0.7; }
-    50% { transform: translateY(-15px); opacity: 1; }
-  }
-  @keyframes floatSideways {
-    0%, 100% { transform: translateX(0); opacity: 0.7; }
-    50% { transform: translateX(25px); opacity: 1; }
-  }
-  @keyframes pulseRing {
-    0%, 100% { transform: scale(1); opacity: 0.3; }
-    50% { transform: scale(1.15); opacity: 0.6; }
-  }
+/* ===== HERO ===== */
+.hero{min-height:100svh;padding-block:150px 0;display:flex;flex-direction:column;}
+.hero-name{
+  font-family:var(--f-name);font-weight:400;letter-spacing:0;
+  font-size:clamp(56px,9vw,124px);line-height:1;
+  color:var(--pink);
+  text-shadow:0 0 22px rgba(255,92,168,.6),0 0 60px rgba(255,92,168,.3);
+  transform:rotate(-4deg);transform-origin:left center;
+  margin-bottom:22px;
+}
+.hero-title{
+  font-family:var(--f-display);font-weight:800;
+  font-size:clamp(30px,4.6vw,60px);line-height:1.05;letter-spacing:-.02em;
+  margin-bottom:22px;max-width:780px;
+}
+.hero-title em{font-style:normal;color:var(--peach);}
+.hero-title,.hero-sub{text-shadow:0 2px 18px rgba(11,15,40,.85),0 0 2px rgba(11,15,40,.6);}
+.hero-sub{color:rgba(245,240,250,.86);max-width:560px;font-size:clamp(1rem,1.25vw,1.1rem);margin-bottom:34px;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+.lights{
+  margin-top:auto;padding-bottom:28px;
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);
+}
+.lights i{width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 10px var(--pink);animation:blink 1.6s infinite;}
+.lights i:nth-child(2){animation-delay:.2s;}
+.lights i:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{opacity:1}30%{opacity:.25}}
 
-  /* Navigation */
-  nav {
-    position: fixed;
-    top: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--glass-bg);
-    border-radius: 35px;
-    box-shadow: 0 0 10px var(--neon-purple);
-    padding: 12px 30px;
-    display: flex;
-    gap: 30px;
-    z-index: 1000;
-  }
-  nav a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 8px 15px;
-    border-radius: 25px;
-    transition: background-color 0.3s ease;
-  }
-  nav a:hover,
-  nav a.active {
-    background-color: var(--neon-purple);
-    color: var(--background-dark);
-    box-shadow: 0 0 10px var(--neon-purple);
-  }
+/* ===== PODIUM STRIP ===== */
+.podium{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.podium div{padding:26px 22px;min-width:0;}
+.podium div + div{border-left:1px solid var(--line);}
+.podium b{display:block;font-family:var(--f-display);font-size:clamp(1.9rem,3vw,2.6rem);font-weight:800;line-height:1.05;color:var(--text);}
+.podium b span{color:var(--pink);}
+.podium p{font-size:.88rem;color:var(--muted);margin-top:6px;}
 
-  /* Hero */
-  .hero {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
-    padding: 0 20px;
-  }
-  .hero h1 {
-    font-weight: 700;
-    font-size: clamp(3rem, 8vw, 5.5rem);
-    color: var(--neon-purple);
-    text-shadow: 0 0 20px var(--neon-purple);
-    margin-bottom: 10px;
-    font-family: 'Inter', sans-serif;
-  }
-  .hero-subtitle {
-    color: var(--neon-lilac);
-    font-weight: 500;
-    font-size: 1.5rem;
-    margin-bottom: 40px;
-    min-height: 2.2rem;
-    font-style: italic;
-  }
-  .cta-buttons a {
-    text-decoration: none;
-    display: inline-block;
-    background-color: var(--neon-purple);
-    color: var(--background-dark);
-    padding: 14px 40px;
-    border-radius: 30px;
-    font-weight: 600;
-    margin: 0 10px;
-    box-shadow: 0 0 12px var(--neon-purple);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .cta-buttons a:hover {
-    background-color: var(--neon-lilac);
-    box-shadow: 0 0 25px var(--neon-lilac);
-  }
+/* ===== SECTIONS ===== */
+.section{padding-block:120px;}
+.sector{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  font-family:var(--f-mono);font-size:.74rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--violet);
+}
+.sector::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--violet);box-shadow:0 0 12px var(--violet);}
+.sector span{color:var(--muted);font-weight:500;}
+.section-heading{font-size:clamp(36px,5vw,64px);margin-bottom:14px;}
+.section-intro{color:var(--lilac);max-width:560px;}
 
-  /* Section styling */
-  section {
-    max-width: 960px;
-    margin: 100px auto 100px auto;
-    padding: 0 20px;
-  }
-  .section-header {
-    text-align: center;
-    margin-bottom: 60px;
-  }
-  .section-badge {
-    display: inline-block;
-    font-weight: 600;
-    font-size: 12px;
-    color: var(--neon-lilac);
-    letter-spacing: 2px;
-    padding: 7px 24px;
-    border: 1.5px solid var(--neon-lilac);
-    border-radius: 35px;
-    margin-bottom: 20px;
-  }
-  .section-title {
-    color: var(--neon-purple);
-    font-weight: 700;
-    font-size: 2.7rem;
-    letter-spacing: 2px;
-  }
-  .section-subtitle {
-    color: var(--text-muted);
-    font-weight: 400;
-    font-size: 1.1rem;
-    max-width: 700px;
-    margin: 10px auto 0 auto;
-    letter-spacing: 0.5px;
-  }
+/* ===== WORK ===== */
+.builds{margin-top:64px;display:grid;gap:22px;}
+.build{
+  display:grid;grid-template-columns:200px 1fr;gap:36px;
+  padding:34px;border-radius:18px;
+  background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.build-side{display:flex;flex-direction:column;gap:14px;min-width:0;}
+.build-tag{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--peach);}
+.build-result{
+  font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--pink);
+}
+.build-result small{display:block;font-family:var(--f-body);font-weight:500;font-size:.82rem;color:var(--muted);margin-top:6px;line-height:1.4;}
+.build-main{min-width:0;}
+.build h3{font-size:clamp(1.5rem,2.4vw,2rem);margin-bottom:8px;}
+.build-hook{color:var(--text);margin-bottom:20px;font-size:1.05rem;}
+.notes{display:grid;grid-template-columns:110px 1fr;gap:10px 20px;padding-block:18px;border-top:1px solid var(--line);margin-bottom:16px;}
+.notes dt{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:4px;}
+.notes dd{color:var(--lilac);font-size:.95rem;}
+.notes dd strong{color:var(--text);font-weight:600;}
+.stack{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);}
+.build-link{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-family:var(--f-display);font-weight:700;color:var(--pink);min-height:32px;}
+.build-link:hover{color:var(--peach);}
 
-  /* About */
-  .about-content {
-    font-weight: 400;
-    color: var(--text-light);
-    line-height: 1.6;
-    max-width: 700px;
-    margin: 0 auto;
-    font-size: 1.1rem;
-  }
-  .profile-card {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 30px auto;
-    border-radius: 50%;
-    background: var(--neon-purple);
-    box-shadow: 0 0 20px var(--neon-purple);
-  }
-  /* Skills & Leadership container reuse */
-  .container-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
-  }
-  .card {
-    background: var(--glass-bg);
-    border-radius: 25px;
-    padding: 30px;
-    box-shadow: 0 0 18px rgba(160,126,255,0.3);
-    border: 1.5px solid var(--glass-border);
-    transition: background-color 0.3s ease;
-  }
-  .card:hover {
-    background-color: rgba(196, 167, 231, 0.2);
-  }
-  .card h3 {
-    color: var(--neon-purple);
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .tag {
-    background: var(--neon-lilac);
-    padding: 7px 18px;
-    border-radius: 25px;
-    font-weight: 600;
-    color: var(--background-dark);
-    box-shadow: 0 0 8px var(--neon-lilac);
-    user-select: none;
-  }
+/* ===== TRACK ===== */
+.track-grid{margin-top:64px;display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;}
+/* chequered-flag banner: full width, fading into the page above and below */
+.track-banner{position:relative;margin-top:48px;height:clamp(240px, 40vw, 540px);overflow:hidden;}
+.track-banner img{width:100%;height:100%;object-fit:cover;object-position:62% 62%;display:block;}
+.track-banner::after{content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg, var(--night) 0%, rgba(11,15,40,0) 22%, rgba(11,15,40,0) 70%, var(--night) 100%),
+             linear-gradient(90deg, rgba(11,15,40,.55), rgba(11,15,40,0) 35%);}
+.track-banner figcaption{position:absolute;left:var(--gutter);bottom:22%;z-index:1;
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);}
+.track-banner figcaption b{color:var(--pink);font-weight:700;}
+/* the focused shot sits beside the result and the pit list */
+.track-photo{position:sticky;top:96px;margin:0;border-radius:var(--radius, 18px);overflow:hidden;border:1px solid var(--line);aspect-ratio:4/5;}
+.track-photo img{width:100%;height:100%;object-fit:cover;object-position:50% 42%;display:block;}
+.track-side{display:grid;gap:28px;}
+/* round photo at the finish */
+.finish-photo{width:clamp(150px, 13vw, 184px);height:clamp(150px, 13vw, 184px);margin:0 auto 30px;border-radius:50%;overflow:hidden;
+  padding:3px;background:linear-gradient(135deg, var(--peach), var(--pink) 50%, var(--violet));}
+.finish-photo img{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:50% 35%;display:block;border:3px solid var(--night);}
+.p1-card{
+  position:relative;overflow:hidden;
+  padding:40px 36px;border-radius:22px;
+  background:linear-gradient(160deg, rgba(106,76,125,.55), rgba(27,27,58,.75) 55%, rgba(209,124,154,.35));
+  border:1px solid rgba(255,92,168,.35);
+}
+.p1-big{
+  font-family:var(--f-display);font-weight:800;line-height:.85;letter-spacing:-.04em;
+  font-size:clamp(110px,15vw,190px);
+  background:linear-gradient(180deg,var(--peach),var(--pink) 70%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.p1-title{font-size:1.5rem;margin:14px 0 6px;}
+.p1-meta{font-family:var(--f-mono);font-size:.76rem;letter-spacing:.08em;color:var(--lilac);margin-bottom:20px;}
+.p1-card p{color:var(--lilac);}
+.events{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+.events span{
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;
+  padding:6px 11px;border-radius:999px;border:1px solid rgba(185,178,208,.3);color:var(--text);
+}
+.events span::before{content:"✓ ";color:var(--pink);}
+.flag{
+  position:absolute;top:22px;right:22px;width:56px;height:28px;opacity:.5;
+  background:conic-gradient(var(--text) 25%, transparent 0 50%, var(--text) 0 75%, transparent 0) 0 0/14px 14px;
+}
+.pit-list{display:grid;gap:0;border-top:1px solid var(--line);}
+.pit{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:20px 0;border-bottom:1px solid var(--line);}
+.pit h3{font-size:1.1rem;font-weight:700;letter-spacing:-.01em;}
+.pit p{grid-column:1 / -1;color:var(--muted);font-size:.93rem;}
+.pit time,.pit .when{font-family:var(--f-mono);font-size:.74rem;color:var(--peach);white-space:nowrap;padding-top:4px;}
+.bee{
+  display:inline-block;width:38px;height:12px;border-radius:3px;vertical-align:middle;margin-left:8px;
+  background:repeating-linear-gradient(90deg,#F6C445 0 6px,#111 6px 12px);
+}
 
-  /* Projects text */
-  .project-description {
-    color: var(--text-muted);
-    font-weight: 400;
-    line-height: 1.5;
-  }
+/* ===== NOW / TIMELINE ===== */
+.timeline{margin-top:56px;display:grid;gap:0;border-top:1px solid var(--line);}
+.stint{display:grid;grid-template-columns:180px 1fr;gap:26px;padding:28px 0;border-bottom:1px solid var(--line);}
+.stint .when{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);padding-top:6px;}
+.stint .when b{display:inline-block;color:var(--night);background:var(--pink);border-radius:4px;padding:1px 7px;font-weight:700;margin-bottom:6px;}
+.stint h3{font-size:1.35rem;margin-bottom:4px;}
+.stint h3 span{color:var(--lilac);font-weight:500;}
+.stint p{color:var(--lilac);max-width:640px;}
 
-  /* Fade-in on scroll */
-  .fade-in {
-    opacity: 0;
-    transform: translateY(25px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ===== OFF TRACK ===== */
+.off-grid{margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.off{padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:12px;}
+.off .build-tag{color:var(--violet);}
+.off h3{font-size:1.5rem;}
+.off p{color:var(--lilac);}
+.off blockquote{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);font-size:.95rem;color:var(--text);}
+.off blockquote::before{content:"“";color:var(--pink);font-family:var(--f-display);font-weight:800;margin-right:2px;}
+.off blockquote::after{content:"”";color:var(--pink);font-family:var(--f-display);font-weight:800;}
 
-  footer {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    user-select: none;
-  }
+/* ===== TOOLBOX ===== */
+.toolbox{margin-top:48px;border-top:1px solid var(--line);}
+.tool-row{display:grid;grid-template-columns:200px 1fr;gap:24px;padding:22px 0;border-bottom:1px solid var(--line);}
+.tool-row h3{font-size:1rem;font-weight:700;letter-spacing:0;}
+.tool-row p{color:var(--lilac);}
+.tool-row p b{color:var(--text);font-weight:600;}
 
-  /* Responsive */
-  @media (max-width: 720px) {
-    .container-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+/* ===== FINISH ===== */
+.finish{padding-block:120px 80px;text-align:center;}
+.quote{
+  font-family:var(--f-display);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(26px,3.6vw,44px);line-height:1.2;max-width:860px;margin:0 auto 18px;text-wrap:balance;
+}
+.quote em{font-style:normal;color:var(--pink);}
+.quote-by{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:56px;}
+.contact{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.email{
+  font-family:var(--f-mono);font-size:clamp(.95rem,2.4vw,1.25rem);color:var(--text);
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;
+  user-select:text;-webkit-user-select:text;
+}
+.copy{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--pink);border:1px solid rgba(255,92,168,.5);border-radius:999px;padding:6px 12px;min-height:32px;}
+.copy:hover{background:rgba(255,92,168,.12);}
+.footer{padding-block:28px calc(28px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;color:var(--muted);}
+.footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 
-  /* Contact form styles */
-  .contact-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    max-width: 960px;
-    margin: 0 auto;
-  }
-  @media (max-width: 720px) {
-    .contact-container {
-      grid-template-columns: 1fr;
-    }
-  }
-  .contact-info h3 {
-    color: var(--neon-purple);
-    font-weight: 700;
-    margin-bottom: 15px;
-  }
-  .contact-info p, .contact-info strong, .contact-info span, .contact-info a {
-    color: var(--text-light);
-    font-size: 1rem;
-  }
-  .contact-info a {
-    color: var(--neon-lilac);
-    text-decoration: none;
-  }
-  .contact-info div + div {
-    margin-top: 20px;
-  }
-  .contact-form {
-    background: var(--glass-bg);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(160, 126, 255, 0.25);
-    border: 1.5px solid var(--glass-border);
-  }
-  .contact-form label {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--text-light);
-    font-weight: 600;
-  }
-  .contact-form input,
-  .contact-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    border: 1px solid var(--glass-border);
-    background: rgba(255,255,255,0.1);
-    color: var(--text-light);
-    font-size: 1rem;
-    resize: vertical;
-    font-family: 'Inter', sans-serif;
-  }
-  .contact-form button {
-    width: 100%;
-    padding: 15px;
-    background: var(--neon-purple);
-    color: var(--background-dark);
-    border: none;
-    border-radius: 15px;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 0 15px var(--neon-purple);
-    transition: background-color 0.3s ease;
-  }
-  .contact-form button:hover {
-    background: var(--neon-lilac);
-    box-shadow: 0 0 25px var(--neon-lilac);
-  }
+/* ===== RESPONSIVE ===== */
+@media (max-width:900px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .hud{top:80px;}
+  .hud-speed{font-size:1.15rem;}
+  .hud-row{gap:10px;font-size:.62rem;}
+  .hud-hint{font-size:.58rem;max-width:150px;margin-left:auto;line-height:1.5;}
+  .podium{grid-template-columns:1fr 1fr;}
+  .lights{display:none;}
+  .podium div:nth-child(3){border-left:none;}
+  .podium div:nth-child(n+3){border-top:1px solid var(--line);}
+  .build{grid-template-columns:1fr;gap:20px;padding:26px;}
+  .build-side{flex-direction:row;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;}
+  .track-grid,.off-grid{grid-template-columns:1fr;}
+  .track-photo{position:static;aspect-ratio:4/5;max-height:70vh;}
+  .track-banner figcaption{bottom:16%;font-size:.62rem;}
+  .stint{grid-template-columns:1fr;gap:6px;}
+  .tool-row{grid-template-columns:1fr;gap:6px;}
+}
+@media (max-width:600px){
+  .section{padding-block:84px;}
+  .hero{padding-block:170px 0;}
+  .notes{grid-template-columns:1fr;gap:2px;}
+  .notes dd{margin-bottom:10px;}
+  .p1-card{padding:30px 24px;}
+  .off{padding:24px;}
+  .podium div{padding:20px 14px;}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .lights i{animation:none;}
+}
 </style>
 </head>
 <body>
-
-<div class="bg-animation">
-  <!-- Ten orbs with various sizes and positions -->
-  <div class="orb small" style="top: 15vh; left: 10vw; animation-delay: 0s;"></div>
-  <div class="orb medium" style="top: 40vh; left: 25vw; animation-delay: 1.5s;"></div>
-  <div class="orb small" style="top: 70vh; left: 15vw; animation-delay: 3s;"></div>
-  <div class="orb large" style="top: 20vh; left: 60vw; animation-delay: 0.5s;"></div>
-  <div class="orb medium" style="top: 65vh; left: 72vw; animation-delay: 4s;"></div>
-  <div class="orb small" style="top: 45vh; left: 88vw; animation-delay: 1s;"></div>
-  <div class="orb medium" style="top: 85vh; left: 42vw; animation-delay: 6s;"></div>
-  <div class="orb large" style="top: 77vh; left: 80vw; animation-delay: 2s;"></div>
-  <div class="orb small" style="top: 30vh; left: 78vw; animation-delay: 3.5s;"></div>
-  <div class="orb medium" style="top: 10vh; left: 88vw; animation-delay: 0s;"></div>
+<canvas id="scene" aria-hidden="true"></canvas>
+<canvas id="kart3d" aria-hidden="true"></canvas>
+<div id="scrim" aria-hidden="true"></div>
+<div class="warp-flash" id="warpFlash" aria-hidden="true"></div>
+<div class="hud" id="hud" aria-hidden="true">
+  <div class="hud-row"><span class="hud-world" id="hudWorld"></span><span><b>P1</b></span><span>LAP <b id="hudLap">1</b></span></div>
+  <div class="hud-speed"><span id="hudSpeed">0</span><small>KM/H</small></div>
+  <button class="hud-boost" id="boostBtn" type="button" tabindex="-1"><span>boost</span><span class="chev" aria-hidden="true">&#8250;&#8250;&#8250;</span></button>
+  <div class="hud-hint" id="hudHint">hold boost or space</div>
+  <div class="warp-msg" id="warpMsg"><span id="warpLabel">entering time warp</span><b id="warpCount">3</b></div>
 </div>
 
-<nav>
-  <a href="#home" class="active">Home</a>
-  <a href="#about">About</a>
-  <a href="#skills">Skills</a>
-  <a href="#projects">Projects</a>
-  <a href="#leadership">Leadership</a>
-  <a href="#contact">Contact</a>
-</nav>
+<div id="page">
+  <nav class="navbar" id="navbar">
+    <a href="#home" class="monogram" aria-label="Home">pavitara</a>
+    <ul class="nav-links">
+      <li><a href="#work" data-nav="work">work</a></li>
+      <li><a href="#track" data-nav="track">on track</a></li>
+      <li><a href="#now" data-nav="now">now</a></li>
+      <li><a href="#off-track" data-nav="off-track">off track</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#work">work</a>
+    <a href="#track">on track</a>
+    <a href="#now">now</a>
+    <a href="#off-track">off track</a>
+    <a href="#contact">contact</a>
+  </div>
 
-<section id="home" class="hero">
-  <h1>Pavitara S</h1>
-  <div class="hero-subtitle" id="hero-subtitle"></div>
-  <div class="cta-buttons">
-    <a href="#projects">View Projects</a>
-    <a href="#contact">Contact Me</a>
-  </div>
-</section>
+  <header class="hero" id="home">
+    <div class="container" style="display:flex;flex-direction:column;flex:1;">
+      <h1 class="hero-name">Pavitara S</h1>
+      <p class="hero-title">codes. races. pitches. <em>leads.</em></p>
+      <p class="hero-sub">Final-year CSE at LICET, Chennai, and an <strong>SDE intern at Renault</strong>. I won <strong>P1 at FKRC Season 6</strong>, pitched a startup to first place, and built a hovercraft in Paris. The rest is below.</p>
+      <div class="buttons">
+        <a href="#work" class="btn btn-pink">see the work</a>
+        <a href="Pavitara_S_Resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">resume</a>
+        <a href="https://github.com/pavitara30" class="btn btn-ghost" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github</a>
+        <a href="https://www.linkedin.com/in/pavitara-s-715458290/" class="btn btn-ghost" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.15C0 .52.53 0 1.18 0h13.64C15.47 0 16 .52 16 1.15v13.7c0 .63-.53 1.15-1.18 1.15H1.18C.53 16 0 15.48 0 14.85V1.15zM4.94 13.4V6.2H2.56v7.2h2.38zM3.75 5.2c.83 0 1.35-.55 1.35-1.24-.02-.7-.52-1.24-1.33-1.24-.82 0-1.35.54-1.35 1.24 0 .69.52 1.24 1.32 1.24h.01zM8.68 13.4V9.38c0-.22.02-.43.08-.58.17-.43.56-.88 1.22-.88.86 0 1.2.66 1.2 1.62v3.86h2.38V9.27c0-2.21-1.18-3.24-2.75-3.24-1.27 0-1.84.7-2.16 1.19V6.2H6.3c.03.68 0 7.2 0 7.2h2.38z"/></svg>linkedin</a>
+      </div>
+      <div class="lights"><i></i><i></i><i></i> lights out. scroll.</div>
+    </div>
+  </header>
 
-<section id="about" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">About Me</span>
-    <h2 class="section-title">Driven Tech Enthusiast</h2>
-    <p class="section-subtitle">Exploring, leading, and learning through the world of computer science.</p>
+  <div class="container">
+    <div class="podium" aria-label="Highlights">
+      <div><b><span>P1</span></b><p>Female Endurance, FKRC Season 6</p></div>
+      <div><b>1<span>st</span></b><p>Anna University Startup Pitch</p></div>
+      <div><b>Paris</b><p>ICAM student exchange, IoT hovercraft</p></div>
+      <div><b>7</b><p>first-years mentored at Envision 2025</p></div>
+    </div>
   </div>
-  <div class="profile-card"></div>
-  <div class="about-content" style="max-width:720px; margin: auto;">
-    <h3>Hi, I'm Pavitara</h3>
-    <p>I'm in my 3rd year of Computer Science at Loyola-ICAM College of Engineering and Technology, Chennai. Passionate about technology, I constantly explore new domains and ideas. I've held important leadership roles and enjoy guiding teams with my communication skills.</p>
-    <p>Notably, I won 1st place for a startup pitch at Anna University for a groundbreaking medical diagnostic project, and represented in ICAM Paris with an innovative IoT hovercraft project.</p>
-  </div>
-</section>
 
-<section id="skills" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Skills</span>
-    <h2 class="section-title">Technical Expertise</h2>
-    <p class="section-subtitle">Coding, leadership, and project management.</p>
-  </div>
-  <div class="container-grid">
-    <div class="card">
-      <h3>Programming</h3>
-      <div class="tags">
-        <span class="tag">Java</span>
-        <span class="tag">SQL</span>
+  <!-- WORK -->
+  <section class="section" id="work">
+    <div class="container">
+      <div class="sector">sector 1 <span>· the build log</span></div>
+      <h2 class="section-heading">things i built.</h2>
+      <p class="section-intro">Hardware, software, and one startup. Each one started as an idea someone said was a lot.</p>
+
+      <div class="builds">
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">startup</div>
+            <div class="build-result">1st<small>Anna University Startup Pitch. Selected for incubation.</small></div>
+          </div>
+          <div class="build-main">
+            <h3>Nanopore-PLM Diagnostic Kit</h3>
+            <p class="build-hook">An AI-driven genomic analysis device for catching neurodegenerative diseases early, at a cost people can actually afford.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Diagnosing neurodegenerative diseases is slow and expensive. Nanopore sequencing plus a protein language model could make it cheap and early.</dd>
+              <dt>What I did</dt><dd>Defined the problem, the solution, the business model and the applications, then took it to the stage.</dd>
+              <dt>How it went</dt><dd><strong>1st place</strong> at the Anna University Startup Pitch, <strong>3rd</strong> at LICET IIC eCirkle Pitch 2025, and <strong>selected for incubation</strong>.</dd>
+            </dl>
+            <p class="stack">Python · Machine Learning · Genomics</p>
+          </div>
+        </article>
+
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">made in paris</div>
+            <div class="build-result">1 mo<small>from zero to a hovercraft that listens</small></div>
+          </div>
+          <div class="build-main">
+            <h3>IoT Hovercraft with Voice Control</h3>
+            <p class="build-hook">A hovercraft you can drive by talking to it, built during the ICAM Paris student exchange.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Make a hovercraft that steers itself around obstacles and takes orders by voice or phone.</dd>
+              <dt>What I did</dt><dd>Programmed the Arduino in Embedded C, wired ultrasonic sensors for obstacle detection, and built a Blynk app for remote control and monitoring.</dd>
+              <dt>How it went</dt><dd>A <strong>working prototype</strong> with voice navigation, shipped in one month abroad.</dd>
+            </dl>
+            <p class="stack">Embedded C · Arduino · Ultrasonic sensors · Blynk · Android</p>
+          </div>
+        </article>
+
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">software</div>
+            <div class="build-result">OTP<small>email login, booking and confirmations</small></div>
+          </div>
+          <div class="build-main">
+            <h3>SkyLink Airline Reservation</h3>
+            <p class="build-hook">A full airline booking system, built and tested the way real software engineering says you should.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Search, book and cancel flights with secure sign-in and nothing falling through the cracks.</dd>
+              <dt>What I did</dt><dd>Designed it with OOSE principles, then built email OTP login, flight search, booking, cancellation and email confirmations.</dd>
+              <dt>How it went</dt><dd>Every flow <strong>tested for reliability</strong> before it was called done.</dd>
+            </dl>
+            <p class="stack">Java · MySQL · OOSE · Software Testing</p>
+            <a class="build-link" href="https://github.com/pavitara30/Airline-Reservation" target="_blank" rel="noopener">code →</a>
+          </div>
+        </article>
+
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">for the team</div>
+            <div class="build-result">auto<small>no more counting laps by hand</small></div>
+          </div>
+          <div class="build-main">
+            <h3>Automated Lap Counter</h3>
+            <p class="build-hook">An IR-sensor lap counting system for Team Turbonites' EV go-kart.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Practice sessions need accurate lap counts, and people with clipboards miss things.</dd>
+              <dt>What I did</dt><dd>Built the counter with an IR sensor and Arduino, and worked on the kart's motor controller integration.</dd>
+              <dt>How it went</dt><dd>Laps <strong>counted automatically</strong> while the team focused on driving.</dd>
+            </dl>
+            <p class="stack">Arduino · IR sensor · Embedded C</p>
+          </div>
+        </article>
       </div>
     </div>
-    <div class="card">
-      <h3>Leadership</h3>
-      <div class="tags">
-        <span class="tag">Team Management</span>
-        <span class="tag">Communication</span>
-        <span class="tag">Event Organization</span>
+  </section>
+
+  <!-- TRACK -->
+  <section class="section" id="track" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">sector 2 <span>· on track</span></div>
+      <h2 class="section-heading">main driver.</h2>
+      <p class="section-intro">Team Turbonites, LICET's EV go-kart team. I drive, I designed the fairing, and I've run half the team behind the scenes.</p>
+    </div>
+
+    <figure class="track-banner">
+      <img src="img/finish-line-1800.jpg" srcset="img/finish-line-900.jpg 900w, img/finish-line-1800.jpg 1800w" sizes="100vw" width="1800" height="908" loading="lazy" decoding="async" alt="Pavitara crossing the finish line in the yellow Turbonites kart at night as the chequered flag waves.">
+      <figcaption>fkrc s6 · <b>p1</b>, female endurance</figcaption>
+    </figure>
+
+    <div class="container">
+      <div class="track-grid">
+        <figure class="track-photo">
+          <img src="img/thumbs-up-900.jpg" srcset="img/thumbs-up-600.jpg 600w, img/thumbs-up-900.jpg 900w" sizes="(max-width: 900px) 100vw, 45vw" width="900" height="1350" loading="lazy" decoding="async" alt="Pavitara in her helmet and race suit, seated in the Turbonites kart, giving a thumbs up.">
+        </figure>
+        <div class="track-side">
+        <div class="p1-card">
+          <span class="flag" aria-hidden="true"></span>
+          <div class="p1-big">P1</div>
+          <h3 class="p1-title">Female Endurance winner</h3>
+          <div class="p1-meta">FKRC SEASON 6 · 16–19 MAR 2026 · CoASTT HIGH PERFORMANCE TRACK</div>
+          <p>First time on that track, after a season where the team came back from the previous year's setbacks. Every dynamic event cleared.</p>
+          <div class="events">
+            <span>endurance</span><span>brake test</span><span>acceleration</span><span>skid pad</span><span>autocross</span>
+          </div>
+        </div>
+
+        <div class="pit-list">
+          <div class="pit"><h3>Main Driver, GKDC 2025</h3><span class="when">national</span><p>Drove for Turbonites at the national-level Go Kart Design Challenge.</p></div>
+          <div class="pit"><h3>Designed the kart's fairing <span class="bee" aria-hidden="true"></span></h3><span class="when">FKRC S6</span><p>The Bumblebee livery on the kart was my concept.</p></div>
+          <div class="pit"><h3>HR Lead</h3><span class="when">1.5 yrs</span><p>Kept a team of engineers running like one.</p></div>
+          <div class="pit"><h3>Media &amp; Sponsorship Head</h3><span class="when">1 yr</span><p>Got the kart seen and got it funded.</p></div>
+          <div class="pit"><h3>Non-Tech Head</h3><span class="when">2025</span><p>Everything that isn't the kart itself, which is most things.</p></div>
+        </div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="projects" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Portfolio</span>
-    <h2 class="section-title">Featured Projects</h2>
-    <p class="section-subtitle">Project wins and international experience.</p>
-  </div>
-  <div class="container-grid">
-    <div class="card">
-      <h3>Nanopore-PLM Diagnostic Kit</h3>
-      <p class="project-description">
-        Won 1st place at Anna University Startup Pitch. Selected for incubation. Combined nanopore tech and PLM (LLM) to detect neurodegenerative diseases affordably.
-      </p>
-    </div>
-    <div class="card">
-      <h3>Hovercraft w/ IoT Voice Control</h3>
-      <p class="project-description">
-        Selected for ICAM Paris Student Exchange. Developed a voice and app-controlled hovercraft using Blynk IoT.
-      </p>
-    </div>
-  </div>
-</section>
+  <!-- NOW -->
+  <section class="section" id="now" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">sector 3 <span>· now</span></div>
+      <h2 class="section-heading">where i am.</h2>
+      <p class="section-intro">Raced karts, now writing software for a car company. Makes sense.</p>
 
-<section id="leadership" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Leadership</span>
-    <h2 class="section-title">Clubs & Roles</h2>
-    <p class="section-subtitle">Leading with energy and collaboration</p>
-  </div>
-  <div class="container-grid">
-    <div class="card">
-      <h3>Turbonites Kart Motorsport</h3>
-      <div class="tags">
-        <span class="tag">HR Head</span>
-        <span class="tag">Media & Sponsorship Head</span>
-        <span class="tag">Driver</span>
-        <span class="tag">Non-Tech Head (2025)</span>
+      <div class="timeline">
+        <div class="stint">
+          <div class="when"><b>now</b><br>6-month internship</div>
+          <div><h3>SDE Intern <span>· Renault, Chennai</span></h3><p>Software development as part of a six-month internship.</p></div>
+        </div>
+        <div class="stint">
+          <div class="when">ended Sep 2026</div>
+          <div><h3>Oracle HCM Intern <span>· Kovaion Consulting</span></h3><p>Hands-on with Oracle HCM Cloud, HR processes, reporting and enterprise systems.</p></div>
+        </div>
+        <div class="stint">
+          <div class="when">exchange</div>
+          <div><h3>Student Exchange <span>· ICAM Paris, France</span></h3><p>One month in Paris, one IoT hovercraft, and a lot of cross-cultural teamwork.</p></div>
+        </div>
+        <div class="stint">
+          <div class="when">2023 – 2027</div>
+          <div><h3>B.E. Computer Science <span>· LICET, Chennai</span></h3><p>Loyola-ICAM College of Engineering and Technology. CGPA 8.0.</p></div>
+        </div>
       </div>
     </div>
-    <div class="card">
-      <h3>Enunciate Club</h3>
-      <div class="tags">
-        <span class="tag">President</span>
-        <span class="tag">Language & Culture Events</span>
+  </section>
+
+  <!-- OFF TRACK -->
+  <section class="section" id="off-track" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">cooldown lap <span>· off track</span></div>
+      <h2 class="section-heading">people stuff.</h2>
+      <p class="section-intro">Leading isn't only about finding the answer. Most of it is listening.</p>
+
+      <div class="off-grid">
+        <article class="off">
+          <div class="build-tag">President · Enunciate Language &amp; Cultural Club</div>
+          <h3>LICET's first-ever Diwali</h3>
+          <p>On 17 October 2025, my team ran the college's first Diwali celebration, with a rangoli competition that brought French and Indian students together, mehendi and cultural events. I also coordinate between faculty, students and the exchange students.</p>
+          <blockquote>Turning an idea into reality, together.</blockquote>
+        </article>
+        <article class="off">
+          <div class="build-tag">Lead Mentor · Envision 2025</div>
+          <h3>Code Green</h3>
+          <p>From 11 to 29 August 2025 I guided seven first-years from different departments through their first engineering project. They built Code Green, a smart traffic signal system that clears the way for ambulances, using ESP32 and Arduino Nano, and presented it to faculty and industry judges.</p>
+          <blockquote>Leadership is as much about listening, guiding and empowering others as it is about finding solutions.</blockquote>
+        </article>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Added Contact Section -->
-<section id="contact" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Contact</span>
-    <h2 class="section-title">Let's Create Something Amazing</h2>
-    <p class="section-subtitle">Ready to bring your ideas to life? Let’s discuss your project and explore how we can work together.</p>
-  </div>
-  <div class="contact-container">
-    <div class="contact-info">
-      <h3>Get in Touch</h3>
-      <p>I'm always excited to work on innovative projects and collaborate with inspiring people. Whether you have a specific project in mind or just want to say hi, feel free to reach out!</p>
-      <div>
-        <div><strong>Email:</strong><br /><a href="mailto:pavitara.s@example.com">tarasenvel03@gmail.com</a></div>
-        <div><strong>Phone:</strong><br /><span>+91 73057 36999</span></div>
-        <div><strong>Location:</strong><br /><span>Chennai, Tamil Nadu, India</span></div>
+  <!-- TOOLBOX -->
+  <section class="section" id="toolbox" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">telemetry <span>· toolbox</span></div>
+      <h2 class="section-heading">what's in the kit.</h2>
+      <div class="toolbox">
+        <div class="tool-row"><h3>Languages</h3><p><b>Java</b> for SkyLink, <b>Python</b> for the startup's ML, <b>Embedded C</b> for anything with a sensor.</p></div>
+        <div class="tool-row"><h3>Data</h3><p><b>MySQL</b>, plus DBMS fundamentals.</p></div>
+        <div class="tool-row"><h3>Hardware &amp; IoT</h3><p><b>Arduino</b>, <b>ESP32</b>, <b>Blynk</b>, IR and ultrasonic sensors, and a motor controller or two.</p></div>
+        <div class="tool-row"><h3>Enterprise</h3><p><b>Oracle HCM Cloud</b>, from the Kovaion internship.</p></div>
+        <div class="tool-row"><h3>Core CS</h3><p>Data Structures, Operating Systems, Computer Networks (TCP/IP), and problem solving on <b>LeetCode</b> and <b>HackerRank</b>.</p></div>
+        <div class="tool-row"><h3>Certified</h3><p><b>Oracle Academy</b>: Java Fundamentals, SQL Basics, Cloud Infrastructure Foundations, Project Management Fundamentals.</p></div>
       </div>
     </div>
-    <form class="contact-form" onsubmit="handleSubmit(event)">
-      <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" placeholder="John Doe" required />
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" placeholder="john@example.com" required />
-      <label for="subject">Subject</label>
-      <input type="text" id="subject" name="subject" placeholder="Project Inquiry" required />
-      <label for="message">Message</label>
-      <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
-  </div>
-</section>
+  </section>
 
-<footer>
-  <p>&copy; 2025 Pavitara S. All rights reserved.</p>
-</footer>
+  <!-- FINISH -->
+  <section class="finish" id="contact">
+    <div class="container">
+      <div class="finish-photo"><img src="img/pavitara-360.jpg" width="360" height="360" loading="lazy" decoding="async" alt="Pavitara S"></div>
+      <div class="sector" style="justify-content:center;">finish line</div>
+      <p class="quote">you don't always have to feel confident. sometimes you just have to <em>trust yourself, show up and do it anyway.</em></p>
+      <p class="quote-by">what P1 taught me</p>
+      <div class="contact">
+        <div class="email"><a href="mailto:tarasenvel03@gmail.com" id="emailText">tarasenvel03@gmail.com</a><button class="copy" id="copyEmail" type="button">copy</button></div>
+        <div class="buttons" style="justify-content:center;">
+          <a href="https://www.linkedin.com/in/pavitara-s-715458290/" class="btn btn-pink" target="_blank" rel="noopener">linkedin</a>
+          <a href="https://github.com/pavitara30" class="btn btn-ghost" target="_blank" rel="noopener">github</a>
+          <a href="Pavitara_S_Resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">resume</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <footer class="footer">
+    <div class="container"><span>© 2026 Pavitara S</span><span>Chennai · built at dusk</span></div>
+  </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-  // Animate subtitle text
-  const heroSubtitle = document.getElementById('hero-subtitle');
-  const lines = [
-    'Passionate tech enthusiast',
-    'Computer Science student at Loyola-ICAM Chennai',
-    'Leader with great communication skills',
-    'Winner of Anna University Startup Pitch',
-    'Innovator with projects in AI & IoT'
+(function(){
+"use strict";
+
+/* ============ NAV ============ */
+const navbar = document.getElementById('navbar');
+const scrim = document.getElementById('scrim');
+const hudEl = document.getElementById('hud');
+function onScroll(){
+  const y = window.scrollY;
+  navbar.classList.toggle('scrolled', y > 40);
+  // the scene stays bright in the hero, then dims so the text reads
+  const t = Math.min(1, Math.max(0, (y - window.innerHeight * 0.25) / (window.innerHeight * 0.55)));
+  scrim.style.setProperty('--scrim', t.toFixed(3));
+  const hudA = 1 - t * (window.innerWidth < 900 ? 1 : 0.7);
+  hudEl.style.opacity = hudA.toFixed(3);
+  hudEl.classList.toggle('faded', hudA < 0.35);
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+onScroll();
+
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', ()=>{
+  const open = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open', open);
+  hamburger.setAttribute('aria-expanded', open);
+});
+mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', false);
+}));
+
+const navAnchors = document.querySelectorAll('[data-nav]');
+const navObserver = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) navAnchors.forEach(a=>a.classList.toggle('active', a.dataset.nav === e.target.id));
+  });
+}, { rootMargin:'-45% 0px -45% 0px' });
+['work','track','now','off-track'].forEach(id=>navObserver.observe(document.getElementById(id)));
+
+/* ============ COPY EMAIL ============ */
+const copyBtn = document.getElementById('copyEmail');
+copyBtn.addEventListener('click', ()=>{
+  const text = document.getElementById('emailText').textContent;
+  const done = ()=>{ copyBtn.textContent = 'copied'; setTimeout(()=>copyBtn.textContent = 'copy', 1600); };
+  const fallback = ()=>{
+    const r = document.createRange(); r.selectNodeContents(document.getElementById('emailText'));
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    copyBtn.textContent = 'press ctrl+c';
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else fallback();
+});
+
+/* ============ DUSK RACE SCENE ============
+   An outrun-style road into a striped sunset. Her kart drives into it,
+   the pointer steers it, and holding anywhere (or space) boosts. */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const hudSpeed = document.getElementById('hudSpeed');
+const hudLap = document.getElementById('hudLap');
+const hudHint = document.getElementById('hudHint');
+const boostBtn = document.getElementById('boostBtn');
+if(isTouch) hudHint.textContent = 'hold boost + slide';
+
+const C = { night:'#0B0F28', midnight:'#1B1B3A', dusk:'#6A4C7D', twilight:'#D17C9A', pink:'#FF5CA8', violet:'#BC6CFF', peach:'#FFB07C', lilac:'#B9B2D0' };
+let W = 0, H = 0, DPR = 1, horizon = 0;
+
+/* Two worlds. Hold boost long enough and you time-warp from one to the other.
+   Board lines are meant to be read in passing: a quiet flex, never a shout. */
+const THEMES = {
+  dusk: {
+    sky:[C.night, C.midnight, C.dusk, C.twilight, C.peach], ground:['#2a1640', '#140f33', C.night],
+    gridH:'255,92,168', gridV:'188,108,255', edge:C.peach, edgeGlow:C.pink, kerb:'rgba(255,92,168,.85)',
+    glow:'255,92,168', head:'rgba(255,170,210,.7)', band:'rgba(255,92,168,.9)', tyreBand:'rgba(255,92,168,.8)',
+    board:'rgba(255,92,168,.85)', boardText:'#ffd2e6', horizon:C.pink, streak:'255,176,124',
+    skyline:'#231a44', windows:'rgba(255,176,124,.75)', palm:'#120d2b', warp:false,
+    words:["you're in p2", 'show up anyway', 'slow is smooth', 'unbothered since lap 1', 'made in chennai']
+  },
+  warp: {
+    sky:['#03040c', '#0a0b24', '#1b1450', '#24557a', '#3df5e0'], ground:['#0b2236', '#070f26', '#03040c'],
+    gridH:'61,245,224', gridV:'188,108,255', edge:'#3df5e0', edgeGlow:'#3df5e0', kerb:'rgba(188,108,255,.85)',
+    glow:'61,245,224', head:'rgba(200,255,250,.75)', band:'rgba(61,245,224,.9)', tyreBand:'rgba(188,108,255,.85)',
+    board:'rgba(61,245,224,.85)', boardText:'#d8fffa', horizon:'#3df5e0', streak:'61,245,224',
+    skyline:'#0d1433', windows:'rgba(61,245,224,.7)', palm:'#0a0f2a', warp:true,
+    words:['still in p2?', 'bonjour from paris', 'nanopore, loading', 'eta: whenever', 'the future is chill']
+  }
+};
+let TH = THEMES.dusk;
+let stars = [], skyline = [], palms = [];
+
+function rand(a, b){ return a + Math.random() * (b - a); }
+
+function layout(){
+  DPR = Math.min(window.devicePixelRatio || 1, 1.75);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  horizon = Math.round(H * (W < 700 ? 0.56 : 0.6));
+
+  stars = [];
+  const n = Math.round((W * horizon) / 5200);
+  for(let i=0;i<n;i++) stars.push({ x:rand(0,W), y:rand(0,horizon*0.75), r:rand(.4,1.4), p:rand(0,Math.PI*2), s:rand(.6,1.8) });
+
+  // a low city skyline along the horizon, leaving the sun's middle clear
+  skyline = [];
+  let x = -10;
+  while(x < W + 10){
+    const w = rand(14, 42);
+    const center = Math.abs((x + w/2) - W/2) / (W/2);
+    const h = rand(8, 26) + center * rand(10, 46);
+    const lights = [];
+    for(let k=0;k<Math.floor(h/7);k++) if(Math.random() < .35) lights.push({ dx:rand(3,w-5), dy:rand(4,h-4) });
+    skyline.push({ x, w, h, lights });
+    x += w + rand(0, 4);
+  }
+
+  // palms at both edges
+  const ps = Math.min(W, H);
+  palms = [
+    { x:W*0.06, h:ps*0.42, lean:-0.18 },
+    { x:W*0.14, h:ps*0.30, lean:0.12 },
+    { x:W*0.92, h:ps*0.46, lean:0.2 },
+    { x:W*0.84, h:ps*0.28, lean:-0.1 }
   ];
-  let lineIndex = 0, charIndex = 0;
+}
 
-  function typeText() {
-    if(charIndex <= lines[lineIndex].length) {
-      heroSubtitle.textContent = lines[lineIndex].substring(0, charIndex);
-      charIndex++;
-      setTimeout(typeText, 70);
+const state = { dist:0, speed:0, target:1, steer:0, steerTarget:0, boost:false, lap:1, t:0,
+  steerVel:0, latAcc:0, accel:0, bounce:0, bounceVel:0, hold:0 };
+// time warp: hold boost for 5s, then a 3s countdown, then the world changes
+const warp = { counting:false, count:0, needRelease:false, flash:0, msgTimer:0 };
+// the camera: a slow sway, a tilt into turns, shake, and a wider view on boost
+const cam = { roll:0, zoom:1.3, sx:0, sy:0, px:0, py:0 };
+
+function drawSky(){
+  const g = ctx.createLinearGradient(0, 0, 0, horizon);
+  [0, .38, .66, .88, 1].forEach((o, i) => g.addColorStop(o, TH.sky[i]));
+  ctx.fillStyle = g;
+  ctx.fillRect(-W * 0.2, -H * 0.2, W * 1.4, horizon + 1 + H * 0.2);
+
+  const streak = Math.max(0, state.speed - 1.4) * 9;
+  for(const s of stars){
+    const a = .35 + .45 * Math.sin(state.t * s.s + s.p);
+    ctx.globalAlpha = Math.max(.1, a) * (1 - s.y / horizon);
+    ctx.fillStyle = '#fff';
+    if(streak > 1){
+      ctx.fillRect(s.x, s.y, s.r, s.r + streak * (s.y / horizon));
     } else {
-      setTimeout(() => {
-        charIndex = 0;
-        lineIndex = (lineIndex + 1) % lines.length;
-        typeText();
-      }, 2000);
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
     }
   }
-  window.onload = typeText;
+  ctx.globalAlpha = 1;
+}
 
-  // Fade in on scroll
-  const faders = document.querySelectorAll('.fade-in');
-  const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -100px 0px" };
-  const fadeOnScroll = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-  faders.forEach(fader => fadeOnScroll.observe(fader));
+function drawPlanet(){
+  // the warp world has a ringed planet where the sun was
+  const r = Math.min(W, H) * (W < 700 ? 0.22 : 0.16);
+  const cx = W/2 - state.steer * 18, cy = horizon - r * 0.55;
+  const glowG = ctx.createRadialGradient(cx, cy, r * 0.8, cx, cy, r * 2.4);
+  glowG.addColorStop(0, 'rgba(61,245,224,.25)'); glowG.addColorStop(1, 'rgba(61,245,224,0)');
+  ctx.fillStyle = glowG; ctx.fillRect(cx - r * 2.4, cy - r * 2.4, r * 4.8, r * 4.8);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(-W, -H, W * 3, horizon + H); ctx.clip();
+  const g = ctx.createLinearGradient(cx - r, cy - r, cx + r, cy + r);
+  g.addColorStop(0, '#d8fffa'); g.addColorStop(.45, '#3df5e0'); g.addColorStop(1, '#5b2bb0');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(216,255,250,.75)'; ctx.lineWidth = Math.max(1.5, r * 0.035);
+  ctx.beginPath(); ctx.ellipse(cx, cy, r * 1.75, r * 0.38, -0.22, Math.PI * 0.04, Math.PI * 0.96, true); ctx.stroke();
+  ctx.strokeStyle = 'rgba(188,108,255,.6)'; ctx.lineWidth = Math.max(1, r * 0.02);
+  ctx.beginPath(); ctx.ellipse(cx, cy, r * 1.95, r * 0.44, -0.22, Math.PI * 0.04, Math.PI * 0.96, true); ctx.stroke();
+  ctx.restore();
+}
 
-  // Nav active on scroll
-  const sections = Array.from(document.querySelectorAll('section[id]'));
-  const navLinks = document.querySelectorAll('nav a');
-  function setActiveNav() {
-    let scrollPos = window.scrollY + window.innerHeight / 3;
-    for(let section of sections){
-      if(scrollPos >= section.offsetTop){
-        navLinks.forEach(link => link.classList.remove('active'));
-        const active = document.querySelector(`nav a[href="#${section.id}"]`);
-        if(active) active.classList.add('active');
+function drawSun(){
+  if(TH.warp) return drawPlanet();
+  const r = Math.min(W, H) * (W < 700 ? 0.26 : 0.2);
+  const cx = W/2 - state.steer * 18;
+  const cy = horizon - r * 0.32;
+  // glow
+  const glow = ctx.createRadialGradient(cx, cy, r*0.6, cx, cy, r*2.1);
+  glow.addColorStop(0, 'rgba(255,92,168,.35)');
+  glow.addColorStop(1, 'rgba(255,92,168,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(cx - r*2.2, cy - r*2.2, r*4.4, Math.min(r*4.4, horizon - (cy - r*2.2)));
+
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, W, horizon); ctx.clip();
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+  const g = ctx.createLinearGradient(0, cy - r, 0, cy + r);
+  g.addColorStop(0, C.peach);
+  g.addColorStop(.55, C.pink);
+  g.addColorStop(1, C.violet);
+  ctx.fillStyle = g;
+  // stripes cut into the lower half drift slowly upward
+  const top = cy - r, mid = cy - r * 0.05, bottom = cy + r;
+  ctx.fillRect(cx - r, top, r*2, mid - top);
+  const band = r * 0.16, drift = (state.t * 6) % band;
+  let y = mid;
+  let i = 0;
+  while(y < bottom){
+    const gap = Math.min(band * 0.7, 1.5 + i * 1.6 + (drift / band) * 1.6);
+    const h = band - gap;
+    ctx.fillRect(cx - r, y, r*2, Math.max(0, h));
+    y += band; i++;
+  }
+  ctx.restore();
+}
+
+function drawSkyline(){
+  ctx.fillStyle = TH.skyline;
+  for(const b of skyline){
+    if(TH.warp){
+      // the city becomes a row of thin glass spires
+      ctx.beginPath(); ctx.moveTo(b.x, horizon); ctx.lineTo(b.x + b.w/2, horizon - b.h * 1.5); ctx.lineTo(b.x + b.w, horizon); ctx.fill();
+    } else ctx.fillRect(b.x, horizon - b.h, b.w, b.h);
+  }
+  if(TH.warp) return;
+  ctx.fillStyle = TH.windows;
+  for(const b of skyline){
+    for(const l of b.lights) ctx.fillRect(b.x + l.dx, horizon - b.h + l.dy, 1.6, 1.6);
+  }
+}
+
+function drawPalm(p, baseY){
+  if(baseY === undefined) baseY = horizon + 2;
+  const sway = Math.sin(state.t * 0.8 + (p.seed !== undefined ? p.seed : p.x)) * 0.02;
+  const topX = p.x + p.h * (p.lean + sway), topY = baseY - p.h;
+  if(TH.warp) return drawCrystal(p.x, baseY, p.h);
+  ctx.strokeStyle = TH.palm; ctx.fillStyle = TH.palm;
+  ctx.lineCap = 'round';
+  ctx.lineWidth = Math.max(3, p.h * 0.035);
+  ctx.beginPath();
+  ctx.moveTo(p.x, baseY);
+  ctx.quadraticCurveTo(p.x + p.h * p.lean * 0.2, baseY - p.h * 0.6, topX, topY);
+  ctx.stroke();
+  const len = p.h * 0.42;
+  for(let k=0;k<7;k++){
+    const a = -Math.PI/2 + (k - 3) * 0.48 + sway * 4;
+    const ex = topX + Math.cos(a) * len, ey = topY + Math.sin(a) * len * 0.55 + len * 0.28;
+    ctx.lineWidth = Math.max(2, p.h * 0.02);
+    ctx.beginPath();
+    ctx.moveTo(topX, topY);
+    ctx.quadraticCurveTo(topX + Math.cos(a) * len * 0.5, topY + Math.sin(a) * len * 0.5 - len * 0.12, ex, ey);
+    ctx.stroke();
+  }
+}
+
+function drawCrystal(x, baseY, h){
+  // warp-world stand-in for a palm: a tall faceted shard with a lit edge
+  const w = h * 0.16;
+  ctx.fillStyle = '#0d1636';
+  ctx.beginPath(); ctx.moveTo(x - w, baseY); ctx.lineTo(x - w * 0.2, baseY - h); ctx.lineTo(x + w * 0.6, baseY - h * 0.55); ctx.lineTo(x + w, baseY); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(61,245,224,.7)'; ctx.lineWidth = Math.max(1, h * 0.012);
+  ctx.beginPath(); ctx.moveTo(x - w * 0.2, baseY - h); ctx.lineTo(x + w * 0.1, baseY); ctx.stroke();
+}
+
+function drawGround(){
+  const g = ctx.createLinearGradient(0, horizon, 0, H);
+  g.addColorStop(0, TH.ground[0]);
+  g.addColorStop(.25, TH.ground[1]);
+  g.addColorStop(1, TH.ground[2]);
+  ctx.fillStyle = g;
+  ctx.fillRect(-W * 0.2, horizon, W * 1.4, H - horizon + H * 0.2);
+
+  const vx = W/2 - state.steer * 30, depth = H - horizon;
+  // horizontal grid lines coming toward the viewer
+  const phase = (state.dist * 0.9) % 1;
+  for(let i=0;i<26;i++){
+    const z = i + 1 - phase;
+    const y = horizon + depth * (1.2 / z);
+    if(y > H || y < horizon) continue;
+    const k = (y - horizon) / depth;
+    ctx.strokeStyle = `rgba(${TH.gridH},${(0.08 + k * 0.5).toFixed(3)})`;
+    ctx.lineWidth = 0.6 + k * 1.4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  // vertical grid lines converging at the vanishing point
+  const spread = W * 3.2;
+  for(let i=-18;i<=18;i++){
+    const bx = W/2 + (i / 18) * spread / 2;
+    ctx.strokeStyle = `rgba(${TH.gridV},.22)`;
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(vx, horizon); ctx.lineTo(bx, H); ctx.stroke();
+  }
+
+  // the road
+  const roadBottom = Math.max(W * 0.46, 300), roadTop = 6;
+  ctx.fillStyle = 'rgba(11,15,40,.88)';
+  ctx.beginPath();
+  ctx.moveTo(vx - roadTop, horizon); ctx.lineTo(vx + roadTop, horizon);
+  ctx.lineTo(W/2 + roadBottom/2, H); ctx.lineTo(W/2 - roadBottom/2, H);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = TH.edge; ctx.lineWidth = 2;
+  ctx.shadowColor = TH.edgeGlow; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.moveTo(vx - roadTop, horizon); ctx.lineTo(W/2 - roadBottom/2, H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(vx + roadTop, horizon); ctx.lineTo(W/2 + roadBottom/2, H); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // red-and-white style kerbs on both edges, in pink, rushing past
+  const kphase = (state.dist * 3.2) % 1;
+  const lTop = vx - roadTop, rTop = vx + roadTop, lBot = W/2 - roadBottom/2, rBot = W/2 + roadBottom/2;
+  ctx.fillStyle = TH.kerb;
+  for(let i=0;i<40;i++){
+    const z1 = (i + 1 - kphase) * 0.5, z2 = z1 + 0.25;
+    if(z1 < 0.3) continue;
+    const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
+    if(y2 > H || y1 < horizon) continue;
+    const yb = Math.min(H, y1);
+    const k1 = (yb - horizon) / depth, k2 = (y2 - horizon) / depth;
+    const w1 = 1 + k1 * 16, w2 = 1 + k2 * 16;
+    const l1 = lTop + (lBot - lTop) * k1, l2 = lTop + (lBot - lTop) * k2;
+    const r1 = rTop + (rBot - rTop) * k1, r2 = rTop + (rBot - rTop) * k2;
+    ctx.beginPath(); ctx.moveTo(l2 - w2, y2); ctx.lineTo(l2, y2); ctx.lineTo(l1, yb); ctx.lineTo(l1 - w1, yb); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(r2, y2); ctx.lineTo(r2 + w2, y2); ctx.lineTo(r1 + w1, yb); ctx.lineTo(r1, yb); ctx.closePath(); ctx.fill();
+  }
+
+  // centre dashes
+  ctx.fillStyle = 'rgba(245,240,250,.75)';
+  const dphase = (state.dist * 1.6) % 1;
+  for(let i=0;i<18;i++){
+    const z1 = i + 1 - dphase, z2 = z1 + 0.45;
+    const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
+    if(y1 > H + 40 || y2 < horizon) continue;
+    const k1 = (y1 - horizon) / depth, k2 = (y2 - horizon) / depth;
+    const x1 = vx + (W/2 - vx) * k1, x2 = vx + (W/2 - vx) * k2;
+    const w1 = 1 + k1 * 7, w2 = 1 + k2 * 7;
+    ctx.beginPath();
+    ctx.moveTo(x2 - w2/2, y2); ctx.lineTo(x2 + w2/2, y2);
+    ctx.lineTo(x1 + w1/2, y1); ctx.lineTo(x1 - w1/2, y1);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // horizon line
+  ctx.fillStyle = TH.horizon;
+  ctx.globalAlpha = .9;
+  ctx.fillRect(0, horizon - 1, W, 2);
+  ctx.globalAlpha = 1;
+}
+
+function rr(x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+
+function drawKart(){
+  const s = Math.min(W * (W < 700 ? 0.36 : 0.2), 190, H * 0.24);
+  const cx = W/2 + state.steer * W * 0.12;
+  const bob = Math.sin(state.t * (8 + state.speed * 6)) * (0.6 + state.speed * 0.6);
+  const by = H - s * 0.42 + bob;
+  ctx.save();
+  ctx.translate(cx, by);
+  ctx.rotate(state.steer * 0.06);
+
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,.45)';
+  ctx.beginPath(); ctx.ellipse(0, s*0.3, s*0.62, s*0.07, 0, 0, Math.PI*2); ctx.fill();
+
+  // rear tyres
+  ctx.fillStyle = '#07080f';
+  rr(-s*0.62, -s*0.05, s*0.26, s*0.36, s*0.05); ctx.fill();
+  rr(s*0.36, -s*0.05, s*0.26, s*0.36, s*0.05); ctx.fill();
+  ctx.fillStyle = 'rgba(185,178,208,.25)';
+  ctx.fillRect(-s*0.6, s*0.02, s*0.22, s*0.02);
+  ctx.fillRect(s*0.38, s*0.02, s*0.22, s*0.02);
+
+  // axle and body
+  ctx.fillStyle = '#1d1838';
+  ctx.fillRect(-s*0.38, s*0.08, s*0.76, s*0.06);
+  ctx.fillStyle = '#16122d';
+  rr(-s*0.34, -s*0.14, s*0.68, s*0.24, s*0.06); ctx.fill();
+  // livery stripe
+  ctx.fillStyle = C.pink;
+  rr(-s*0.34, -s*0.06, s*0.68, s*0.05, s*0.02); ctx.fill();
+
+  // seat back and driver
+  ctx.fillStyle = '#0d0b1f';
+  rr(-s*0.13, -s*0.36, s*0.26, s*0.24, s*0.05); ctx.fill();
+  // helmet
+  const hg = ctx.createLinearGradient(0, -s*0.6, 0, -s*0.32);
+  hg.addColorStop(0, C.peach); hg.addColorStop(1, C.pink);
+  ctx.fillStyle = hg;
+  ctx.beginPath(); ctx.arc(0, -s*0.44, s*0.13, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(11,15,40,.7)';
+  ctx.fillRect(-s*0.13, -s*0.47, s*0.26, s*0.035);
+  // shoulders
+  ctx.fillStyle = '#2a2350';
+  rr(-s*0.17, -s*0.33, s*0.34, s*0.1, s*0.04); ctx.fill();
+
+  // rear bumper and tail lights
+  ctx.fillStyle = '#2b2550';
+  ctx.fillRect(-s*0.3, s*0.14, s*0.6, s*0.04);
+  const glowA = state.boost ? 1 : 0.75;
+  ctx.shadowColor = state.boost ? C.peach : C.pink;
+  ctx.shadowBlur = state.boost ? 28 : 16;
+  ctx.fillStyle = state.boost ? C.peach : C.pink;
+  ctx.globalAlpha = glowA;
+  rr(-s*0.28, -s*0.12, s*0.12, s*0.04, s*0.015); ctx.fill();
+  rr(s*0.16, -s*0.12, s*0.12, s*0.04, s*0.015); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+
+  // boost exhaust
+  if(state.speed > 1.3){
+    const k = Math.min(1, (state.speed - 1.3) / 2);
+    ctx.fillStyle = `rgba(255,176,124,${(0.5 * k).toFixed(2)})`;
+    ctx.beginPath(); ctx.ellipse(0, s*0.24, s*0.06, s*(0.04 + 0.08 * k * (0.7 + Math.random()*0.3)), 0, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+/* ============ 3D KART ============
+   A small low-poly kart in her colours, drawn with three.js on its own
+   canvas over the road. Mostly silhouette, lit from the sunset ahead.
+   If three.js doesn't load, the flat 2D kart is drawn instead. */
+const kart3d = (function(){
+  if(!window.THREE) return null;
+  const T = window.THREE;
+  const el = document.getElementById('kart3d');
+  let renderer;
+  try { renderer = new T.WebGLRenderer({ canvas:el, alpha:true, antialias:true }); }
+  catch(err){ return null; }
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new T.Scene();
+  const camera = new T.PerspectiveCamera(26, 4/3, 0.1, 50);
+  camera.position.set(0, 1.75, 5.6);
+  camera.lookAt(0, 0.32, 0);
+
+  // violet sky above, near-black road below, peach sun ahead, a faint fill from behind
+  scene.add(new T.HemisphereLight(0x8a6cc8, 0x0b0f28, 0.55));
+  const sun = new T.DirectionalLight(0xffb07c, 1.5); sun.position.set(0, 2.2, -6); scene.add(sun);
+  const rim = new T.DirectionalLight(0xff5ca8, 0.7); rim.position.set(-4, 1.2, -3); scene.add(rim);
+  const fill = new T.DirectionalLight(0xb9b2d0, 0.28); fill.position.set(2, 3, 5); scene.add(fill);
+
+  const std = (color, o) => new T.MeshStandardMaterial(Object.assign({ color, roughness:0.6, metalness:0.1 }, o || {}));
+  const gloss = (color, o) => new T.MeshPhysicalMaterial(Object.assign({ color, roughness:0.35, metalness:0.1, clearcoat:1, clearcoatRoughness:0.25 }, o || {}));
+  const body = gloss(0x1c1838), pink = gloss(0xff5ca8, { emissive:0x2a0718 });
+  const suit = std(0x231d45, { roughness:0.8 }), dark = std(0x0b0a17, { roughness:0.7 });
+  const steel = std(0x8c84aa, { metalness:0.85, roughness:0.3 }), tube = std(0x2c2748, { metalness:0.6, roughness:0.4 });
+  const rubber = std(0x08080e, { roughness:0.92, metalness:0 }), rimMat = std(0xb9b2d0, { metalness:0.8, roughness:0.3 });
+  const tail = new T.MeshBasicMaterial({ color:0xff5ca8 });
+
+  const kart = new T.Group();
+  const add = (geo, m, x, y, z, rx, ry, rz) => { const o = new T.Mesh(geo, m); o.position.set(x, y, z); o.rotation.set(rx||0, ry||0, rz||0); kart.add(o); return o; };
+
+  // a box with rounded edges, built from an extruded rounded rectangle (w across, h up, d along)
+  function rbox(w, h, d, r){
+    const s = new T.Shape(), x = -w/2, y = -h/2, rr = Math.min(r, w/2, h/2);
+    s.moveTo(x + rr, y); s.lineTo(x + w - rr, y); s.quadraticCurveTo(x + w, y, x + w, y + rr);
+    s.lineTo(x + w, y + h - rr); s.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+    s.lineTo(x + rr, y + h); s.quadraticCurveTo(x, y + h, x, y + h - rr);
+    s.lineTo(x, y + rr); s.quadraticCurveTo(x, y, x + rr, y);
+    const b = Math.min(r * 0.6, d * 0.3);
+    const g = new T.ExtrudeGeometry(s, { depth:Math.max(0.001, d - b*2), bevelEnabled:true, bevelSize:b, bevelThickness:b, bevelSegments:3, curveSegments:6 });
+    g.translate(0, 0, -(d - b*2)/2);
+    return g;
+  }
+  // a bent tube through a list of points
+  const bar = (pts, r, m) => { const c = new T.CatmullRomCurve3(pts.map(p => new T.Vector3(p[0], p[1], p[2]))); const o = new T.Mesh(new T.TubeGeometry(c, 24, r, 8, false), m); kart.add(o); return o; };
+
+  // floor tray and the frame rails
+  add(rbox(0.86, 0.04, 1.62, 0.02), dark, 0, 0.11, 0.02);
+  bar([[-0.36,0.13,-0.78],[-0.4,0.13,0],[-0.38,0.13,0.82]], 0.025, tube);
+  bar([[0.36,0.13,-0.78],[0.4,0.13,0],[0.38,0.13,0.82]], 0.025, tube);
+
+  // front nose fairing, sloping down, with a pink lip
+  add(rbox(0.82, 0.13, 0.46, 0.06), body, 0, 0.22, -0.86, 0.16);
+  add(rbox(0.84, 0.035, 0.08, 0.015), pink, 0, 0.17, -1.1);
+  add(rbox(0.3, 0.16, 0.34, 0.06), body, 0, 0.27, -0.56, 0.32);           // front panel up to the wheel
+  // side pods with a pink stripe
+  for(const sx of [-1, 1]){
+    add(rbox(0.2, 0.15, 0.7, 0.06), body, sx * 0.52, 0.21, 0.04);
+    add(rbox(0.012, 0.035, 0.62, 0.006), pink, sx * 0.625, 0.25, 0.04);
+  }
+  // rear bumper hoop and axle
+  bar([[-0.6,0.2,0.98],[-0.3,0.24,1.06],[0.3,0.24,1.06],[0.6,0.2,0.98]], 0.03, tube);
+  add(new T.CylinderGeometry(0.025, 0.025, 1.2, 10), steel, 0, 0.19, 0.7, 0, 0, Math.PI/2);
+  add(rbox(0.12, 0.035, 0.02, 0.012), tail, -0.3, 0.25, 1.09);
+  add(rbox(0.12, 0.035, 0.02, 0.012), tail, 0.3, 0.25, 1.09);
+
+  // engine on the right, with an exhaust pipe running back
+  add(rbox(0.26, 0.24, 0.3, 0.05), tube, 0.3, 0.32, 0.66);
+  add(rbox(0.2, 0.06, 0.24, 0.02), steel, 0.3, 0.46, 0.66);
+  bar([[0.36,0.3,0.8],[0.38,0.3,0.92],[0.34,0.33,1.04]], 0.03, steel);
+
+  // seat, wrapped around the driver
+  add(rbox(0.42, 0.34, 0.08, 0.06), dark, 0, 0.36, 0.48, -0.32);
+  add(rbox(0.4, 0.06, 0.34, 0.03), dark, 0, 0.17, 0.32);
+
+  // roll hoop behind the seat, padded at the top and braced back to the frame
+  bar([[-0.22,0.16,0.6],[-0.23,0.62,0.62],[-0.2,0.78,0.63],[0,0.8,0.63],[0.2,0.78,0.63],[0.23,0.62,0.62],[0.22,0.16,0.6]], 0.026, steel);
+  bar([[-0.21,0.7,0.63],[-0.26,0.45,0.78],[-0.32,0.16,0.92]], 0.018, tube);
+  bar([[0.21,0.7,0.63],[0.26,0.45,0.78],[0.32,0.16,0.92]], 0.018, tube);
+  add(new T.CylinderGeometry(0.04, 0.04, 0.24, 12), pink, 0, 0.8, 0.63, 0, 0, Math.PI/2);
+
+  // driver: suit, shoulders, arms to the wheel, helmet
+  add(new T.CylinderGeometry(0.16, 0.19, 0.38, 16), suit, 0, 0.42, 0.34, -0.28);
+  add(new T.CylinderGeometry(0.168, 0.168, 0.05, 16), pink, 0, 0.5, 0.37, -0.28);        // pink band on the suit
+  add(new T.SphereGeometry(0.2, 16, 10, 0, Math.PI*2, 0, Math.PI/2), suit, 0, 0.58, 0.39, -0.28).scale.set(1.15, 0.5, 0.8);
+  add(new T.CylinderGeometry(0.06, 0.06, 0.08, 12), dark, 0, 0.66, 0.36);               // neck
+  for(const sx of [-1, 1]) bar([[sx*0.2,0.56,0.36],[sx*0.22,0.44,0.06],[sx*0.13,0.42,-0.2]], 0.045, suit);
+  add(new T.TorusGeometry(0.13, 0.018, 8, 24), dark, 0, 0.42, -0.24, -1.1);              // steering wheel
+  const helmet = add(new T.SphereGeometry(0.155, 24, 18), pink, 0, 0.8, 0.34);
+  helmet.scale.set(1, 1.04, 1.1);
+  add(new T.TorusGeometry(0.157, 0.012, 6, 32), rimMat, 0, 0.8, 0.34, 0, Math.PI/2);   // helmet stripe, front to back
+
+  // wheels: fat slicks at the back, narrower at the front, with metal rims
+  const wheels = [], fronts = [];
+  function wheel(x, z, r, w, front){
+    const pivot = new T.Group(); pivot.position.set(x, r, z);
+    const spin = new T.Group(); pivot.add(spin);
+    const t = new T.Mesh(new T.CylinderGeometry(r, r, w, 28), rubber); t.rotation.z = Math.PI/2; spin.add(t);
+    for(const s of [-1, 1]){
+      const wall = new T.Mesh(new T.TorusGeometry(r - 0.02, 0.022, 8, 28), rubber); wall.rotation.y = Math.PI/2; wall.position.x = s * w/2; spin.add(wall);
+    }
+    const rim = new T.Mesh(new T.CylinderGeometry(r*0.6, r*0.6, w + 0.012, 18), rimMat); rim.rotation.z = Math.PI/2; spin.add(rim);
+    for(let k=0;k<5;k++){
+      const spoke = new T.Mesh(new T.BoxGeometry(w + 0.02, r*0.1, r*0.5), dark);
+      spoke.rotation.x = k * Math.PI * 2 / 5; spin.add(spoke);
+    }
+    kart.add(pivot); wheels.push(spin); if(front) fronts.push(pivot);
+  }
+  wheel(-0.6, -0.6, 0.14, 0.15, true); wheel(0.6, -0.6, 0.14, 0.15, true);
+  wheel(-0.64, 0.7, 0.18, 0.26, false); wheel(0.64, 0.7, 0.18, 0.26, false);
+
+  // exhaust flame at the end of the pipe, only visible on boost
+  const flameMat = new T.MeshBasicMaterial({ color:0xff7aa8, transparent:true, opacity:0, blending:T.AdditiveBlending, depthWrite:false });
+  const flame = new T.Mesh(new T.ConeGeometry(0.05, 0.36, 12), flameMat);
+  flame.geometry.translate(0, 0.18, 0);
+  flame.rotation.x = Math.PI/2; flame.position.set(0.34, 0.33, 1.06); kart.add(flame);
+  const flameCore = new T.Mesh(new T.ConeGeometry(0.025, 0.2, 10), new T.MeshBasicMaterial({ color:0xffd2b0, transparent:true, opacity:0, blending:T.AdditiveBlending, depthWrite:false }));
+  flameCore.geometry.translate(0, 0.1, 0); flame.add(flameCore);
+
+  // soft shadow under the kart
+  const sc = document.createElement('canvas'); sc.width = sc.height = 64;
+  const sx = sc.getContext('2d'); const sg = sx.createRadialGradient(32,32,4,32,32,32);
+  sg.addColorStop(0,'rgba(0,0,0,.6)'); sg.addColorStop(1,'rgba(0,0,0,0)'); sx.fillStyle = sg; sx.fillRect(0,0,64,64);
+  const shadow = new T.Mesh(new T.PlaneGeometry(1.7, 2.5), new T.MeshBasicMaterial({ map:new T.CanvasTexture(sc), transparent:true, depthWrite:false }));
+  shadow.rotation.x = -Math.PI/2; shadow.position.y = 0.005;
+  scene.add(shadow);
+  scene.add(kart);
+
+  let cw = 0, ch = 0, spin = 0, pitch = 0;
+  function size(){
+    // kept small on purpose: it sits on the road, it doesn't headline
+    cw = Math.round(Math.min(W * (W < 700 ? 0.62 : 0.3), 340, H * 0.42));
+    ch = Math.round(cw * 0.72);
+    renderer.setPixelRatio(DPR);
+    renderer.setSize(cw, ch, false);
+    el.style.width = cw + 'px'; el.style.height = ch + 'px';
+    camera.aspect = cw / ch; camera.updateProjectionMatrix();
+  }
+
+  function render(dt){
+    const boostK = Math.max(0, Math.min(1, (state.speed - 1.1) / 2));
+    spin -= state.speed * dt * 14;
+    wheels.forEach(w => { w.rotation.x = spin; });
+    // the front wheels point where it's heading; the body yaws with its sideways
+    // speed, rolls out of the turn, squats on boost and dives when you lift
+    fronts.forEach(f => { f.rotation.y = Math.max(-0.5, Math.min(0.5, -state.steerVel * 0.35 - state.latAcc * 0.01)); });
+    pitch += (Math.max(-0.07, Math.min(0.07, state.accel * 0.03)) - pitch) * Math.min(1, dt * 6);
+    const yaw = Math.max(-0.5, Math.min(0.5, -state.steerVel * 0.28 - state.steer * 0.08));
+    const roll = Math.max(-0.08, Math.min(0.08, state.latAcc * 0.004));
+    kart.rotation.set(pitch, yaw, roll);
+    kart.position.y = Math.max(0, state.bounce * 0.6);
+    kart.position.x = Math.sin(state.t * 47) * 0.005 * Math.max(0, state.speed - 1.5);
+    shadow.rotation.z = kart.rotation.y;
+    tail.color.setHex(state.boost ? 0xffb07c : 0xff5ca8);
+    sun.color.setHex(TH.warp ? 0x3df5e0 : 0xffb07c);
+    rim.color.setHex(TH.warp ? 0xbc6cff : 0xff5ca8);
+    flameMat.opacity = boostK * (0.45 + Math.random() * 0.3);
+    flameCore.material.opacity = boostK * 0.9;
+    flame.scale.set(1, 0.5 + boostK * (0.9 + Math.random() * 0.6), 1);
+    renderer.render(scene, camera);
+    // slide across the road with the steer, then follow the camera
+    const [px, py] = camPoint(W/2 + state.steer * W * 0.09, H - (W < 700 ? 74 : 64) - ch / 2);
+    el.style.transform = `translate3d(${(px - cw/2).toFixed(1)}px, ${(py - ch/2).toFixed(1)}px, 0) rotate(${cam.roll.toFixed(4)}rad) scale(${cam.zoom.toFixed(4)})`;
+  }
+
+  return { size, render };
+})();
+
+/* ============ TRACKSIDE ============
+   Lamps, bollards, tyre stacks, palms and boards that come down both sides
+   of the road and sweep past close to the kart. World units: 1 = half the
+   road's width at the bottom of the screen; z is distance ahead. */
+const SPAN = 30, TRAVEL = 1.6;
+const side = [];
+(function(){
+  let w = 0;
+  for(let z=1; z<SPAN; z+=2.5){ side.push({ type:'lamp', x:-1.55, z }); side.push({ type:'lamp', x:1.55, z:z + 1.25 }); }
+  for(let z=0.5; z<SPAN; z+=0.85){ side.push({ type:'bollard', x:-1.2, z }); side.push({ type:'bollard', x:1.2, z:z + 0.42 }); }
+  for(let z=3; z<SPAN; z+=rand(3.5, 6)) side.push({ type:'palm', x:(Math.random() < .5 ? -1 : 1) * rand(2.3, 3.2), z, h:rand(2.6, 3.4), lean:rand(-.15, .15) });
+  for(let z=5; z<SPAN; z+=rand(5, 8)) side.push({ type:'tyres', x:(Math.random() < .5 ? -1 : 1) * rand(1.45, 1.7), z });
+  for(let z=7; z<SPAN; z+=rand(5.5, 7.5)) side.push({ type:'board', x:(w % 2 ? 1 : -1) * 2.2, z, word:w++ });
+})();
+
+function drawSide(){
+  const depth = H - horizon, vx = W/2 - state.steer * 30;
+  const roadBottom = Math.max(W * 0.46, 300);
+  const travel = state.dist * TRAVEL;
+  const items = [];
+  for(const o of side){
+    let z = ((o.z - travel) % SPAN + SPAN) % SPAN;
+    if(z < 0.22) continue;
+    items.push([z, o]);
+  }
+  items.sort((a, b) => b[0] - a[0]);
+  for(const [z, o] of items){
+    const k = 1.2 / z;                       // same perspective as the road
+    const y = horizon + depth * k;
+    const u = roadBottom / 2 * k;            // pixels per world unit at this depth
+    const x = vx + (W/2 + o.x * roadBottom / 2 - vx) * k;
+    if(x < -u * 4 || x > W + u * 4) continue;
+    ctx.globalAlpha = Math.min(1, (SPAN - z) / 6);
+    if(o.type === 'lamp') drawLamp(x, y, u, o.x < 0 ? 1 : -1);
+    else if(o.type === 'bollard') drawBollard(x, y, u);
+    else if(o.type === 'tyres') drawTyres(x, y, u);
+    else if(o.type === 'palm') drawPalm({ x, h:u * o.h, lean:o.lean, seed:o.z }, y);
+    else if(o.type === 'board') drawBoard(x, y, u, TH.words[o.word % TH.words.length]);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function glow(x, y, r, color, a){
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, color.replace('A', a)); g.addColorStop(1, color.replace('A', 0));
+  ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+}
+function drawLamp(x, y, u, dir){
+  const h = u * 1.7, armX = x + dir * u * 0.38, top = y - h;
+  // pool of light on the road
+  ctx.save(); ctx.translate(armX, y); ctx.scale(1, 0.28);
+  glow(0, 0, u * 0.9, `rgba(${TH.glow},A)`, 0.22); ctx.restore();
+  ctx.strokeStyle = '#1a1433'; ctx.lineCap = 'round';
+  ctx.lineWidth = Math.max(1, u * 0.045);
+  ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, top + u * 0.08);
+  ctx.quadraticCurveTo(x, top, x + dir * u * 0.12, top); ctx.lineTo(armX, top); ctx.stroke();
+  glow(armX, top + u * 0.03, u * 0.45, `rgba(${TH.glow},A)`, 0.55);
+  ctx.fillStyle = TH.head;
+  ctx.fillRect(armX - u * 0.07, top, u * 0.14, Math.max(1, Math.min(4, u * 0.025)));
+}
+function drawBollard(x, y, u){
+  const w = Math.max(1, u * 0.07), h = u * 0.24;
+  ctx.fillStyle = '#16122d'; ctx.fillRect(x - w/2, y - h, w, h);
+  ctx.fillStyle = TH.band; ctx.fillRect(x - w/2, y - h * 0.8, w, h * 0.18);
+}
+function drawTyres(x, y, u){
+  const r = u * 0.16;
+  for(let i=0;i<3;i++){
+    const cy = y - r * 0.55 - i * r * 0.7;
+    ctx.fillStyle = '#0a0914';
+    ctx.beginPath(); ctx.ellipse(x, cy, r, r * 0.42, 0, 0, Math.PI*2); ctx.fill();
+    ctx.strokeStyle = i === 1 ? TH.tyreBand : 'rgba(185,178,208,.35)';
+    ctx.lineWidth = Math.max(1, u * 0.02); ctx.stroke();
+  }
+}
+function drawBoard(x, y, u, text){
+  const w = u * 1.5, h = u * 0.42, top = y - u * 1.0;
+  ctx.fillStyle = '#120d2b';
+  ctx.fillRect(x - w * 0.36, top + h, Math.max(1, u * 0.04), y - top - h);
+  ctx.fillRect(x + w * 0.32, top + h, Math.max(1, u * 0.04), y - top - h);
+  ctx.fillStyle = 'rgba(11,15,40,.92)'; ctx.fillRect(x - w/2, top, w, h);
+  ctx.strokeStyle = TH.board; ctx.lineWidth = Math.max(1, u * 0.025); ctx.strokeRect(x - w/2, top, w, h);
+  if(u > 14){
+    ctx.fillStyle = TH.boardText;
+    ctx.font = `700 ${Math.round(h * 0.34)}px "JetBrains Mono", monospace`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(text, x, top + h / 2 + 1, w * 0.88);
+  }
+}
+
+/* ============ LIGHT SPEED ============
+   The longer boost is held, the more the scene stretches into lines that
+   fly out from the vanishing point. */
+const rays = [];
+for(let i=0;i<110;i++) rays.push({ a:Math.random() * Math.PI * 2, r:Math.random(), w:rand(.6, 1.8) });
+function lightK(){ return Math.max(0, Math.min(1, (state.hold - 0.8) / 4.2)); }
+function drawLightspeed(dt){
+  const k = lightK();
+  if(k <= 0.01) return;
+  const vx = W/2 - state.steer * 30, vy = horizon;
+  const reach = Math.hypot(W, H) * 0.75;
+  ctx.lineCap = 'round';
+  for(const ray of rays){
+    ray.r *= 1 + dt * (1.5 + 7 * k);
+    if(ray.r > 1.2){ ray.r = rand(0.03, 0.12); ray.a = Math.random() * Math.PI * 2; }
+    const c = Math.cos(ray.a), s = Math.sin(ray.a);
+    const r2 = ray.r * reach, r1 = r2 * (1 - (0.15 + 0.55 * k) * Math.min(1, ray.r * 1.5));
+    ctx.strokeStyle = `rgba(${ray.w > 1.4 ? TH.streak : '245,240,250'},${(0.55 * k * Math.min(1, ray.r * 3)).toFixed(3)})`;
+    ctx.lineWidth = ray.w * (0.6 + ray.r * 1.4);
+    ctx.beginPath(); ctx.moveTo(vx + c * r1, vy + s * r1 * 0.8); ctx.lineTo(vx + c * r2, vy + s * r2 * 0.8); ctx.stroke();
+  }
+}
+
+// speed streaks along the road edges while boosting
+function drawStreaks(){
+  const k = Math.max(0, Math.min(1, (state.speed - 1.3) / 2.2));
+  if(k <= 0) return;
+  const vx = W/2 - state.steer * 30, depth = H - horizon;
+  ctx.lineCap = 'round';
+  for(let i=0;i<22;i++){
+    const side = i % 2 ? 1 : -1;
+    const ph = ((state.dist * 1.8 + i * 0.37) % 1);
+    const z1 = 1 + ph * 7, z2 = z1 + 0.6 + k * 1.2;
+    const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
+    const off = (0.62 + (i % 5) * 0.09) * side;
+    const x1 = vx + (W/2 + off * W * 0.5 - vx) * ((y1 - horizon) / depth);
+    const x2 = vx + (W/2 + off * W * 0.5 - vx) * ((y2 - horizon) / depth);
+    ctx.strokeStyle = `rgba(${TH.streak},${(0.5 * k).toFixed(3)})`;
+    ctx.lineWidth = 1 + 2 * ((y1 - horizon) / depth);
+    ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x1, y1); ctx.stroke();
+  }
+}
+
+function frame(dt){
+  ctx.fillStyle = C.night; ctx.fillRect(0, 0, W, H);
+  ctx.save();
+  // camera: pivot low in the frame, so the horizon swings and the road stays put
+  cam.px = W/2; cam.py = H * 0.86;
+  ctx.translate(cam.px + cam.sx, cam.py + cam.sy);
+  ctx.rotate(cam.roll);
+  ctx.scale(cam.zoom, cam.zoom);
+  ctx.translate(-cam.px, -cam.py);
+  drawSky();
+  drawSun();
+  drawSkyline();
+  for(const p of palms) drawPalm(p);
+  drawGround();
+  drawStreaks();
+  drawSide();
+  drawLightspeed(dt || 0);
+  if(!kart3d) drawKart();
+  ctx.restore();
+  if(kart3d) kart3d.render(dt || 0);
+}
+
+// where a point drawn in scene space ends up on screen after the camera
+function camPoint(x, y){
+  const dx = (x - cam.px) * cam.zoom, dy = (y - cam.py) * cam.zoom;
+  const c = Math.cos(cam.roll), s = Math.sin(cam.roll);
+  return [cam.px + cam.sx + dx * c - dy * s, cam.py + cam.sy + dx * s + dy * c];
+}
+
+function step(dt){
+  // throttle against drag: it surges off the line and coasts down when you let go
+  const prev = state.speed;
+  // after a warp, light speed waits until boost is released and pressed again
+  state.hold = state.boost && !warp.needRelease ? state.hold + dt : 0;
+  state.target = state.boost ? 4 + lightK() * 3.5 : 1;
+  state.speed += (state.target - state.speed) * Math.min(1, dt * (state.boost ? 2.4 : 1.2));
+  const accel = dt > 0 ? (state.speed - prev) / dt : 0;
+  state.accel += (accel - state.accel) * Math.min(1, dt * 8);
+
+  // lateral: a spring toward where you point, with less grip the faster you go,
+  // so it overshoots a little and settles like a kart sliding on its tyres
+  const grip = 18 / (1 + (state.speed - 1) * 0.35), damp = 7.5;
+  const latA = (state.steerTarget - state.steer) * grip - state.steerVel * damp;
+  state.steerVel += latA * dt;
+  state.steer = Math.max(-1.08, Math.min(1.08, state.steer + state.steerVel * dt));
+  state.latAcc += (latA - state.latAcc) * Math.min(1, dt * 10);
+  state.dist += state.speed * dt;
+
+  // suspension: road bumps kick a damped spring, harder at speed
+  if(Math.random() < dt * (2 + state.speed * 3)) state.bounceVel += (Math.random() - 0.3) * 0.5 * state.speed;
+  state.bounceVel += (-state.bounce * 160 - state.bounceVel * 12) * dt;
+  state.bounce += state.bounceVel * dt;
+
+  stepWarp(dt);
+
+  // camera
+  const boostK = Math.max(0, Math.min(1, (state.speed - 1.2) / 2.4));
+  const rollT = Math.sin(state.t * 0.5) * 0.004 - state.steerVel * 0.03 - state.latAcc * 0.0012;
+  cam.roll += (Math.max(-0.035, Math.min(0.035, rollT)) - cam.roll) * Math.min(1, dt * 4);
+  // cruise slightly zoomed in (narrow field of view); boost pulls it wide
+  const zoomT = 1.3 - boostK * 0.28 - lightK() * 0.1 - Math.max(0, state.accel) * 0.008;
+  cam.zoom += (zoomT - cam.zoom) * Math.min(1, dt * 3);
+  const shake = boostK * 1.6, t = state.t;
+  cam.sx = Math.sin(t * 0.7) * 3 + (Math.sin(t * 13.1) + Math.sin(t * 21.7 + 2)) * 0.5 * shake;
+  cam.sy = Math.sin(t * 0.9 + 1) * 2 + (Math.sin(t * 15.3 + 1) + Math.sin(t * 24.1)) * 0.5 * shake + state.bounce * 18;
+}
+
+const warpMsg = document.getElementById('warpMsg'), warpCount = document.getElementById('warpCount');
+const warpLabel = document.getElementById('warpLabel'), warpFlash = document.getElementById('warpFlash');
+const hudWorld = document.getElementById('hudWorld');
+function showWarpMsg(label, count, warped){
+  warpLabel.textContent = label; warpCount.textContent = count;
+  warpMsg.classList.toggle('warped', !!warped);
+  warpMsg.classList.add('show');
+  hudEl.classList.add('warping');
+}
+function stepWarp(dt){
+  if(!state.boost) warp.needRelease = false;
+  const onHero = !hudEl.classList.contains('faded');
+  if(!warp.counting && !warp.needRelease && onHero && state.hold >= 5){
+    warp.counting = true; warp.count = 3;
+  }
+  if(warp.counting){
+    if(!state.boost || !onHero){
+      warp.counting = false;
+      showWarpMsg('warp cancelled', '', TH.warp); warp.msgTimer = 1.1;
+    } else {
+      warp.count -= dt;
+      if(warp.count <= 0){
+        warp.counting = false; warp.needRelease = true; warp.flash = 1;
+        TH = TH.warp ? THEMES.dusk : THEMES.warp;
+        state.hold = 0;
+        hudWorld.textContent = TH.warp ? 'TIME WARP' : '';
+        showWarpMsg(TH.warp ? 'welcome to the time warp' : 'back in 2026', '', TH.warp); warp.msgTimer = 2.2;
+      } else {
+        showWarpMsg(TH.warp ? 'leaving time warp' : 'entering time warp', Math.ceil(warp.count), TH.warp);
       }
     }
   }
-  window.addEventListener('scroll', setActiveNav);
-
-  // Contact form submission simulation
-  function handleSubmit(event) {
-    event.preventDefault();
-    const form = event.target;
-    const btn = form.querySelector('button');
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-    setTimeout(() => {
-      alert('Thank you for reaching out! I will get back to you soon.');
-      form.reset();
-      btn.textContent = 'Send Message';
-      btn.disabled = false;
-    }, 1500);
+  if(warp.msgTimer > 0){
+    warp.msgTimer -= dt;
+    if(warp.msgTimer <= 0){ warpMsg.classList.remove('show'); hudEl.classList.remove('warping'); }
   }
+  if(warp.flash > 0){
+    warp.flash = Math.max(0, warp.flash - dt * 1.4);
+    warpFlash.style.opacity = (warp.flash * warp.flash).toFixed(3);
+  }
+}
+
+let last = 0, running = true;
+function loop(now){
+  if(!running) return;
+  const dt = Math.min(0.05, (now - (last || now)) / 1000);
+  last = now;
+  state.t += dt;
+  step(dt);
+  const lap = 1 + Math.floor(state.dist / 40);
+  if(lap !== state.lap){ state.lap = lap; hudLap.textContent = lap; }
+  hudSpeed.textContent = Math.round(state.speed * 42);
+  hudEl.classList.toggle('boost', state.boost);
+  boostBtn.style.setProperty('--charge', (Math.min(1, state.hold / 5) * 100).toFixed(1) + '%');
+  frame(dt);
+  requestAnimationFrame(loop);
+}
+
+const baseLayout = layout;
+layout = function(){ baseLayout(); if(kart3d) kart3d.size(); };
+layout();
+if(reduceMotion){
+  state.speed = 1; frame(); hudSpeed.textContent = 42;
+  window.addEventListener('resize', ()=>{ layout(); frame(); });
+} else {
+  requestAnimationFrame(loop);
+  let rt;
+  window.addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(layout, 120); });
+  document.addEventListener('visibilitychange', ()=>{
+    running = !document.hidden;
+    if(running){ last = 0; requestAnimationFrame(loop); }
+  });
+
+  const setBoost = on => { state.boost = on; };
+  const steerTo = v => { state.steerTarget = Math.max(-1, Math.min(1, v)); };
+
+  // mouse: steering follows the pointer; hold on any empty part of the page to boost
+  const interactive = el => el && el.closest && el.closest('a,button,input,textarea,select,label,.email');
+  window.addEventListener('pointermove', e=>{
+    if(e.pointerType === 'mouse') steerTo((e.clientX / W) * 2 - 1);
+  }, { passive:true });
+  boostBtn.addEventListener('pointerdown', e=>{
+    if(e.pointerType !== 'mouse') return;
+    e.preventDefault(); e.stopPropagation(); setBoost(true);
+  });
+  window.addEventListener('pointerdown', e=>{
+    if(e.pointerType === 'mouse' && e.button === 0 && !interactive(e.target)) setBoost(true);
+  });
+  window.addEventListener('pointerup', e=>{ if(e.pointerType === 'mouse') setBoost(false); });
+
+  // touch: hold the boost button to charge, slide that thumb left or right to steer.
+  // Touch events, not pointer events, so a long hold never gets cancelled into a scroll.
+  let boostTouch = null, touchStartX = 0, steerAtStart = 0;
+  boostBtn.addEventListener('touchstart', e=>{
+    e.preventDefault();
+    const t = e.changedTouches[0];
+    boostTouch = t.identifier; touchStartX = t.clientX; steerAtStart = state.steerTarget;
+    setBoost(true);
+  }, { passive:false });
+  const findTouch = (list, id) => { for(const t of list) if(t.identifier === id) return t; return null; };
+  window.addEventListener('touchmove', e=>{
+    const held = boostTouch !== null && findTouch(e.changedTouches, boostTouch);
+    if(held){
+      // the thumb on the button: sliding a third of the screen is full lock
+      if(e.cancelable) e.preventDefault();
+      steerTo(steerAtStart + (held.clientX - touchStartX) / (W * 0.33));
+      return;
+    }
+    // any other finger dragging across the hero steers to where it is
+    if(window.scrollY < window.innerHeight * 0.5) steerTo((e.changedTouches[0].clientX / W) * 2 - 1);
+  }, { passive:false });
+  const endTouch = e=>{
+    if(boostTouch !== null && findTouch(e.changedTouches, boostTouch)){ boostTouch = null; setBoost(false); }
+  };
+  window.addEventListener('touchend', endTouch);
+  window.addEventListener('touchcancel', endTouch);
+  boostBtn.addEventListener('contextmenu', e=>e.preventDefault());
+
+  window.addEventListener('blur', ()=>setBoost(false));
+
+  // a focused link doesn't use space, so only real text fields and buttons keep it
+  const typing = el => el && el.closest && el.closest('input,textarea,select,button,[contenteditable]');
+  const boostKey = c => c === 'Space' || c === 'KeyW';
+  window.addEventListener('keydown', e=>{
+    if(boostKey(e.code) && !typing(document.activeElement) && !e.metaKey && !e.ctrlKey && !e.altKey){ e.preventDefault(); setBoost(true); }
+    if(e.code === 'ArrowLeft' || e.code === 'KeyA') state.steerTarget = Math.max(-1, state.steerTarget - 0.25);
+    if(e.code === 'ArrowRight' || e.code === 'KeyD') state.steerTarget = Math.min(1, state.steerTarget + 0.25);
+  });
+  window.addEventListener('keyup', e=>{ if(boostKey(e.code)) setBoost(false); });
+}
+})();
 </script>
 </body>
 </html>
