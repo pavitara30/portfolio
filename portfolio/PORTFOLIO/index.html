@@ -1,586 +1,983 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Pavitara S - Portfolio</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Pavitara S | Software Developer</title>
+<meta name="description" content="Pavitara S. Computer Science student and SDE intern in Chennai. P1 at FKRC Season 6, startup pitch winner, and builder of an IoT hovercraft made in Paris.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pavitara.vercel.app/">
+<meta property="og:title" content="Pavitara S | Software Developer">
+<meta property="og:description" content="Codes, races, pitches, leads. P1 at FKRC Season 6 and an SDE intern in Chennai.">
+<meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://pavitara.vercel.app/">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Pavitara S">
+<meta name="theme-color" content="#0B0F28">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://pavitara.vercel.app/#person",
+  "name": "Pavitara S",
+  "url": "https://pavitara.vercel.app/",
+  "jobTitle": "Software Developer",
+  "email": "mailto:tarasenvel03@gmail.com",
+  "address": { "@type": "PostalAddress", "addressLocality": "Chennai", "addressRegion": "Tamil Nadu", "addressCountry": "IN" },
+  "alumniOf": { "@type": "CollegeOrUniversity", "name": "Loyola-ICAM College of Engineering and Technology" },
+  "knowsAbout": ["Java", "Python", "Embedded C", "MySQL", "IoT", "Arduino"],
+  "sameAs": ["https://www.linkedin.com/in/pavitara-s-715458290/", "https://github.com/pavitara30"]
+}
+</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23FFB07C'/%3E%3Cstop offset='1' stop-color='%23FF5CA8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='%230B0F28'/%3E%3Ccircle cx='32' cy='36' r='18' fill='url(%23g)'/%3E%3Crect x='10' y='38' width='44' height='3' fill='%230B0F28'/%3E%3Crect x='10' y='45' width='44' height='4' fill='%230B0F28'/%3E%3Crect x='10' y='52' width='44' height='12' fill='%230B0F28'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Yellowtail&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  /* Fonts */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+/* Layout: a fixed dusk race scene behind everything, a scrim that darkens as you scroll,
+   and a single reading column where sections are "sectors" of one lap. */
+:root{
+  --night:#0B0F28;
+  --midnight:#1B1B3A;
+  --dusk:#6A4C7D;
+  --pink:#FF5CA8;
+  --violet:#BC6CFF;
+  --peach:#FFB07C;
+  --lilac:#B9B2D0;
+  --text:#F5F0FA;
+  --muted:#9A93B5;
+  --line:rgba(185,178,208,.16);
+  --card:rgba(27,27,58,.62);
+  --f-name:'Yellowtail', 'Brush Script MT', cursive;
+  --f-display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body:'Manrope', 'Segoe UI', system-ui, sans-serif;
+  --f-mono:'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --gutter:max(20px, 6vw);
+  color-scheme:dark;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+html,body{background:var(--night);overflow-x:hidden;max-width:100%;}
+body{color:var(--text);font-family:var(--f-body);line-height:1.65;font-size:16px;min-height:100vh;}
+img{max-width:100%;display:block;}
+a{color:inherit;text-decoration:none;}
+ul{list-style:none;}
+button{font-family:inherit;border:none;background:none;color:inherit;cursor:pointer;}
+h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text-wrap:balance;line-height:1.05;}
+::selection{background:var(--pink);color:var(--night);}
+:focus-visible{outline:2px solid var(--peach);outline-offset:3px;border-radius:4px;}
 
-  :root {
-    --background-dark: #0b0715;
-    --neon-purple: #a07eff;
-    --neon-lilac: #c4a7e7;
-    --dark-navy: #120e2b;
-    --glass-bg: rgba(35, 24, 58, 0.3);
-    --glass-border: rgba(160, 126, 255, 0.3);
-    --text-light: #f0e9ff;
-    --text-muted: #9b8ccc;
-  }
+/* ===== SCENE ===== */
+#scene{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;}
+#scrim{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(180deg, rgba(11,15,40,.88), rgba(11,15,40,.8));
+  opacity:var(--scrim,0);
+}
+#page{position:relative;z-index:2;}
+.container{max-width:1120px;margin:0 auto;padding-inline:var(--gutter);}
 
-  * {
-    margin: 0; padding: 0; box-sizing: border-box;
-  }
+/* ===== HUD ===== */
+.hud{
+  position:fixed;right:var(--gutter);top:92px;z-index:3;
+  font-family:var(--f-mono);text-align:right;
+  pointer-events:none;user-select:none;
+  font-variant-numeric:tabular-nums;
+  transition:opacity .4s var(--ease);
+}
+.hud-row{font-size:.72rem;letter-spacing:.14em;color:var(--lilac);display:flex;gap:16px;justify-content:flex-end;}
+.hud-row b{color:var(--pink);font-weight:700;}
+.hud-speed{font-size:1.7rem;font-weight:700;color:var(--text);line-height:1.2;}
+.hud-speed small{font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-left:4px;}
+.hud-hint{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.hud.boost .hud-speed{color:var(--peach);}
+@media (hover:none){
+  body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}
+}
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--background-dark);
-    color: var(--text-light);
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
-  }
+/* ===== NAV ===== */
+.navbar{
+  position:fixed;top:0;left:0;width:100%;z-index:1000;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(22px + env(safe-area-inset-top,0px)) var(--gutter) 22px;
+  border-bottom:1px solid transparent;
+  transition:background .3s var(--ease),padding .3s var(--ease),border-color .3s var(--ease);
+}
+.navbar.scrolled{background:rgba(11,15,40,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding-block:calc(12px + env(safe-area-inset-top,0px)) 12px;border-color:var(--line);}
+.monogram{font-family:var(--f-name);font-size:30px;color:var(--pink);line-height:1;text-shadow:0 0 18px rgba(255,92,168,.55);}
+.nav-links{display:flex;gap:34px;}
+.nav-links a{font-size:.9rem;font-weight:500;color:var(--lilac);transition:color .2s var(--ease);}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.hamburger{display:none;flex-direction:column;gap:5px;width:48px;height:48px;align-items:center;justify-content:center;z-index:1600;}
+.hamburger span{width:22px;height:2px;background:var(--text);transition:transform .3s var(--ease),opacity .3s var(--ease);}
+.hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.hamburger.open span:nth-child(2){opacity:0;}
+.hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+.mobile-menu{
+  position:fixed;inset:0;z-index:1500;background:var(--night);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;
+  transform:translateY(-100%);transition:transform .45s var(--ease);
+}
+.mobile-menu.open{transform:translateY(0);}
+.mobile-menu a{font-family:var(--f-display);font-size:1.7rem;font-weight:700;min-height:48px;display:flex;align-items:center;}
+.mobile-menu a:hover{color:var(--pink);}
 
-  /* Background with floating neon orbs */
-  .bg-animation {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    pointer-events: none;
-    z-index: -1;
-    background: radial-gradient(circle, var(--dark-navy), var(--background-dark));
-  }
-  .orb {
-    position: absolute;
-    border-radius: 50%;
-    background: var(--neon-purple);
-    filter: drop-shadow(0 0 6px var(--neon-purple));
-    animation-timing-function: ease-in-out;
-    opacity: 0.7;
-  }
-  .orb.small {
-    width: 20px; height: 20px;
-    animation-name: floatUpDown;
-    animation-duration: 6s;
-    animation-iteration-count: infinite;
-  }
-  .orb.medium {
-    width: 35px; height: 35px;
-    animation-name: floatSideways;
-    animation-duration: 10s;
-    animation-iteration-count: infinite;
-  }
-  .orb.large {
-    width: 60px; height: 60px;
-    background: transparent;
-    border: 2px solid var(--neon-lilac);
-    opacity: 0.3;
-    filter: drop-shadow(0 0 8px var(--neon-lilac));
-    animation-name: pulseRing;
-    animation-duration: 8s;
-    animation-iteration-count: infinite;
-  }
+/* ===== BUTTONS ===== */
+.buttons{display:flex;gap:12px;flex-wrap:wrap;}
+.btn{
+  display:inline-flex;align-items:center;gap:10px;min-height:48px;
+  padding:13px 24px;border-radius:999px;
+  font-family:var(--f-display);font-weight:700;font-size:.95rem;
+  transition:background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease),box-shadow .2s var(--ease);
+}
+.btn-pink{background:var(--pink);color:var(--night);box-shadow:0 0 0 rgba(255,92,168,0);}
+.btn-pink:hover{box-shadow:0 0 28px rgba(255,92,168,.55);}
+.btn-ghost{border:1px solid rgba(185,178,208,.35);color:var(--text);background:rgba(11,15,40,.35);}
+.btn-ghost:hover{border-color:var(--pink);color:var(--pink);}
+.btn svg{width:16px;height:16px;fill:currentColor;}
 
-  /* Animations */
-  @keyframes floatUpDown {
-    0%, 100% { transform: translateY(0); opacity: 0.7; }
-    50% { transform: translateY(-15px); opacity: 1; }
-  }
-  @keyframes floatSideways {
-    0%, 100% { transform: translateX(0); opacity: 0.7; }
-    50% { transform: translateX(25px); opacity: 1; }
-  }
-  @keyframes pulseRing {
-    0%, 100% { transform: scale(1); opacity: 0.3; }
-    50% { transform: scale(1.15); opacity: 0.6; }
-  }
+/* ===== HERO ===== */
+.hero{min-height:100svh;padding-block:150px 0;display:flex;flex-direction:column;}
+.hero-name{
+  font-family:var(--f-name);font-weight:400;letter-spacing:0;
+  font-size:clamp(56px,9vw,124px);line-height:1;
+  color:var(--pink);
+  text-shadow:0 0 22px rgba(255,92,168,.6),0 0 60px rgba(255,92,168,.3);
+  transform:rotate(-4deg);transform-origin:left center;
+  margin-bottom:22px;
+}
+.hero-title{
+  font-family:var(--f-display);font-weight:800;
+  font-size:clamp(30px,4.6vw,60px);line-height:1.05;letter-spacing:-.02em;
+  margin-bottom:22px;max-width:780px;
+}
+.hero-title em{font-style:normal;color:var(--peach);}
+.hero-title,.hero-sub{text-shadow:0 2px 18px rgba(11,15,40,.85),0 0 2px rgba(11,15,40,.6);}
+.hero-sub{color:rgba(245,240,250,.86);max-width:560px;font-size:clamp(1rem,1.25vw,1.1rem);margin-bottom:34px;}
+.hero-sub strong{color:var(--text);font-weight:600;}
+.lights{
+  margin-top:auto;padding-bottom:28px;
+  display:flex;align-items:center;gap:12px;
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--lilac);
+}
+.lights i{width:8px;height:8px;border-radius:50%;background:var(--pink);box-shadow:0 0 10px var(--pink);animation:blink 1.6s infinite;}
+.lights i:nth-child(2){animation-delay:.2s;}
+.lights i:nth-child(3){animation-delay:.4s;}
+@keyframes blink{0%,60%,100%{opacity:1}30%{opacity:.25}}
 
-  /* Navigation */
-  nav {
-    position: fixed;
-    top: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--glass-bg);
-    border-radius: 35px;
-    box-shadow: 0 0 10px var(--neon-purple);
-    padding: 12px 30px;
-    display: flex;
-    gap: 30px;
-    z-index: 1000;
-  }
-  nav a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 15px;
-    padding: 8px 15px;
-    border-radius: 25px;
-    transition: background-color 0.3s ease;
-  }
-  nav a:hover,
-  nav a.active {
-    background-color: var(--neon-purple);
-    color: var(--background-dark);
-    box-shadow: 0 0 10px var(--neon-purple);
-  }
+/* ===== PODIUM STRIP ===== */
+.podium{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+}
+.podium div{padding:26px 22px;min-width:0;}
+.podium div + div{border-left:1px solid var(--line);}
+.podium b{display:block;font-family:var(--f-display);font-size:clamp(1.9rem,3vw,2.6rem);font-weight:800;line-height:1.05;color:var(--text);}
+.podium b span{color:var(--pink);}
+.podium p{font-size:.88rem;color:var(--muted);margin-top:6px;}
 
-  /* Hero */
-  .hero {
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
-    padding: 0 20px;
-  }
-  .hero h1 {
-    font-weight: 700;
-    font-size: clamp(3rem, 8vw, 5.5rem);
-    color: var(--neon-purple);
-    text-shadow: 0 0 20px var(--neon-purple);
-    margin-bottom: 10px;
-    font-family: 'Inter', sans-serif;
-  }
-  .hero-subtitle {
-    color: var(--neon-lilac);
-    font-weight: 500;
-    font-size: 1.5rem;
-    margin-bottom: 40px;
-    min-height: 2.2rem;
-    font-style: italic;
-  }
-  .cta-buttons a {
-    text-decoration: none;
-    display: inline-block;
-    background-color: var(--neon-purple);
-    color: var(--background-dark);
-    padding: 14px 40px;
-    border-radius: 30px;
-    font-weight: 600;
-    margin: 0 10px;
-    box-shadow: 0 0 12px var(--neon-purple);
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .cta-buttons a:hover {
-    background-color: var(--neon-lilac);
-    box-shadow: 0 0 25px var(--neon-lilac);
-  }
+/* ===== SECTIONS ===== */
+.section{padding-block:120px;}
+.sector{
+  display:flex;align-items:center;gap:10px;margin-bottom:16px;
+  font-family:var(--f-mono);font-size:.74rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--violet);
+}
+.sector::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--violet);box-shadow:0 0 12px var(--violet);}
+.sector span{color:var(--muted);font-weight:500;}
+.section-heading{font-size:clamp(36px,5vw,64px);margin-bottom:14px;}
+.section-intro{color:var(--lilac);max-width:560px;}
 
-  /* Section styling */
-  section {
-    max-width: 960px;
-    margin: 100px auto 100px auto;
-    padding: 0 20px;
-  }
-  .section-header {
-    text-align: center;
-    margin-bottom: 60px;
-  }
-  .section-badge {
-    display: inline-block;
-    font-weight: 600;
-    font-size: 12px;
-    color: var(--neon-lilac);
-    letter-spacing: 2px;
-    padding: 7px 24px;
-    border: 1.5px solid var(--neon-lilac);
-    border-radius: 35px;
-    margin-bottom: 20px;
-  }
-  .section-title {
-    color: var(--neon-purple);
-    font-weight: 700;
-    font-size: 2.7rem;
-    letter-spacing: 2px;
-  }
-  .section-subtitle {
-    color: var(--text-muted);
-    font-weight: 400;
-    font-size: 1.1rem;
-    max-width: 700px;
-    margin: 10px auto 0 auto;
-    letter-spacing: 0.5px;
-  }
+/* ===== WORK ===== */
+.builds{margin-top:64px;display:grid;gap:22px;}
+.build{
+  display:grid;grid-template-columns:200px 1fr;gap:36px;
+  padding:34px;border-radius:18px;
+  background:var(--card);border:1px solid var(--line);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.build-side{display:flex;flex-direction:column;gap:14px;min-width:0;}
+.build-tag{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--peach);}
+.build-result{
+  font-family:var(--f-display);font-weight:800;font-size:2.4rem;line-height:1;color:var(--pink);
+}
+.build-result small{display:block;font-family:var(--f-body);font-weight:500;font-size:.82rem;color:var(--muted);margin-top:6px;line-height:1.4;}
+.build-main{min-width:0;}
+.build h3{font-size:clamp(1.5rem,2.4vw,2rem);margin-bottom:8px;}
+.build-hook{color:var(--text);margin-bottom:20px;font-size:1.05rem;}
+.notes{display:grid;grid-template-columns:110px 1fr;gap:10px 20px;padding-block:18px;border-top:1px solid var(--line);margin-bottom:16px;}
+.notes dt{font-family:var(--f-mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:4px;}
+.notes dd{color:var(--lilac);font-size:.95rem;}
+.notes dd strong{color:var(--text);font-weight:600;}
+.stack{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);}
+.build-link{display:inline-flex;align-items:center;gap:8px;margin-top:14px;font-family:var(--f-display);font-weight:700;color:var(--pink);min-height:32px;}
+.build-link:hover{color:var(--peach);}
 
-  /* About */
-  .about-content {
-    font-weight: 400;
-    color: var(--text-light);
-    line-height: 1.6;
-    max-width: 700px;
-    margin: 0 auto;
-    font-size: 1.1rem;
-  }
-  .profile-card {
-    width: 150px;
-    height: 150px;
-    margin: 0 auto 30px auto;
-    border-radius: 50%;
-    background: var(--neon-purple);
-    box-shadow: 0 0 20px var(--neon-purple);
-  }
-  /* Skills & Leadership container reuse */
-  .container-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 40px;
-  }
-  .card {
-    background: var(--glass-bg);
-    border-radius: 25px;
-    padding: 30px;
-    box-shadow: 0 0 18px rgba(160,126,255,0.3);
-    border: 1.5px solid var(--glass-border);
-    transition: background-color 0.3s ease;
-  }
-  .card:hover {
-    background-color: rgba(196, 167, 231, 0.2);
-  }
-  .card h3 {
-    color: var(--neon-purple);
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-  .tag {
-    background: var(--neon-lilac);
-    padding: 7px 18px;
-    border-radius: 25px;
-    font-weight: 600;
-    color: var(--background-dark);
-    box-shadow: 0 0 8px var(--neon-lilac);
-    user-select: none;
-  }
+/* ===== TRACK ===== */
+.track-grid{margin-top:64px;display:grid;grid-template-columns:1.1fr 1fr;gap:28px;align-items:start;}
+.p1-card{
+  position:relative;overflow:hidden;
+  padding:40px 36px;border-radius:22px;
+  background:linear-gradient(160deg, rgba(106,76,125,.55), rgba(27,27,58,.75) 55%, rgba(209,124,154,.35));
+  border:1px solid rgba(255,92,168,.35);
+}
+.p1-big{
+  font-family:var(--f-display);font-weight:800;line-height:.85;letter-spacing:-.04em;
+  font-size:clamp(110px,15vw,190px);
+  background:linear-gradient(180deg,var(--peach),var(--pink) 70%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.p1-title{font-size:1.5rem;margin:14px 0 6px;}
+.p1-meta{font-family:var(--f-mono);font-size:.76rem;letter-spacing:.08em;color:var(--lilac);margin-bottom:20px;}
+.p1-card p{color:var(--lilac);}
+.events{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+.events span{
+  font-family:var(--f-mono);font-size:.72rem;letter-spacing:.06em;
+  padding:6px 11px;border-radius:999px;border:1px solid rgba(185,178,208,.3);color:var(--text);
+}
+.events span::before{content:"✓ ";color:var(--pink);}
+.flag{
+  position:absolute;top:22px;right:22px;width:56px;height:28px;opacity:.5;
+  background:conic-gradient(var(--text) 25%, transparent 0 50%, var(--text) 0 75%, transparent 0) 0 0/14px 14px;
+}
+.pit-list{display:grid;gap:0;border-top:1px solid var(--line);}
+.pit{display:grid;grid-template-columns:1fr auto;gap:4px 16px;padding:20px 0;border-bottom:1px solid var(--line);}
+.pit h3{font-size:1.1rem;font-weight:700;letter-spacing:-.01em;}
+.pit p{grid-column:1 / -1;color:var(--muted);font-size:.93rem;}
+.pit time,.pit .when{font-family:var(--f-mono);font-size:.74rem;color:var(--peach);white-space:nowrap;padding-top:4px;}
+.bee{
+  display:inline-block;width:38px;height:12px;border-radius:3px;vertical-align:middle;margin-left:8px;
+  background:repeating-linear-gradient(90deg,#F6C445 0 6px,#111 6px 12px);
+}
 
-  /* Projects text */
-  .project-description {
-    color: var(--text-muted);
-    font-weight: 400;
-    line-height: 1.5;
-  }
+/* ===== NOW / TIMELINE ===== */
+.timeline{margin-top:56px;display:grid;gap:0;border-top:1px solid var(--line);}
+.stint{display:grid;grid-template-columns:180px 1fr;gap:26px;padding:28px 0;border-bottom:1px solid var(--line);}
+.stint .when{font-family:var(--f-mono);font-size:.78rem;color:var(--muted);padding-top:6px;}
+.stint .when b{display:inline-block;color:var(--night);background:var(--pink);border-radius:4px;padding:1px 7px;font-weight:700;margin-bottom:6px;}
+.stint h3{font-size:1.35rem;margin-bottom:4px;}
+.stint h3 span{color:var(--lilac);font-weight:500;}
+.stint p{color:var(--lilac);max-width:640px;}
 
-  /* Fade-in on scroll */
-  .fade-in {
-    opacity: 0;
-    transform: translateY(25px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-  }
-  .fade-in.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ===== OFF TRACK ===== */
+.off-grid{margin-top:56px;display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.off{padding:32px;border-radius:18px;background:var(--card);border:1px solid var(--line);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:12px;}
+.off .build-tag{color:var(--violet);}
+.off h3{font-size:1.5rem;}
+.off p{color:var(--lilac);}
+.off blockquote{margin-top:auto;padding-top:16px;border-top:1px solid var(--line);font-size:.95rem;color:var(--text);}
+.off blockquote::before{content:"“";color:var(--pink);font-family:var(--f-display);font-weight:800;margin-right:2px;}
+.off blockquote::after{content:"”";color:var(--pink);font-family:var(--f-display);font-weight:800;}
 
-  footer {
-    text-align: center;
-    padding: 40px 20px;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    user-select: none;
-  }
+/* ===== TOOLBOX ===== */
+.toolbox{margin-top:48px;border-top:1px solid var(--line);}
+.tool-row{display:grid;grid-template-columns:200px 1fr;gap:24px;padding:22px 0;border-bottom:1px solid var(--line);}
+.tool-row h3{font-size:1rem;font-weight:700;letter-spacing:0;}
+.tool-row p{color:var(--lilac);}
+.tool-row p b{color:var(--text);font-weight:600;}
 
-  /* Responsive */
-  @media (max-width: 720px) {
-    .container-grid {
-      grid-template-columns: 1fr;
-    }
-  }
+/* ===== FINISH ===== */
+.finish{padding-block:120px 80px;text-align:center;}
+.quote{
+  font-family:var(--f-display);font-weight:700;letter-spacing:-.02em;
+  font-size:clamp(26px,3.6vw,44px);line-height:1.2;max-width:860px;margin:0 auto 18px;text-wrap:balance;
+}
+.quote em{font-style:normal;color:var(--pink);}
+.quote-by{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:56px;}
+.contact{display:flex;flex-direction:column;align-items:center;gap:20px;}
+.email{
+  font-family:var(--f-mono);font-size:clamp(.95rem,2.4vw,1.25rem);color:var(--text);
+  display:inline-flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:center;
+  user-select:text;-webkit-user-select:text;
+}
+.copy{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--pink);border:1px solid rgba(255,92,168,.5);border-radius:999px;padding:6px 12px;min-height:32px;}
+.copy:hover{background:rgba(255,92,168,.12);}
+.footer{padding-block:28px calc(28px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;color:var(--muted);}
+.footer .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
 
-  /* Contact form styles */
-  .contact-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 60px;
-    max-width: 960px;
-    margin: 0 auto;
-  }
-  @media (max-width: 720px) {
-    .contact-container {
-      grid-template-columns: 1fr;
-    }
-  }
-  .contact-info h3 {
-    color: var(--neon-purple);
-    font-weight: 700;
-    margin-bottom: 15px;
-  }
-  .contact-info p, .contact-info strong, .contact-info span, .contact-info a {
-    color: var(--text-light);
-    font-size: 1rem;
-  }
-  .contact-info a {
-    color: var(--neon-lilac);
-    text-decoration: none;
-  }
-  .contact-info div + div {
-    margin-top: 20px;
-  }
-  .contact-form {
-    background: var(--glass-bg);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 0 30px rgba(160, 126, 255, 0.25);
-    border: 1.5px solid var(--glass-border);
-  }
-  .contact-form label {
-    display: block;
-    margin-bottom: 6px;
-    color: var(--text-light);
-    font-weight: 600;
-  }
-  .contact-form input,
-  .contact-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    border: 1px solid var(--glass-border);
-    background: rgba(255,255,255,0.1);
-    color: var(--text-light);
-    font-size: 1rem;
-    resize: vertical;
-    font-family: 'Inter', sans-serif;
-  }
-  .contact-form button {
-    width: 100%;
-    padding: 15px;
-    background: var(--neon-purple);
-    color: var(--background-dark);
-    border: none;
-    border-radius: 15px;
-    font-weight: 700;
-    font-size: 1rem;
-    cursor: pointer;
-    box-shadow: 0 0 15px var(--neon-purple);
-    transition: background-color 0.3s ease;
-  }
-  .contact-form button:hover {
-    background: var(--neon-lilac);
-    box-shadow: 0 0 25px var(--neon-lilac);
-  }
+/* ===== RESPONSIVE ===== */
+@media (max-width:900px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .hud{top:80px;}
+  .hud-speed{font-size:1.15rem;}
+  .hud-row{gap:10px;font-size:.62rem;}
+  .hud-hint{font-size:.58rem;max-width:150px;margin-left:auto;line-height:1.5;}
+  .podium{grid-template-columns:1fr 1fr;}
+  .lights{display:none;}
+  .podium div:nth-child(3){border-left:none;}
+  .podium div:nth-child(n+3){border-top:1px solid var(--line);}
+  .build{grid-template-columns:1fr;gap:20px;padding:26px;}
+  .build-side{flex-direction:row;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;}
+  .track-grid,.off-grid{grid-template-columns:1fr;}
+  .stint{grid-template-columns:1fr;gap:6px;}
+  .tool-row{grid-template-columns:1fr;gap:6px;}
+}
+@media (max-width:600px){
+  .section{padding-block:84px;}
+  .hero{padding-block:170px 0;}
+  .notes{grid-template-columns:1fr;gap:2px;}
+  .notes dd{margin-bottom:10px;}
+  .p1-card{padding:30px 24px;}
+  .off{padding:24px;}
+  .podium div{padding:20px 14px;}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .lights i{animation:none;}
+}
 </style>
 </head>
 <body>
-
-<div class="bg-animation">
-  <!-- Ten orbs with various sizes and positions -->
-  <div class="orb small" style="top: 15vh; left: 10vw; animation-delay: 0s;"></div>
-  <div class="orb medium" style="top: 40vh; left: 25vw; animation-delay: 1.5s;"></div>
-  <div class="orb small" style="top: 70vh; left: 15vw; animation-delay: 3s;"></div>
-  <div class="orb large" style="top: 20vh; left: 60vw; animation-delay: 0.5s;"></div>
-  <div class="orb medium" style="top: 65vh; left: 72vw; animation-delay: 4s;"></div>
-  <div class="orb small" style="top: 45vh; left: 88vw; animation-delay: 1s;"></div>
-  <div class="orb medium" style="top: 85vh; left: 42vw; animation-delay: 6s;"></div>
-  <div class="orb large" style="top: 77vh; left: 80vw; animation-delay: 2s;"></div>
-  <div class="orb small" style="top: 30vh; left: 78vw; animation-delay: 3.5s;"></div>
-  <div class="orb medium" style="top: 10vh; left: 88vw; animation-delay: 0s;"></div>
+<canvas id="scene" aria-hidden="true"></canvas>
+<div id="scrim" aria-hidden="true"></div>
+<div class="hud" id="hud" aria-hidden="true">
+  <div class="hud-row"><span><b>P1</b></span><span>LAP <b id="hudLap">1</b></span></div>
+  <div class="hud-speed"><span id="hudSpeed">0</span><small>KM/H</small></div>
+  <div class="hud-hint" id="hudHint">hold anywhere or press space to boost</div>
 </div>
 
-<nav>
-  <a href="#home" class="active">Home</a>
-  <a href="#about">About</a>
-  <a href="#skills">Skills</a>
-  <a href="#projects">Projects</a>
-  <a href="#leadership">Leadership</a>
-  <a href="#contact">Contact</a>
-</nav>
+<div id="page">
+  <nav class="navbar" id="navbar">
+    <a href="#home" class="monogram" aria-label="Home">pavitara</a>
+    <ul class="nav-links">
+      <li><a href="#work" data-nav="work">work</a></li>
+      <li><a href="#track" data-nav="track">on track</a></li>
+      <li><a href="#now" data-nav="now">now</a></li>
+      <li><a href="#off-track" data-nav="off-track">off track</a></li>
+      <li><a href="#contact">contact</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#work">work</a>
+    <a href="#track">on track</a>
+    <a href="#now">now</a>
+    <a href="#off-track">off track</a>
+    <a href="#contact">contact</a>
+  </div>
 
-<section id="home" class="hero">
-  <h1>Pavitara S</h1>
-  <div class="hero-subtitle" id="hero-subtitle"></div>
-  <div class="cta-buttons">
-    <a href="#projects">View Projects</a>
-    <a href="#contact">Contact Me</a>
-  </div>
-</section>
+  <header class="hero" id="home">
+    <div class="container" style="display:flex;flex-direction:column;flex:1;">
+      <h1 class="hero-name">Pavitara S</h1>
+      <p class="hero-title">codes. races. pitches. <em>leads.</em></p>
+      <p class="hero-sub">Final-year CSE at LICET, Chennai, and an <strong>SDE intern at Renault</strong>. I won <strong>P1 at FKRC Season 6</strong>, pitched a startup to first place, and built a hovercraft in Paris. The rest is below.</p>
+      <div class="buttons">
+        <a href="#work" class="btn btn-pink">see the work</a>
+        <a href="Pavitara_S_Resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">resume</a>
+        <a href="https://github.com/pavitara30" class="btn btn-ghost" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github</a>
+        <a href="https://www.linkedin.com/in/pavitara-s-715458290/" class="btn btn-ghost" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.15C0 .52.53 0 1.18 0h13.64C15.47 0 16 .52 16 1.15v13.7c0 .63-.53 1.15-1.18 1.15H1.18C.53 16 0 15.48 0 14.85V1.15zM4.94 13.4V6.2H2.56v7.2h2.38zM3.75 5.2c.83 0 1.35-.55 1.35-1.24-.02-.7-.52-1.24-1.33-1.24-.82 0-1.35.54-1.35 1.24 0 .69.52 1.24 1.32 1.24h.01zM8.68 13.4V9.38c0-.22.02-.43.08-.58.17-.43.56-.88 1.22-.88.86 0 1.2.66 1.2 1.62v3.86h2.38V9.27c0-2.21-1.18-3.24-2.75-3.24-1.27 0-1.84.7-2.16 1.19V6.2H6.3c.03.68 0 7.2 0 7.2h2.38z"/></svg>linkedin</a>
+      </div>
+      <div class="lights"><i></i><i></i><i></i> lights out. scroll to start.</div>
+    </div>
+  </header>
 
-<section id="about" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">About Me</span>
-    <h2 class="section-title">Driven Tech Enthusiast</h2>
-    <p class="section-subtitle">Exploring, leading, and learning through the world of computer science.</p>
+  <div class="container">
+    <div class="podium" aria-label="Highlights">
+      <div><b><span>P1</span></b><p>Female Endurance, FKRC Season 6</p></div>
+      <div><b>1<span>st</span></b><p>Anna University Startup Pitch</p></div>
+      <div><b>Paris</b><p>ICAM student exchange, IoT hovercraft</p></div>
+      <div><b>7</b><p>first-years mentored at Envision 2025</p></div>
+    </div>
   </div>
-  <div class="profile-card"></div>
-  <div class="about-content" style="max-width:720px; margin: auto;">
-    <h3>Hi, I'm Pavitara</h3>
-    <p>I'm in my 3rd year of Computer Science at Loyola-ICAM College of Engineering and Technology, Chennai. Passionate about technology, I constantly explore new domains and ideas. I've held important leadership roles and enjoy guiding teams with my communication skills.</p>
-    <p>Notably, I won 1st place for a startup pitch at Anna University for a groundbreaking medical diagnostic project, and represented in ICAM Paris with an innovative IoT hovercraft project.</p>
-  </div>
-</section>
 
-<section id="skills" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Skills</span>
-    <h2 class="section-title">Technical Expertise</h2>
-    <p class="section-subtitle">Coding, leadership, and project management.</p>
-  </div>
-  <div class="container-grid">
-    <div class="card">
-      <h3>Programming</h3>
-      <div class="tags">
-        <span class="tag">Java</span>
-        <span class="tag">SQL</span>
+  <!-- WORK -->
+  <section class="section" id="work">
+    <div class="container">
+      <div class="sector">sector 1 <span>· the build log</span></div>
+      <h2 class="section-heading">things i built.</h2>
+      <p class="section-intro">Hardware, software, and one startup. Each one started as an idea someone said was a lot.</p>
+
+      <div class="builds">
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">startup</div>
+            <div class="build-result">1st<small>Anna University Startup Pitch. Selected for incubation.</small></div>
+          </div>
+          <div class="build-main">
+            <h3>Nanopore-PLM Diagnostic Kit</h3>
+            <p class="build-hook">An AI-driven genomic analysis device for catching neurodegenerative diseases early, at a cost people can actually afford.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Diagnosing neurodegenerative diseases is slow and expensive. Nanopore sequencing plus a protein language model could make it cheap and early.</dd>
+              <dt>What I did</dt><dd>Defined the problem, the solution, the business model and the applications, then took it to the stage.</dd>
+              <dt>How it went</dt><dd><strong>1st place</strong> at the Anna University Startup Pitch, <strong>3rd</strong> at LICET IIC eCirkle Pitch 2025, and <strong>selected for incubation</strong>.</dd>
+            </dl>
+            <p class="stack">Python · Machine Learning · Genomics</p>
+          </div>
+        </article>
+
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">made in paris</div>
+            <div class="build-result">1 mo<small>from zero to a hovercraft that listens</small></div>
+          </div>
+          <div class="build-main">
+            <h3>IoT Hovercraft with Voice Control</h3>
+            <p class="build-hook">A hovercraft you can drive by talking to it, built during the ICAM Paris student exchange.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Make a hovercraft that steers itself around obstacles and takes orders by voice or phone.</dd>
+              <dt>What I did</dt><dd>Programmed the Arduino in Embedded C, wired ultrasonic sensors for obstacle detection, and built a Blynk app for remote control and monitoring.</dd>
+              <dt>How it went</dt><dd>A <strong>working prototype</strong> with voice navigation, shipped in one month abroad.</dd>
+            </dl>
+            <p class="stack">Embedded C · Arduino · Ultrasonic sensors · Blynk · Android</p>
+          </div>
+        </article>
+
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">software</div>
+            <div class="build-result">OTP<small>email login, booking and confirmations</small></div>
+          </div>
+          <div class="build-main">
+            <h3>SkyLink Airline Reservation</h3>
+            <p class="build-hook">A full airline booking system, built and tested the way real software engineering says you should.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Search, book and cancel flights with secure sign-in and nothing falling through the cracks.</dd>
+              <dt>What I did</dt><dd>Designed it with OOSE principles, then built email OTP login, flight search, booking, cancellation and email confirmations.</dd>
+              <dt>How it went</dt><dd>Every flow <strong>tested for reliability</strong> before it was called done.</dd>
+            </dl>
+            <p class="stack">Java · MySQL · OOSE · Software Testing</p>
+            <a class="build-link" href="https://github.com/pavitara30/Airline-Reservation" target="_blank" rel="noopener">code →</a>
+          </div>
+        </article>
+
+        <article class="build">
+          <div class="build-side">
+            <div class="build-tag">for the team</div>
+            <div class="build-result">auto<small>no more counting laps by hand</small></div>
+          </div>
+          <div class="build-main">
+            <h3>Automated Lap Counter</h3>
+            <p class="build-hook">An IR-sensor lap counting system for Team Turbonites' EV go-kart.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Practice sessions need accurate lap counts, and people with clipboards miss things.</dd>
+              <dt>What I did</dt><dd>Built the counter with an IR sensor and Arduino, and worked on the kart's motor controller integration.</dd>
+              <dt>How it went</dt><dd>Laps <strong>counted automatically</strong> while the team focused on driving.</dd>
+            </dl>
+            <p class="stack">Arduino · IR sensor · Embedded C</p>
+          </div>
+        </article>
       </div>
     </div>
-    <div class="card">
-      <h3>Leadership</h3>
-      <div class="tags">
-        <span class="tag">Team Management</span>
-        <span class="tag">Communication</span>
-        <span class="tag">Event Organization</span>
+  </section>
+
+  <!-- TRACK -->
+  <section class="section" id="track" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">sector 2 <span>· on track</span></div>
+      <h2 class="section-heading">main driver.</h2>
+      <p class="section-intro">Team Turbonites, LICET's EV go-kart team. I drive, I designed the fairing, and I've run half the team behind the scenes.</p>
+
+      <div class="track-grid">
+        <div class="p1-card">
+          <span class="flag" aria-hidden="true"></span>
+          <div class="p1-big">P1</div>
+          <h3 class="p1-title">Female Endurance winner</h3>
+          <div class="p1-meta">FKRC SEASON 6 · 16–19 MAR 2026 · CoASTT HIGH PERFORMANCE TRACK</div>
+          <p>First time on that track, after a season where the team came back from the previous year's setbacks. Every dynamic event cleared.</p>
+          <div class="events">
+            <span>endurance</span><span>brake test</span><span>acceleration</span><span>skid pad</span><span>autocross</span>
+          </div>
+        </div>
+
+        <div class="pit-list">
+          <div class="pit"><h3>Main Driver, GKDC 2025</h3><span class="when">national</span><p>Drove for Turbonites at the national-level Go Kart Design Challenge.</p></div>
+          <div class="pit"><h3>Designed the kart's fairing <span class="bee" aria-hidden="true"></span></h3><span class="when">FKRC S6</span><p>The Bumblebee livery on the kart was my concept.</p></div>
+          <div class="pit"><h3>HR Lead</h3><span class="when">1.5 yrs</span><p>Kept a team of engineers running like one.</p></div>
+          <div class="pit"><h3>Media &amp; Sponsorship Head</h3><span class="when">1 yr</span><p>Got the kart seen and got it funded.</p></div>
+          <div class="pit"><h3>Non-Tech Head</h3><span class="when">2025</span><p>Everything that isn't the kart itself, which is most things.</p></div>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<section id="projects" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Portfolio</span>
-    <h2 class="section-title">Featured Projects</h2>
-    <p class="section-subtitle">Project wins and international experience.</p>
-  </div>
-  <div class="container-grid">
-    <div class="card">
-      <h3>Nanopore-PLM Diagnostic Kit</h3>
-      <p class="project-description">
-        Won 1st place at Anna University Startup Pitch. Selected for incubation. Combined nanopore tech and PLM (LLM) to detect neurodegenerative diseases affordably.
-      </p>
-    </div>
-    <div class="card">
-      <h3>Hovercraft w/ IoT Voice Control</h3>
-      <p class="project-description">
-        Selected for ICAM Paris Student Exchange. Developed a voice and app-controlled hovercraft using Blynk IoT.
-      </p>
-    </div>
-  </div>
-</section>
+  <!-- NOW -->
+  <section class="section" id="now" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">sector 3 <span>· now</span></div>
+      <h2 class="section-heading">where i am.</h2>
+      <p class="section-intro">Raced karts, now writing software for a car company. Makes sense.</p>
 
-<section id="leadership" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Leadership</span>
-    <h2 class="section-title">Clubs & Roles</h2>
-    <p class="section-subtitle">Leading with energy and collaboration</p>
-  </div>
-  <div class="container-grid">
-    <div class="card">
-      <h3>Turbonites Kart Motorsport</h3>
-      <div class="tags">
-        <span class="tag">HR Head</span>
-        <span class="tag">Media & Sponsorship Head</span>
-        <span class="tag">Driver</span>
-        <span class="tag">Non-Tech Head (2025)</span>
+      <div class="timeline">
+        <div class="stint">
+          <div class="when"><b>now</b><br>6-month internship</div>
+          <div><h3>SDE Intern <span>· Renault, Chennai</span></h3><p>Software development as part of a six-month internship.</p></div>
+        </div>
+        <div class="stint">
+          <div class="when">ended Sep 2026</div>
+          <div><h3>Oracle HCM Intern <span>· Kovaion Consulting</span></h3><p>Hands-on with Oracle HCM Cloud, HR processes, reporting and enterprise systems.</p></div>
+        </div>
+        <div class="stint">
+          <div class="when">exchange</div>
+          <div><h3>Student Exchange <span>· ICAM Paris, France</span></h3><p>One month in Paris, one IoT hovercraft, and a lot of cross-cultural teamwork.</p></div>
+        </div>
+        <div class="stint">
+          <div class="when">2023 – 2027</div>
+          <div><h3>B.E. Computer Science <span>· LICET, Chennai</span></h3><p>Loyola-ICAM College of Engineering and Technology. CGPA 8.0.</p></div>
+        </div>
       </div>
     </div>
-    <div class="card">
-      <h3>Enunciate Club</h3>
-      <div class="tags">
-        <span class="tag">President</span>
-        <span class="tag">Language & Culture Events</span>
+  </section>
+
+  <!-- OFF TRACK -->
+  <section class="section" id="off-track" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">cooldown lap <span>· off track</span></div>
+      <h2 class="section-heading">people stuff.</h2>
+      <p class="section-intro">Leading isn't only about finding the answer. Most of it is listening.</p>
+
+      <div class="off-grid">
+        <article class="off">
+          <div class="build-tag">President · Enunciate Language &amp; Cultural Club</div>
+          <h3>LICET's first-ever Diwali</h3>
+          <p>On 17 October 2025, my team ran the college's first Diwali celebration, with a rangoli competition that brought French and Indian students together, mehendi and cultural events. I also coordinate between faculty, students and the exchange students.</p>
+          <blockquote>Turning an idea into reality, together.</blockquote>
+        </article>
+        <article class="off">
+          <div class="build-tag">Lead Mentor · Envision 2025</div>
+          <h3>Code Green</h3>
+          <p>From 11 to 29 August 2025 I guided seven first-years from different departments through their first engineering project. They built Code Green, a smart traffic signal system that clears the way for ambulances, using ESP32 and Arduino Nano, and presented it to faculty and industry judges.</p>
+          <blockquote>Leadership is as much about listening, guiding and empowering others as it is about finding solutions.</blockquote>
+        </article>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- Added Contact Section -->
-<section id="contact" class="fade-in">
-  <div class="section-header">
-    <span class="section-badge">Contact</span>
-    <h2 class="section-title">Let's Create Something Amazing</h2>
-    <p class="section-subtitle">Ready to bring your ideas to life? Let’s discuss your project and explore how we can work together.</p>
-  </div>
-  <div class="contact-container">
-    <div class="contact-info">
-      <h3>Get in Touch</h3>
-      <p>I'm always excited to work on innovative projects and collaborate with inspiring people. Whether you have a specific project in mind or just want to say hi, feel free to reach out!</p>
-      <div>
-        <div><strong>Email:</strong><br /><a href="mailto:pavitara.s@example.com">tarasenvel03@gmail.com</a></div>
-        <div><strong>Phone:</strong><br /><span>+91 73057 36999</span></div>
-        <div><strong>Location:</strong><br /><span>Chennai, Tamil Nadu, India</span></div>
+  <!-- TOOLBOX -->
+  <section class="section" id="toolbox" style="padding-top:40px;">
+    <div class="container">
+      <div class="sector">telemetry <span>· toolbox</span></div>
+      <h2 class="section-heading">what's in the kit.</h2>
+      <div class="toolbox">
+        <div class="tool-row"><h3>Languages</h3><p><b>Java</b> for SkyLink, <b>Python</b> for the startup's ML, <b>Embedded C</b> for anything with a sensor.</p></div>
+        <div class="tool-row"><h3>Data</h3><p><b>MySQL</b>, plus DBMS fundamentals.</p></div>
+        <div class="tool-row"><h3>Hardware &amp; IoT</h3><p><b>Arduino</b>, <b>ESP32</b>, <b>Blynk</b>, IR and ultrasonic sensors, and a motor controller or two.</p></div>
+        <div class="tool-row"><h3>Enterprise</h3><p><b>Oracle HCM Cloud</b>, from the Kovaion internship.</p></div>
+        <div class="tool-row"><h3>Core CS</h3><p>Data Structures, Operating Systems, Computer Networks (TCP/IP), and problem solving on <b>LeetCode</b> and <b>HackerRank</b>.</p></div>
+        <div class="tool-row"><h3>Certified</h3><p><b>Oracle Academy</b>: Java Fundamentals, SQL Basics, Cloud Infrastructure Foundations, Project Management Fundamentals.</p></div>
       </div>
     </div>
-    <form class="contact-form" onsubmit="handleSubmit(event)">
-      <label for="name">Full Name</label>
-      <input type="text" id="name" name="name" placeholder="John Doe" required />
-      <label for="email">Email Address</label>
-      <input type="email" id="email" name="email" placeholder="john@example.com" required />
-      <label for="subject">Subject</label>
-      <input type="text" id="subject" name="subject" placeholder="Project Inquiry" required />
-      <label for="message">Message</label>
-      <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
-  </div>
-</section>
+  </section>
 
-<footer>
-  <p>&copy; 2025 Pavitara S. All rights reserved.</p>
-</footer>
+  <!-- FINISH -->
+  <section class="finish" id="contact">
+    <div class="container">
+      <div class="sector" style="justify-content:center;">finish line</div>
+      <p class="quote">you don't always have to feel confident. sometimes you just have to <em>trust yourself, show up and do it anyway.</em></p>
+      <p class="quote-by">what P1 taught me</p>
+      <div class="contact">
+        <div class="email"><a href="mailto:tarasenvel03@gmail.com" id="emailText">tarasenvel03@gmail.com</a><button class="copy" id="copyEmail" type="button">copy</button></div>
+        <div class="buttons" style="justify-content:center;">
+          <a href="https://www.linkedin.com/in/pavitara-s-715458290/" class="btn btn-pink" target="_blank" rel="noopener">linkedin</a>
+          <a href="https://github.com/pavitara30" class="btn btn-ghost" target="_blank" rel="noopener">github</a>
+          <a href="Pavitara_S_Resume.pdf" class="btn btn-ghost" target="_blank" rel="noopener">resume</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container"><span>© 2026 Pavitara S</span><span>Chennai · built at dusk</span></div>
+  </footer>
+</div>
 
 <script>
-  // Animate subtitle text
-  const heroSubtitle = document.getElementById('hero-subtitle');
-  const lines = [
-    'Passionate tech enthusiast',
-    'Computer Science student at Loyola-ICAM Chennai',
-    'Leader with great communication skills',
-    'Winner of Anna University Startup Pitch',
-    'Innovator with projects in AI & IoT'
+(function(){
+"use strict";
+
+/* ============ NAV ============ */
+const navbar = document.getElementById('navbar');
+const scrim = document.getElementById('scrim');
+const hudEl = document.getElementById('hud');
+function onScroll(){
+  const y = window.scrollY;
+  navbar.classList.toggle('scrolled', y > 40);
+  // the scene stays bright in the hero, then dims so the text reads
+  const t = Math.min(1, Math.max(0, (y - window.innerHeight * 0.25) / (window.innerHeight * 0.55)));
+  scrim.style.setProperty('--scrim', t.toFixed(3));
+  hudEl.style.opacity = (1 - t * (window.innerWidth < 900 ? 1 : 0.7)).toFixed(3);
+}
+window.addEventListener('scroll', onScroll, { passive:true });
+onScroll();
+
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+hamburger.addEventListener('click', ()=>{
+  const open = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open', open);
+  hamburger.setAttribute('aria-expanded', open);
+});
+mobileMenu.querySelectorAll('a').forEach(a=>a.addEventListener('click', ()=>{
+  hamburger.classList.remove('open');
+  mobileMenu.classList.remove('open');
+  hamburger.setAttribute('aria-expanded', false);
+}));
+
+const navAnchors = document.querySelectorAll('[data-nav]');
+const navObserver = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting) navAnchors.forEach(a=>a.classList.toggle('active', a.dataset.nav === e.target.id));
+  });
+}, { rootMargin:'-45% 0px -45% 0px' });
+['work','track','now','off-track'].forEach(id=>navObserver.observe(document.getElementById(id)));
+
+/* ============ COPY EMAIL ============ */
+const copyBtn = document.getElementById('copyEmail');
+copyBtn.addEventListener('click', ()=>{
+  const text = document.getElementById('emailText').textContent;
+  const done = ()=>{ copyBtn.textContent = 'copied'; setTimeout(()=>copyBtn.textContent = 'copy', 1600); };
+  const fallback = ()=>{
+    const r = document.createRange(); r.selectNodeContents(document.getElementById('emailText'));
+    const s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+    copyBtn.textContent = 'press ctrl+c';
+  };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done, fallback);
+  } else fallback();
+});
+
+/* ============ DUSK RACE SCENE ============
+   An outrun-style road into a striped sunset. Her kart drives into it,
+   the pointer steers it, and holding anywhere (or space) boosts. */
+const canvas = document.getElementById('scene');
+const ctx = canvas.getContext('2d');
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+const hudSpeed = document.getElementById('hudSpeed');
+const hudLap = document.getElementById('hudLap');
+const hudHint = document.getElementById('hudHint');
+if(isTouch) hudHint.textContent = 'hold anywhere to boost';
+
+const C = { night:'#0B0F28', midnight:'#1B1B3A', dusk:'#6A4C7D', twilight:'#D17C9A', pink:'#FF5CA8', violet:'#BC6CFF', peach:'#FFB07C', lilac:'#B9B2D0' };
+let W = 0, H = 0, DPR = 1, horizon = 0;
+let stars = [], skyline = [], palms = [];
+
+function rand(a, b){ return a + Math.random() * (b - a); }
+
+function layout(){
+  DPR = Math.min(window.devicePixelRatio || 1, 1.75);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  horizon = Math.round(H * (W < 700 ? 0.56 : 0.6));
+
+  stars = [];
+  const n = Math.round((W * horizon) / 5200);
+  for(let i=0;i<n;i++) stars.push({ x:rand(0,W), y:rand(0,horizon*0.75), r:rand(.4,1.4), p:rand(0,Math.PI*2), s:rand(.6,1.8) });
+
+  // a low city skyline along the horizon, leaving the sun's middle clear
+  skyline = [];
+  let x = -10;
+  while(x < W + 10){
+    const w = rand(14, 42);
+    const center = Math.abs((x + w/2) - W/2) / (W/2);
+    const h = rand(8, 26) + center * rand(10, 46);
+    const lights = [];
+    for(let k=0;k<Math.floor(h/7);k++) if(Math.random() < .35) lights.push({ dx:rand(3,w-5), dy:rand(4,h-4) });
+    skyline.push({ x, w, h, lights });
+    x += w + rand(0, 4);
+  }
+
+  // palms at both edges
+  const ps = Math.min(W, H);
+  palms = [
+    { x:W*0.06, h:ps*0.42, lean:-0.18 },
+    { x:W*0.14, h:ps*0.30, lean:0.12 },
+    { x:W*0.92, h:ps*0.46, lean:0.2 },
+    { x:W*0.84, h:ps*0.28, lean:-0.1 }
   ];
-  let lineIndex = 0, charIndex = 0;
+}
 
-  function typeText() {
-    if(charIndex <= lines[lineIndex].length) {
-      heroSubtitle.textContent = lines[lineIndex].substring(0, charIndex);
-      charIndex++;
-      setTimeout(typeText, 70);
+const state = { dist:0, speed:0, target:1, steer:0, steerTarget:0, boost:false, lap:1, t:0 };
+
+function drawSky(){
+  const g = ctx.createLinearGradient(0, 0, 0, horizon);
+  g.addColorStop(0, C.night);
+  g.addColorStop(.38, C.midnight);
+  g.addColorStop(.66, C.dusk);
+  g.addColorStop(.88, C.twilight);
+  g.addColorStop(1, C.peach);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, horizon + 1);
+
+  const streak = Math.max(0, state.speed - 1.2) * 14;
+  for(const s of stars){
+    const a = .35 + .45 * Math.sin(state.t * s.s + s.p);
+    ctx.globalAlpha = Math.max(.1, a) * (1 - s.y / horizon);
+    ctx.fillStyle = '#fff';
+    if(streak > 1){
+      ctx.fillRect(s.x, s.y, s.r, s.r + streak * (s.y / horizon));
     } else {
-      setTimeout(() => {
-        charIndex = 0;
-        lineIndex = (lineIndex + 1) % lines.length;
-        typeText();
-      }, 2000);
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill();
     }
   }
-  window.onload = typeText;
+  ctx.globalAlpha = 1;
+}
 
-  // Fade in on scroll
-  const faders = document.querySelectorAll('.fade-in');
-  const observerOptions = { threshold: 0.1, rootMargin: "0px 0px -100px 0px" };
-  const fadeOnScroll = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        entry.target.classList.add('visible');
-        observer.unobserve(entry.target);
-      }
-    });
-  }, observerOptions);
-  faders.forEach(fader => fadeOnScroll.observe(fader));
+function drawSun(){
+  const r = Math.min(W, H) * (W < 700 ? 0.26 : 0.2);
+  const cx = W/2 - state.steer * 18;
+  const cy = horizon - r * 0.32;
+  // glow
+  const glow = ctx.createRadialGradient(cx, cy, r*0.6, cx, cy, r*2.1);
+  glow.addColorStop(0, 'rgba(255,92,168,.35)');
+  glow.addColorStop(1, 'rgba(255,92,168,0)');
+  ctx.fillStyle = glow;
+  ctx.fillRect(cx - r*2.2, cy - r*2.2, r*4.4, Math.min(r*4.4, horizon - (cy - r*2.2)));
 
-  // Nav active on scroll
-  const sections = Array.from(document.querySelectorAll('section[id]'));
-  const navLinks = document.querySelectorAll('nav a');
-  function setActiveNav() {
-    let scrollPos = window.scrollY + window.innerHeight / 3;
-    for(let section of sections){
-      if(scrollPos >= section.offsetTop){
-        navLinks.forEach(link => link.classList.remove('active'));
-        const active = document.querySelector(`nav a[href="#${section.id}"]`);
-        if(active) active.classList.add('active');
-      }
-    }
+  ctx.save();
+  ctx.beginPath(); ctx.rect(0, 0, W, horizon); ctx.clip();
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2); ctx.clip();
+  const g = ctx.createLinearGradient(0, cy - r, 0, cy + r);
+  g.addColorStop(0, C.peach);
+  g.addColorStop(.55, C.pink);
+  g.addColorStop(1, C.violet);
+  ctx.fillStyle = g;
+  // stripes cut into the lower half drift slowly upward
+  const top = cy - r, mid = cy - r * 0.05, bottom = cy + r;
+  ctx.fillRect(cx - r, top, r*2, mid - top);
+  const band = r * 0.16, drift = (state.t * 6) % band;
+  let y = mid;
+  let i = 0;
+  while(y < bottom){
+    const gap = Math.min(band * 0.7, 1.5 + i * 1.6 + (drift / band) * 1.6);
+    const h = band - gap;
+    ctx.fillRect(cx - r, y, r*2, Math.max(0, h));
+    y += band; i++;
   }
-  window.addEventListener('scroll', setActiveNav);
+  ctx.restore();
+}
 
-  // Contact form submission simulation
-  function handleSubmit(event) {
-    event.preventDefault();
-    const form = event.target;
-    const btn = form.querySelector('button');
-    btn.textContent = 'Sending...';
-    btn.disabled = true;
-    setTimeout(() => {
-      alert('Thank you for reaching out! I will get back to you soon.');
-      form.reset();
-      btn.textContent = 'Send Message';
-      btn.disabled = false;
-    }, 1500);
+function drawSkyline(){
+  ctx.fillStyle = '#231a44';
+  for(const b of skyline){
+    ctx.fillRect(b.x, horizon - b.h, b.w, b.h);
   }
+  ctx.fillStyle = 'rgba(255,176,124,.75)';
+  for(const b of skyline){
+    for(const l of b.lights) ctx.fillRect(b.x + l.dx, horizon - b.h + l.dy, 1.6, 1.6);
+  }
+}
+
+function drawPalm(p){
+  const baseY = horizon + 2;
+  const sway = Math.sin(state.t * 0.8 + p.x) * 0.02;
+  const topX = p.x + p.h * (p.lean + sway), topY = baseY - p.h;
+  ctx.strokeStyle = '#120d2b'; ctx.fillStyle = '#120d2b';
+  ctx.lineCap = 'round';
+  ctx.lineWidth = Math.max(3, p.h * 0.035);
+  ctx.beginPath();
+  ctx.moveTo(p.x, baseY);
+  ctx.quadraticCurveTo(p.x + p.h * p.lean * 0.2, baseY - p.h * 0.6, topX, topY);
+  ctx.stroke();
+  const len = p.h * 0.42;
+  for(let k=0;k<7;k++){
+    const a = -Math.PI/2 + (k - 3) * 0.48 + sway * 4;
+    const ex = topX + Math.cos(a) * len, ey = topY + Math.sin(a) * len * 0.55 + len * 0.28;
+    ctx.lineWidth = Math.max(2, p.h * 0.02);
+    ctx.beginPath();
+    ctx.moveTo(topX, topY);
+    ctx.quadraticCurveTo(topX + Math.cos(a) * len * 0.5, topY + Math.sin(a) * len * 0.5 - len * 0.12, ex, ey);
+    ctx.stroke();
+  }
+}
+
+function drawGround(){
+  const g = ctx.createLinearGradient(0, horizon, 0, H);
+  g.addColorStop(0, '#2a1640');
+  g.addColorStop(.25, '#140f33');
+  g.addColorStop(1, C.night);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, horizon, W, H - horizon);
+
+  const vx = W/2 - state.steer * 30, depth = H - horizon;
+  // horizontal grid lines coming toward the viewer
+  const phase = (state.dist * 0.6) % 1;
+  for(let i=0;i<26;i++){
+    const z = i + 1 - phase;
+    const y = horizon + depth * (1.2 / z);
+    if(y > H || y < horizon) continue;
+    const k = (y - horizon) / depth;
+    ctx.strokeStyle = `rgba(255,92,168,${(0.08 + k * 0.5).toFixed(3)})`;
+    ctx.lineWidth = 0.6 + k * 1.4;
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  }
+  // vertical grid lines converging at the vanishing point
+  const spread = W * 3.2;
+  for(let i=-18;i<=18;i++){
+    const bx = W/2 + (i / 18) * spread / 2;
+    ctx.strokeStyle = 'rgba(188,108,255,.22)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(vx, horizon); ctx.lineTo(bx, H); ctx.stroke();
+  }
+
+  // the road
+  const roadBottom = Math.max(W * 0.46, 300), roadTop = 6;
+  ctx.fillStyle = 'rgba(11,15,40,.88)';
+  ctx.beginPath();
+  ctx.moveTo(vx - roadTop, horizon); ctx.lineTo(vx + roadTop, horizon);
+  ctx.lineTo(W/2 + roadBottom/2, H); ctx.lineTo(W/2 - roadBottom/2, H);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = C.peach; ctx.lineWidth = 2;
+  ctx.shadowColor = C.pink; ctx.shadowBlur = 12;
+  ctx.beginPath(); ctx.moveTo(vx - roadTop, horizon); ctx.lineTo(W/2 - roadBottom/2, H); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(vx + roadTop, horizon); ctx.lineTo(W/2 + roadBottom/2, H); ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // centre dashes
+  ctx.fillStyle = 'rgba(245,240,250,.75)';
+  const dphase = (state.dist * 1.2) % 1;
+  for(let i=0;i<18;i++){
+    const z1 = i + 1 - dphase, z2 = z1 + 0.45;
+    const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
+    if(y1 > H + 40 || y2 < horizon) continue;
+    const k1 = (y1 - horizon) / depth, k2 = (y2 - horizon) / depth;
+    const x1 = vx + (W/2 - vx) * k1, x2 = vx + (W/2 - vx) * k2;
+    const w1 = 1 + k1 * 7, w2 = 1 + k2 * 7;
+    ctx.beginPath();
+    ctx.moveTo(x2 - w2/2, y2); ctx.lineTo(x2 + w2/2, y2);
+    ctx.lineTo(x1 + w1/2, y1); ctx.lineTo(x1 - w1/2, y1);
+    ctx.closePath(); ctx.fill();
+  }
+
+  // horizon line
+  ctx.fillStyle = C.pink;
+  ctx.globalAlpha = .9;
+  ctx.fillRect(0, horizon - 1, W, 2);
+  ctx.globalAlpha = 1;
+}
+
+function rr(x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+}
+
+function drawKart(){
+  const s = Math.min(W * (W < 700 ? 0.36 : 0.2), 190, H * 0.24);
+  const cx = W/2 + state.steer * W * 0.12;
+  const bob = Math.sin(state.t * (8 + state.speed * 6)) * (0.6 + state.speed * 0.6);
+  const by = H - s * 0.42 + bob;
+  ctx.save();
+  ctx.translate(cx, by);
+  ctx.rotate(state.steer * 0.06);
+
+  // shadow
+  ctx.fillStyle = 'rgba(0,0,0,.45)';
+  ctx.beginPath(); ctx.ellipse(0, s*0.3, s*0.62, s*0.07, 0, 0, Math.PI*2); ctx.fill();
+
+  // rear tyres
+  ctx.fillStyle = '#07080f';
+  rr(-s*0.62, -s*0.05, s*0.26, s*0.36, s*0.05); ctx.fill();
+  rr(s*0.36, -s*0.05, s*0.26, s*0.36, s*0.05); ctx.fill();
+  ctx.fillStyle = 'rgba(185,178,208,.25)';
+  ctx.fillRect(-s*0.6, s*0.02, s*0.22, s*0.02);
+  ctx.fillRect(s*0.38, s*0.02, s*0.22, s*0.02);
+
+  // axle and body
+  ctx.fillStyle = '#1d1838';
+  ctx.fillRect(-s*0.38, s*0.08, s*0.76, s*0.06);
+  ctx.fillStyle = '#16122d';
+  rr(-s*0.34, -s*0.14, s*0.68, s*0.24, s*0.06); ctx.fill();
+  // livery stripe
+  ctx.fillStyle = C.pink;
+  rr(-s*0.34, -s*0.06, s*0.68, s*0.05, s*0.02); ctx.fill();
+
+  // seat back and driver
+  ctx.fillStyle = '#0d0b1f';
+  rr(-s*0.13, -s*0.36, s*0.26, s*0.24, s*0.05); ctx.fill();
+  // helmet
+  const hg = ctx.createLinearGradient(0, -s*0.6, 0, -s*0.32);
+  hg.addColorStop(0, C.peach); hg.addColorStop(1, C.pink);
+  ctx.fillStyle = hg;
+  ctx.beginPath(); ctx.arc(0, -s*0.44, s*0.13, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = 'rgba(11,15,40,.7)';
+  ctx.fillRect(-s*0.13, -s*0.47, s*0.26, s*0.035);
+  // shoulders
+  ctx.fillStyle = '#2a2350';
+  rr(-s*0.17, -s*0.33, s*0.34, s*0.1, s*0.04); ctx.fill();
+
+  // rear bumper and tail lights
+  ctx.fillStyle = '#2b2550';
+  ctx.fillRect(-s*0.3, s*0.14, s*0.6, s*0.04);
+  const glowA = state.boost ? 1 : 0.75;
+  ctx.shadowColor = state.boost ? C.peach : C.pink;
+  ctx.shadowBlur = state.boost ? 28 : 16;
+  ctx.fillStyle = state.boost ? C.peach : C.pink;
+  ctx.globalAlpha = glowA;
+  rr(-s*0.28, -s*0.12, s*0.12, s*0.04, s*0.015); ctx.fill();
+  rr(s*0.16, -s*0.12, s*0.12, s*0.04, s*0.015); ctx.fill();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+
+  // boost exhaust
+  if(state.speed > 1.2){
+    const k = Math.min(1, (state.speed - 1.2) / 1.2);
+    ctx.fillStyle = `rgba(255,176,124,${(0.5 * k).toFixed(2)})`;
+    ctx.beginPath(); ctx.ellipse(0, s*0.24, s*0.06, s*(0.04 + 0.08 * k * (0.7 + Math.random()*0.3)), 0, 0, Math.PI*2); ctx.fill();
+  }
+  ctx.restore();
+}
+
+function frame(){
+  drawSky();
+  drawSun();
+  drawSkyline();
+  for(const p of palms) drawPalm(p);
+  drawGround();
+  drawKart();
+}
+
+let last = 0, running = true;
+function loop(now){
+  if(!running) return;
+  const dt = Math.min(0.05, (now - (last || now)) / 1000);
+  last = now;
+  state.t += dt;
+  state.target = state.boost ? 2.6 : 1;
+  state.speed += (state.target - state.speed) * Math.min(1, dt * (state.boost ? 1.6 : 1.1));
+  state.steer += (state.steerTarget - state.steer) * Math.min(1, dt * 3);
+  state.dist += state.speed * dt;
+  const lap = 1 + Math.floor(state.dist / 40);
+  if(lap !== state.lap){ state.lap = lap; hudLap.textContent = lap; }
+  hudSpeed.textContent = Math.round(state.speed * 46);
+  hudEl.classList.toggle('boost', state.boost);
+  frame();
+  requestAnimationFrame(loop);
+}
+
+layout();
+if(reduceMotion){
+  state.speed = 1; frame(); hudSpeed.textContent = 46;
+  window.addEventListener('resize', ()=>{ layout(); frame(); });
+} else {
+  requestAnimationFrame(loop);
+  let rt;
+  window.addEventListener('resize', ()=>{ clearTimeout(rt); rt = setTimeout(layout, 120); });
+  document.addEventListener('visibilitychange', ()=>{
+    running = !document.hidden;
+    if(running){ last = 0; requestAnimationFrame(loop); }
+  });
+
+  // steering follows the pointer
+  window.addEventListener('pointermove', e=>{
+    state.steerTarget = Math.max(-1, Math.min(1, (e.clientX / W) * 2 - 1));
+  }, { passive:true });
+
+  // hold anywhere that isn't a link or button to boost
+  const interactive = el => el.closest && el.closest('a,button,input,textarea,.email');
+  window.addEventListener('pointerdown', e=>{ if(!interactive(e.target)) state.boost = true; });
+  ['pointerup','pointercancel','blur'].forEach(ev=>window.addEventListener(ev, ()=>{ state.boost = false; }));
+  window.addEventListener('keydown', e=>{
+    if(e.code === 'Space' && !interactive(document.activeElement)){ e.preventDefault(); state.boost = true; }
+    if(e.code === 'ArrowLeft') state.steerTarget = Math.max(-1, state.steerTarget - 0.25);
+    if(e.code === 'ArrowRight') state.steerTarget = Math.min(1, state.steerTarget + 0.25);
+  });
+  window.addEventListener('keyup', e=>{ if(e.code === 'Space') state.boost = false; });
+}
+})();
 </script>
 </body>
 </html>
