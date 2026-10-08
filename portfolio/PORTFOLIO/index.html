@@ -92,16 +92,48 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 .hud-speed small{font-size:.7rem;color:var(--muted);letter-spacing:.1em;margin-left:4px;}
 .hud-hint{font-size:.66rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
 .hud.boost .hud-speed{color:var(--peach);}
+/* the boost pedal: centred under the kart, angled like a race decal,
+   iridescent with a sheen that sweeps across it, and a fill that charges as you hold */
 .hud-boost{
-  pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;
-  margin-top:8px;min-height:32px;padding:6px 14px;border-radius:999px;
-  font-family:var(--f-mono);font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--lilac);border:1px solid rgba(185,178,208,.3);background:rgba(11,15,40,.45);
-  transition:color .2s var(--ease),border-color .2s var(--ease),background .2s var(--ease);
+  position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:4;
+  transform:translateX(-50%) skewX(-12deg);
+  pointer-events:auto;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  min-width:172px;min-height:54px;padding:0 26px;border-radius:12px;overflow:hidden;isolation:isolate;
+  font-family:var(--f-mono);font-size:.82rem;font-weight:700;letter-spacing:.3em;text-transform:uppercase;color:#120b26;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,.08) 46%, rgba(0,0,0,.12) 54%, rgba(255,255,255,.18)),
+    linear-gradient(115deg, #ffb07c 0%, #ff5ca8 34%, #bc6cff 68%, #7ad7ff 100%);
+  background-size:100% 100%, 220% 100%;
+  border:1px solid rgba(255,255,255,.55);
+  box-shadow:0 0 0 1px rgba(11,15,40,.6), 0 10px 30px rgba(255,92,168,.45), 0 0 46px rgba(188,108,255,.35), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -3px 8px rgba(18,11,38,.35);
+  animation:boostHue 6s linear infinite;
+  transition:transform .12s var(--ease), box-shadow .2s var(--ease);
 }
-.hud-boost:hover{color:var(--text);border-color:rgba(255,92,168,.5);}
-.hud.boost .hud-boost{color:var(--peach);border-color:rgba(255,176,124,.6);background:linear-gradient(90deg, rgba(255,176,124,.32) var(--charge,0%), rgba(255,176,124,.06) var(--charge,0%));}
-@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{position:fixed;right:var(--gutter);bottom:calc(18px + env(safe-area-inset-bottom,0px));min-height:48px;min-width:104px;padding:10px 18px;font-size:.68rem;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);}}
+.hud-boost > span{display:inline-block;transform:skewX(12deg);position:relative;z-index:2;}
+.hud-boost .chev{letter-spacing:-.1em;opacity:.75;}
+/* charge fill */
+.hud-boost::before{
+  content:'';position:absolute;inset:0;z-index:1;width:var(--charge,0%);
+  background:linear-gradient(90deg, rgba(255,255,255,.15), rgba(255,255,255,.55));
+  mix-blend-mode:overlay;transition:width .1s linear;
+}
+/* sheen */
+.hud-boost::after{
+  content:'';position:absolute;top:-20%;bottom:-20%;left:-60%;width:40%;z-index:1;
+  background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.85), rgba(255,255,255,0));
+  transform:skewX(-20deg);animation:boostSheen 2.8s var(--ease) infinite;
+}
+@keyframes boostSheen{0%,55%{left:-60%;}100%{left:130%;}}
+@keyframes boostHue{to{background-position:0 0, 220% 0;}}
+.hud-boost:hover{box-shadow:0 0 0 1px rgba(11,15,40,.6), 0 12px 36px rgba(255,92,168,.6), 0 0 60px rgba(188,108,255,.5), inset 0 1px 0 rgba(255,255,255,.8), inset 0 -3px 8px rgba(18,11,38,.35);}
+.hud.boost .hud-boost{
+  transform:translateX(-50%) skewX(-12deg) scale(.96);
+  box-shadow:0 0 0 1px rgba(11,15,40,.6), 0 6px 40px rgba(255,176,124,.75), 0 0 80px rgba(255,92,168,.6), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -3px 8px rgba(18,11,38,.35);
+}
+.hud.boost .hud-boost::after{animation-duration:.7s;}
+@media (max-width:700px){.hud{top:84px;}.hud-speed{font-size:1.3rem;}.hud-boost{min-width:164px;min-height:56px;}}
+@media (prefers-reduced-motion:reduce){.hud-boost,.hud-boost::after{animation:none;}}
 .hud.faded .hud-boost{pointer-events:none;}
 /* ===== TIME WARP ===== */
 .warp-msg{
@@ -371,8 +403,8 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 <div class="hud" id="hud" aria-hidden="true">
   <div class="hud-row"><span class="hud-world" id="hudWorld"></span><span><b>P1</b></span><span>LAP <b id="hudLap">1</b></span></div>
   <div class="hud-speed"><span id="hudSpeed">0</span><small>KM/H</small></div>
-  <button class="hud-boost" id="boostBtn" type="button" tabindex="-1">boost</button>
-  <div class="hud-hint" id="hudHint">hold it, or hold space</div>
+  <button class="hud-boost" id="boostBtn" type="button" tabindex="-1"><span>boost</span><span class="chev" aria-hidden="true">&#8250;&#8250;&#8250;</span></button>
+  <div class="hud-hint" id="hudHint">hold boost or space</div>
   <div class="warp-msg" id="warpMsg"><span id="warpLabel">entering time warp</span><b id="warpCount">3</b></div>
 </div>
 
@@ -409,7 +441,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
         <a href="https://github.com/pavitara30" class="btn btn-ghost" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github</a>
         <a href="https://www.linkedin.com/in/pavitara-s-715458290/" class="btn btn-ghost" target="_blank" rel="noopener"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M0 1.15C0 .52.53 0 1.18 0h13.64C15.47 0 16 .52 16 1.15v13.7c0 .63-.53 1.15-1.18 1.15H1.18C.53 16 0 15.48 0 14.85V1.15zM4.94 13.4V6.2H2.56v7.2h2.38zM3.75 5.2c.83 0 1.35-.55 1.35-1.24-.02-.7-.52-1.24-1.33-1.24-.82 0-1.35.54-1.35 1.24 0 .69.52 1.24 1.32 1.24h.01zM8.68 13.4V9.38c0-.22.02-.43.08-.58.17-.43.56-.88 1.22-.88.86 0 1.2.66 1.2 1.62v3.86h2.38V9.27c0-2.21-1.18-3.24-2.75-3.24-1.27 0-1.84.7-2.16 1.19V6.2H6.3c.03.68 0 7.2 0 7.2h2.38z"/></svg>linkedin</a>
       </div>
-      <div class="lights"><i></i><i></i><i></i> lights out. scroll to start.</div>
+      <div class="lights"><i></i><i></i><i></i> lights out. scroll.</div>
     </div>
   </header>
 
@@ -1204,7 +1236,7 @@ const kart3d = (function(){
     flame.scale.set(1, 0.5 + boostK * (0.9 + Math.random() * 0.6), 1);
     renderer.render(scene, camera);
     // slide across the road with the steer, then follow the camera
-    const [px, py] = camPoint(W/2 + state.steer * W * 0.09, H * 0.99 - ch / 2);
+    const [px, py] = camPoint(W/2 + state.steer * W * 0.09, H - (W < 700 ? 74 : 64) - ch / 2);
     el.style.transform = `translate3d(${(px - cw/2).toFixed(1)}px, ${(py - ch/2).toFixed(1)}px, 0) rotate(${cam.roll.toFixed(4)}rad) scale(${cam.zoom.toFixed(4)})`;
   }
 
