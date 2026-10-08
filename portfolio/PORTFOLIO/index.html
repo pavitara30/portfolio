@@ -720,7 +720,7 @@ function drawSky(){
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, W, horizon + 1);
 
-  const streak = Math.max(0, state.speed - 1.2) * 14;
+  const streak = Math.max(0, state.speed - 1.4) * 9;
   for(const s of stars){
     const a = .35 + .45 * Math.sin(state.t * s.s + s.p);
     ctx.globalAlpha = Math.max(.1, a) * (1 - s.y / horizon);
@@ -812,7 +812,7 @@ function drawGround(){
 
   const vx = W/2 - state.steer * 30, depth = H - horizon;
   // horizontal grid lines coming toward the viewer
-  const phase = (state.dist * 0.6) % 1;
+  const phase = (state.dist * 0.9) % 1;
   for(let i=0;i<26;i++){
     const z = i + 1 - phase;
     const y = horizon + depth * (1.2 / z);
@@ -844,9 +844,27 @@ function drawGround(){
   ctx.beginPath(); ctx.moveTo(vx + roadTop, horizon); ctx.lineTo(W/2 + roadBottom/2, H); ctx.stroke();
   ctx.shadowBlur = 0;
 
+  // red-and-white style kerbs on both edges, in pink, rushing past
+  const kphase = (state.dist * 1.6) % 1;
+  const lTop = vx - roadTop, rTop = vx + roadTop, lBot = W/2 - roadBottom/2, rBot = W/2 + roadBottom/2;
+  ctx.fillStyle = 'rgba(255,92,168,.85)';
+  for(let i=0;i<40;i++){
+    const z1 = (i + 1 - kphase) * 0.5, z2 = z1 + 0.25;
+    if(z1 < 0.3) continue;
+    const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
+    if(y2 > H || y1 < horizon) continue;
+    const yb = Math.min(H, y1);
+    const k1 = (yb - horizon) / depth, k2 = (y2 - horizon) / depth;
+    const w1 = 1 + k1 * 16, w2 = 1 + k2 * 16;
+    const l1 = lTop + (lBot - lTop) * k1, l2 = lTop + (lBot - lTop) * k2;
+    const r1 = rTop + (rBot - rTop) * k1, r2 = rTop + (rBot - rTop) * k2;
+    ctx.beginPath(); ctx.moveTo(l2 - w2, y2); ctx.lineTo(l2, y2); ctx.lineTo(l1, yb); ctx.lineTo(l1 - w1, yb); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(r2, y2); ctx.lineTo(r2 + w2, y2); ctx.lineTo(r1 + w1, yb); ctx.lineTo(r1, yb); ctx.closePath(); ctx.fill();
+  }
+
   // centre dashes
   ctx.fillStyle = 'rgba(245,240,250,.75)';
-  const dphase = (state.dist * 1.2) % 1;
+  const dphase = (state.dist * 1.6) % 1;
   for(let i=0;i<18;i++){
     const z1 = i + 1 - dphase, z2 = z1 + 0.45;
     const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
@@ -931,8 +949,8 @@ function drawKart(){
   ctx.shadowBlur = 0;
 
   // boost exhaust
-  if(state.speed > 1.2){
-    const k = Math.min(1, (state.speed - 1.2) / 1.2);
+  if(state.speed > 1.3){
+    const k = Math.min(1, (state.speed - 1.3) / 2);
     ctx.fillStyle = `rgba(255,176,124,${(0.5 * k).toFixed(2)})`;
     ctx.beginPath(); ctx.ellipse(0, s*0.24, s*0.06, s*(0.04 + 0.08 * k * (0.7 + Math.random()*0.3)), 0, 0, Math.PI*2); ctx.fill();
   }
@@ -954,8 +972,8 @@ const kart3d = (function(){
 
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(26, 4/3, 0.1, 50);
-  camera.position.set(0, 1.45, 5.8);
-  camera.lookAt(0, 0.36, 0);
+  camera.position.set(0, 1.75, 5.6);
+  camera.lookAt(0, 0.32, 0);
 
   // violet sky above, near-black road below, peach sun ahead, a faint fill from behind
   scene.add(new T.HemisphereLight(0x8a6cc8, 0x0b0f28, 0.55));
@@ -963,51 +981,98 @@ const kart3d = (function(){
   const rim = new T.DirectionalLight(0xff5ca8, 0.7); rim.position.set(-4, 1.2, -3); scene.add(rim);
   const fill = new T.DirectionalLight(0xb9b2d0, 0.28); fill.position.set(2, 3, 5); scene.add(fill);
 
-  const mat = (color, o) => new T.MeshStandardMaterial(Object.assign({ color, roughness:0.75, metalness:0.15, flatShading:true }, o || {}));
-  const body = mat(0x1a1636), dark = mat(0x0c0b1c), trim = mat(0x2b2550);
-  const pink = mat(0xff5ca8, { roughness:0.5, emissive:0x3a0f26 });
-  const tyre = mat(0x07070d, { roughness:0.95, metalness:0 });
-  const hub = mat(0x8c84aa, { metalness:0.6, roughness:0.4 });
+  const std = (color, o) => new T.MeshStandardMaterial(Object.assign({ color, roughness:0.6, metalness:0.1 }, o || {}));
+  const gloss = (color, o) => new T.MeshPhysicalMaterial(Object.assign({ color, roughness:0.35, metalness:0.1, clearcoat:1, clearcoatRoughness:0.25 }, o || {}));
+  const body = gloss(0x1c1838), pink = gloss(0xff5ca8, { emissive:0x2a0718 });
+  const suit = std(0x231d45, { roughness:0.8 }), dark = std(0x0b0a17, { roughness:0.7 });
+  const steel = std(0x8c84aa, { metalness:0.85, roughness:0.3 }), tube = std(0x2c2748, { metalness:0.6, roughness:0.4 });
+  const rubber = std(0x08080e, { roughness:0.92, metalness:0 }), rimMat = std(0xb9b2d0, { metalness:0.8, roughness:0.3 });
   const tail = new T.MeshBasicMaterial({ color:0xff5ca8 });
 
   const kart = new T.Group();
-  const box = (w, h, d, m, x, y, z) => { const b = new T.Mesh(new T.BoxGeometry(w, h, d), m); b.position.set(x, y, z); kart.add(b); return b; };
+  const add = (geo, m, x, y, z, rx, ry, rz) => { const o = new T.Mesh(geo, m); o.position.set(x, y, z); o.rotation.set(rx||0, ry||0, rz||0); kart.add(o); return o; };
 
-  // chassis, nose and side pods
-  box(0.9, 0.08, 1.9, dark, 0, 0.16, 0);
-  const nose = box(0.7, 0.16, 0.5, body, 0, 0.26, -0.82); nose.rotation.x = 0.18;
-  box(0.86, 0.06, 0.12, pink, 0, 0.2, -1.04);
-  box(0.22, 0.16, 0.8, body, -0.55, 0.24, 0.05);
-  box(0.22, 0.16, 0.8, body, 0.55, 0.24, 0.05);
-  box(0.03, 0.05, 0.76, pink, -0.665, 0.27, 0.05);
-  box(0.03, 0.05, 0.76, pink, 0.665, 0.27, 0.05);
-  // seat, engine and rear bumper
-  const seat = box(0.4, 0.3, 0.12, dark, 0, 0.36, 0.46); seat.rotation.x = -0.25;
-  box(0.36, 0.22, 0.3, trim, 0.32, 0.32, 0.72);
-  box(1.12, 0.07, 0.07, trim, 0, 0.22, 1.0);
-  const lightL = box(0.14, 0.05, 0.03, tail, -0.36, 0.27, 1.04);
-  const lightR = box(0.14, 0.05, 0.03, tail, 0.36, 0.27, 1.04);
-  // driver: shoulders, then a pink helmet with a dark visor band
-  box(0.46, 0.2, 0.26, trim, 0, 0.62, 0.3);
-  const helmet = new T.Mesh(new T.SphereGeometry(0.17, 14, 10), pink); helmet.position.set(0, 0.86, 0.26); kart.add(helmet);
-  const visor = new T.Mesh(new T.BoxGeometry(0.3, 0.06, 0.16), dark); visor.position.set(0, 0.86, 0.14); kart.add(visor);
+  // a box with rounded edges, built from an extruded rounded rectangle (w across, h up, d along)
+  function rbox(w, h, d, r){
+    const s = new T.Shape(), x = -w/2, y = -h/2, rr = Math.min(r, w/2, h/2);
+    s.moveTo(x + rr, y); s.lineTo(x + w - rr, y); s.quadraticCurveTo(x + w, y, x + w, y + rr);
+    s.lineTo(x + w, y + h - rr); s.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
+    s.lineTo(x + rr, y + h); s.quadraticCurveTo(x, y + h, x, y + h - rr);
+    s.lineTo(x, y + rr); s.quadraticCurveTo(x, y, x + rr, y);
+    const b = Math.min(r * 0.6, d * 0.3);
+    const g = new T.ExtrudeGeometry(s, { depth:Math.max(0.001, d - b*2), bevelEnabled:true, bevelSize:b, bevelThickness:b, bevelSegments:3, curveSegments:6 });
+    g.translate(0, 0, -(d - b*2)/2);
+    return g;
+  }
+  // a bent tube through a list of points
+  const bar = (pts, r, m) => { const c = new T.CatmullRomCurve3(pts.map(p => new T.Vector3(p[0], p[1], p[2]))); const o = new T.Mesh(new T.TubeGeometry(c, 24, r, 8, false), m); kart.add(o); return o; };
 
-  // wheels: fat at the back, narrower at the front
+  // floor tray and the frame rails
+  add(rbox(0.86, 0.04, 1.62, 0.02), dark, 0, 0.11, 0.02);
+  bar([[-0.36,0.13,-0.78],[-0.4,0.13,0],[-0.38,0.13,0.82]], 0.025, tube);
+  bar([[0.36,0.13,-0.78],[0.4,0.13,0],[0.38,0.13,0.82]], 0.025, tube);
+
+  // front nose fairing, sloping down, with a pink lip
+  add(rbox(0.82, 0.13, 0.46, 0.06), body, 0, 0.22, -0.86, 0.16);
+  add(rbox(0.84, 0.035, 0.08, 0.015), pink, 0, 0.17, -1.1);
+  add(rbox(0.3, 0.16, 0.34, 0.06), body, 0, 0.27, -0.56, 0.32);           // front panel up to the wheel
+  // side pods with a pink stripe
+  for(const sx of [-1, 1]){
+    add(rbox(0.2, 0.15, 0.7, 0.06), body, sx * 0.52, 0.21, 0.04);
+    add(rbox(0.012, 0.035, 0.62, 0.006), pink, sx * 0.625, 0.25, 0.04);
+  }
+  // rear bumper hoop and axle
+  bar([[-0.6,0.2,0.98],[-0.3,0.24,1.06],[0.3,0.24,1.06],[0.6,0.2,0.98]], 0.03, tube);
+  add(new T.CylinderGeometry(0.025, 0.025, 1.2, 10), steel, 0, 0.19, 0.7, 0, 0, Math.PI/2);
+  add(rbox(0.12, 0.035, 0.02, 0.012), tail, -0.3, 0.25, 1.09);
+  add(rbox(0.12, 0.035, 0.02, 0.012), tail, 0.3, 0.25, 1.09);
+
+  // engine on the right, with an exhaust pipe running back
+  add(rbox(0.26, 0.24, 0.3, 0.05), tube, 0.3, 0.32, 0.66);
+  add(rbox(0.2, 0.06, 0.24, 0.02), steel, 0.3, 0.46, 0.66);
+  bar([[0.36,0.3,0.8],[0.38,0.3,0.92],[0.34,0.33,1.04]], 0.03, steel);
+
+  // seat, wrapped around the driver
+  add(rbox(0.42, 0.34, 0.08, 0.06), dark, 0, 0.36, 0.48, -0.32);
+  add(rbox(0.4, 0.06, 0.34, 0.03), dark, 0, 0.17, 0.32);
+
+  // driver: suit, shoulders, arms to the wheel, helmet
+  add(new T.CylinderGeometry(0.16, 0.19, 0.38, 16), suit, 0, 0.42, 0.34, -0.28);
+  add(new T.CylinderGeometry(0.168, 0.168, 0.05, 16), pink, 0, 0.5, 0.37, -0.28);        // pink band on the suit
+  add(new T.SphereGeometry(0.2, 16, 10, 0, Math.PI*2, 0, Math.PI/2), suit, 0, 0.58, 0.39, -0.28).scale.set(1.15, 0.5, 0.8);
+  add(new T.CylinderGeometry(0.06, 0.06, 0.08, 12), dark, 0, 0.66, 0.36);               // neck
+  for(const sx of [-1, 1]) bar([[sx*0.2,0.56,0.36],[sx*0.22,0.44,0.06],[sx*0.13,0.42,-0.2]], 0.045, suit);
+  add(new T.TorusGeometry(0.13, 0.018, 8, 24), dark, 0, 0.42, -0.24, -1.1);              // steering wheel
+  const helmet = add(new T.SphereGeometry(0.155, 24, 18), pink, 0, 0.8, 0.34);
+  helmet.scale.set(1, 1.04, 1.1);
+  add(new T.TorusGeometry(0.157, 0.012, 6, 32), rimMat, 0, 0.8, 0.34, 0, Math.PI/2);   // helmet stripe, front to back
+
+  // wheels: fat slicks at the back, narrower at the front, with metal rims
   const wheels = [], fronts = [];
   function wheel(x, z, r, w, front){
     const pivot = new T.Group(); pivot.position.set(x, r, z);
     const spin = new T.Group(); pivot.add(spin);
-    const t = new T.Mesh(new T.CylinderGeometry(r, r, w, 16), tyre); t.rotation.z = Math.PI/2; spin.add(t);
-    const h = new T.Mesh(new T.CylinderGeometry(r*0.45, r*0.45, w + 0.01, 6), hub); h.rotation.z = Math.PI/2; spin.add(h);
+    const t = new T.Mesh(new T.CylinderGeometry(r, r, w, 28), rubber); t.rotation.z = Math.PI/2; spin.add(t);
+    for(const s of [-1, 1]){
+      const wall = new T.Mesh(new T.TorusGeometry(r - 0.02, 0.022, 8, 28), rubber); wall.rotation.y = Math.PI/2; wall.position.x = s * w/2; spin.add(wall);
+    }
+    const rim = new T.Mesh(new T.CylinderGeometry(r*0.6, r*0.6, w + 0.012, 18), rimMat); rim.rotation.z = Math.PI/2; spin.add(rim);
+    for(let k=0;k<5;k++){
+      const spoke = new T.Mesh(new T.BoxGeometry(w + 0.02, r*0.1, r*0.5), dark);
+      spoke.rotation.x = k * Math.PI * 2 / 5; spin.add(spoke);
+    }
     kart.add(pivot); wheels.push(spin); if(front) fronts.push(pivot);
   }
-  wheel(-0.62, -0.62, 0.15, 0.16, true); wheel(0.62, -0.62, 0.15, 0.16, true);
-  wheel(-0.64, 0.68, 0.18, 0.26, false); wheel(0.64, 0.68, 0.18, 0.26, false);
+  wheel(-0.6, -0.6, 0.14, 0.15, true); wheel(0.6, -0.6, 0.14, 0.15, true);
+  wheel(-0.64, 0.7, 0.18, 0.26, false); wheel(0.64, 0.7, 0.18, 0.26, false);
 
-  // exhaust flame, only visible on boost
-  const flameMat = new T.MeshBasicMaterial({ color:0xffb07c, transparent:true, opacity:0, blending:T.AdditiveBlending, depthWrite:false });
-  const flame = new T.Mesh(new T.ConeGeometry(0.07, 0.5, 10), flameMat);
-  flame.rotation.x = Math.PI/2; flame.position.set(0.32, 0.3, 1.1); kart.add(flame);
+  // exhaust flame at the end of the pipe, only visible on boost
+  const flameMat = new T.MeshBasicMaterial({ color:0xff7aa8, transparent:true, opacity:0, blending:T.AdditiveBlending, depthWrite:false });
+  const flame = new T.Mesh(new T.ConeGeometry(0.05, 0.36, 12), flameMat);
+  flame.geometry.translate(0, 0.18, 0);
+  flame.rotation.x = Math.PI/2; flame.position.set(0.34, 0.33, 1.06); kart.add(flame);
+  const flameCore = new T.Mesh(new T.ConeGeometry(0.025, 0.2, 10), new T.MeshBasicMaterial({ color:0xffd2b0, transparent:true, opacity:0, blending:T.AdditiveBlending, depthWrite:false }));
+  flameCore.geometry.translate(0, 0.1, 0); flame.add(flameCore);
 
   // soft shadow under the kart
   const sc = document.createElement('canvas'); sc.width = sc.height = 64;
@@ -1030,7 +1095,7 @@ const kart3d = (function(){
   }
 
   function render(dt){
-    const boostK = Math.max(0, Math.min(1, (state.speed - 1.1) / 1.4));
+    const boostK = Math.max(0, Math.min(1, (state.speed - 1.1) / 2));
     spin -= state.speed * dt * 14;
     wheels.forEach(w => { w.rotation.x = spin; });
     fronts.forEach(f => { f.rotation.y = -state.steer * 0.45; });
@@ -1038,11 +1103,13 @@ const kart3d = (function(){
     const accel = dt > 0 ? (state.speed - lastSpeed) / dt : 0; lastSpeed = state.speed;
     pitch += (Math.max(-0.06, Math.min(0.06, accel * 0.05)) - pitch) * Math.min(1, dt * 6);
     kart.rotation.set(-pitch, -state.steer * 0.32, state.steer * 0.06);
-    kart.position.y = Math.abs(Math.sin(state.t * (9 + state.speed * 5))) * 0.012 * state.speed;
+    kart.position.y = Math.abs(Math.sin(state.t * (9 + state.speed * 6))) * 0.01 * state.speed;
+    kart.position.x = Math.sin(state.t * 47) * 0.006 * Math.max(0, state.speed - 1.5);
     shadow.rotation.z = kart.rotation.y;
     tail.color.setHex(state.boost ? 0xffb07c : 0xff5ca8);
-    flameMat.opacity = boostK * (0.55 + Math.random() * 0.35);
-    flame.scale.set(1, 0.6 + boostK * (0.8 + Math.random() * 0.5), 1);
+    flameMat.opacity = boostK * (0.45 + Math.random() * 0.3);
+    flameCore.material.opacity = boostK * 0.9;
+    flame.scale.set(1, 0.5 + boostK * (0.9 + Math.random() * 0.6), 1);
     renderer.render(scene, camera);
     // slide across the road with the steer
     const x = W/2 - cw/2 + state.steer * W * 0.09;
@@ -1054,19 +1121,19 @@ const kart3d = (function(){
 
 // speed streaks along the road edges while boosting
 function drawStreaks(){
-  const k = Math.max(0, Math.min(1, (state.speed - 1.3) / 1.2));
+  const k = Math.max(0, Math.min(1, (state.speed - 1.3) / 2.2));
   if(k <= 0) return;
   const vx = W/2 - state.steer * 30, depth = H - horizon;
   ctx.lineCap = 'round';
-  for(let i=0;i<14;i++){
+  for(let i=0;i<22;i++){
     const side = i % 2 ? 1 : -1;
-    const ph = ((state.dist * 2.4 + i * 0.37) % 1);
+    const ph = ((state.dist * 1.8 + i * 0.37) % 1);
     const z1 = 1 + ph * 7, z2 = z1 + 0.6 + k * 1.2;
     const y1 = horizon + depth * (1.2 / z1), y2 = horizon + depth * (1.2 / z2);
     const off = (0.62 + (i % 5) * 0.09) * side;
     const x1 = vx + (W/2 + off * W * 0.5 - vx) * ((y1 - horizon) / depth);
     const x2 = vx + (W/2 + off * W * 0.5 - vx) * ((y2 - horizon) / depth);
-    ctx.strokeStyle = `rgba(255,176,124,${(0.35 * k).toFixed(3)})`;
+    ctx.strokeStyle = `rgba(255,176,124,${(0.5 * k).toFixed(3)})`;
     ctx.lineWidth = 1 + 2 * ((y1 - horizon) / depth);
     ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x1, y1); ctx.stroke();
   }
@@ -1088,13 +1155,13 @@ function loop(now){
   const dt = Math.min(0.05, (now - (last || now)) / 1000);
   last = now;
   state.t += dt;
-  state.target = state.boost ? 2.6 : 1;
-  state.speed += (state.target - state.speed) * Math.min(1, dt * (state.boost ? 1.6 : 1.1));
+  state.target = state.boost ? 4 : 1;
+  state.speed += (state.target - state.speed) * Math.min(1, dt * (state.boost ? 2.4 : 1.4));
   state.steer += (state.steerTarget - state.steer) * Math.min(1, dt * 3);
   state.dist += state.speed * dt;
   const lap = 1 + Math.floor(state.dist / 40);
   if(lap !== state.lap){ state.lap = lap; hudLap.textContent = lap; }
-  hudSpeed.textContent = Math.round(state.speed * 46);
+  hudSpeed.textContent = Math.round(state.speed * 42);
   hudEl.classList.toggle('boost', state.boost);
   frame(dt);
   requestAnimationFrame(loop);
@@ -1104,7 +1171,7 @@ const baseLayout = layout;
 layout = function(){ baseLayout(); if(kart3d) kart3d.size(); };
 layout();
 if(reduceMotion){
-  state.speed = 1; frame(); hudSpeed.textContent = 46;
+  state.speed = 1; frame(); hudSpeed.textContent = 42;
   window.addEventListener('resize', ()=>{ layout(); frame(); });
 } else {
   requestAnimationFrame(loop);
