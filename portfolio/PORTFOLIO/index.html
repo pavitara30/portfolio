@@ -444,8 +444,8 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
     <ul class="nav-links">
       <li><a href="#work" data-nav="work">work</a></li>
       <li><a href="#track" data-nav="track">on track</a></li>
-      <li><a href="#now" data-nav="now">now</a></li>
-      <li><a href="#off-track" data-nav="off-track">off track</a></li>
+      <li><a href="#now" data-nav="now">experience</a></li>
+      <li><a href="#off-track" data-nav="off-track">leadership</a></li>
       <li><a href="#contact">contact</a></li>
     </ul>
     <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
@@ -455,8 +455,8 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
   <div class="mobile-menu" id="mobileMenu">
     <a href="#work">work</a>
     <a href="#track">on track</a>
-    <a href="#now">now</a>
-    <a href="#off-track">off track</a>
+    <a href="#now">experience</a>
+    <a href="#off-track">leadership</a>
     <a href="#contact">contact</a>
   </div>
 
@@ -477,10 +477,10 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 
   <div class="container">
     <div class="podium" aria-label="Highlights">
-      <div><b><span>P1</span></b><p>Female Endurance, FKRC Season 6</p></div>
-      <div><b>1<span>st</span></b><p>Anna University Startup Pitch</p></div>
-      <div><b>Paris</b><p>ICAM student exchange, IoT hovercraft</p></div>
-      <div><b>Diwali</b><p>LICET's first, as Enunciate president</p></div>
+      <div><b>SDE</b><p>Software Development Engineer Intern, Renault Group</p></div>
+      <div><b>1<span>st</span></b><p>Anna University Startup Pitch, Entwined Edit</p></div>
+      <div><b>P1</b><p>Female Endurance Race, FKRC 2026</p></div>
+      <div><b>8.0</b><p>CGPA, B.E. Computer Science, LICET</p></div>
     </div>
   </div>
 
@@ -528,6 +528,25 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
 
         <article class="build">
           <div class="build-side">
+            <div class="build-tag">for the team</div>
+            <div class="build-result">0.15 s<small>lap times, from just a phone on the kart</small></div>
+          </div>
+          <div class="build-main">
+            <h3>PocketPitStop</h3>
+            <p class="build-hook">Go-kart telemetry from the phone already in your pocket. Upload a session log and get your g-forces, a track map and lap times.</p>
+            <dl class="notes">
+              <dt>The idea</dt><dd>Real kart telemetry kits are expensive. Every phone already has an accelerometer, a gyroscope and GPS.</dd>
+              <dt>How it works</dt><dd>A 100 Hz sensor-fusion pipeline cleans the data with Butterworth and Kalman filters. Python runs right in the browser through Pyodide, so there's nothing to install.</dd>
+              <dt>How it went</dt><dd>On simulated sessions, lap times came <strong>within 0.15 s</strong>. It also breaks down braking and cornering.</dd>
+            </dl>
+            <p class="stack">Python · NumPy · SciPy · pandas · Pyodide · Kalman filtering</p>
+            <a class="build-link" href="https://pocketpitstop.vercel.app" target="_blank" rel="noopener" style="margin-right:22px;">live →</a>
+            <a class="build-link" href="https://github.com/pavitara30/PocketPitStop" target="_blank" rel="noopener">code →</a>
+          </div>
+        </article>
+
+        <article class="build">
+          <div class="build-side">
             <div class="build-tag">software</div>
             <div class="build-result">OTP<small>email login, booking and confirmations</small></div>
           </div>
@@ -541,23 +560,6 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
             </dl>
             <p class="stack">Java · MySQL · OOSE · Software Testing</p>
             <a class="build-link" href="https://github.com/pavitara30/Airline-Reservation" target="_blank" rel="noopener">code →</a>
-          </div>
-        </article>
-
-        <article class="build">
-          <div class="build-side">
-            <div class="build-tag">for the team</div>
-            <div class="build-result">auto<small>no more counting laps by hand</small></div>
-          </div>
-          <div class="build-main">
-            <h3>Automated Lap Counter</h3>
-            <p class="build-hook">An IR-sensor lap counting system for Team Turbonites' EV go-kart.</p>
-            <dl class="notes">
-              <dt>The idea</dt><dd>Practice sessions need accurate lap counts, and people with clipboards miss things.</dd>
-              <dt>What I did</dt><dd>Built the counter with an IR sensor and Arduino, and worked on the kart's motor controller integration.</dd>
-              <dt>How it went</dt><dd>Laps <strong>counted automatically</strong> while the team focused on driving.</dd>
-            </dl>
-            <p class="stack">Arduino · IR sensor · Embedded C</p>
           </div>
         </article>
       </div>
@@ -610,13 +612,13 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
   <section class="section" id="now" style="padding-top:40px;">
     <div class="container">
       <div class="sector">sector 3 <span>· now</span></div>
-      <h2 class="section-heading">where i am.</h2>
+      <h2 class="section-heading">experience &amp; education.</h2>
       <p class="section-intro">Raced karts, now writing software for a car company. Makes sense.</p>
 
       <div class="timeline">
         <div class="stint">
-          <div class="when"><b>now</b><br>6-month internship</div>
-          <div><h3>SDE Intern <span>· Renault, Chennai</span></h3><p>Software development as part of a six-month internship.</p></div>
+          <div class="when"><b>now</b><br>since Sep 2026</div>
+          <div><h3>SDE Intern <span>· Renault Group, Chennai</span></h3><p>Building My Renault for India, Renault's remote vehicle-control app, in Flutter.</p></div>
         </div>
         <div class="stint">
           <div class="when">ended Sep 2026</div>
@@ -638,7 +640,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
   <section class="section" id="off-track" style="padding-top:40px;">
     <div class="container">
       <div class="sector">cooldown lap <span>· off track</span></div>
-      <h2 class="section-heading">people stuff.</h2>
+      <h2 class="section-heading">leadership.</h2>
       <p class="section-intro">Leading isn't only about finding the answer. Most of it is listening.</p>
 
       <div class="off-grid">
@@ -679,7 +681,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:-.02em;text
     <div class="container">
       <div class="finish-photo"><img src="img/pavitara-360.jpg" width="360" height="360" loading="lazy" decoding="async" alt="Pavitara S"></div>
       <div class="sector" style="justify-content:center;">finish line</div>
-      <p class="quote">you don't always have to feel confident. sometimes you just have to <em>trust yourself, show up and do it anyway.</em></p>
+      <p class="quote">confidence isn't something you wait for. <em>trust yourself, show up, and let the work build it.</em></p>
       <p class="quote-by">what P1 taught me</p>
       <div class="contact">
         <div class="email"><a href="mailto:tarasenvel03@gmail.com" id="emailText">tarasenvel03@gmail.com</a><button class="copy" id="copyEmail" type="button">copy</button></div>
